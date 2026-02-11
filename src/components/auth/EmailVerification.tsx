@@ -10,6 +10,8 @@ interface EmailVerificationProps {
   onBack?: () => void;
 }
 
+const DIGIT_REGEX = /^\d*$/;
+
 const EmailVerification = ({ email = "seu@email.com", onVerify, onResend, onBack }: EmailVerificationProps) => {
   const [code, setCode] = useState<string[]>(Array(6).fill(""));
   const [loading, setLoading] = useState(false);
@@ -18,7 +20,7 @@ const EmailVerification = ({ email = "seu@email.com", onVerify, onResend, onBack
   const refs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
+    if (!DIGIT_REGEX.test(value)) return;
     const newCode = [...code];
     newCode[index] = value.slice(-1);
     setCode(newCode);
