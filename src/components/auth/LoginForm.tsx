@@ -4,7 +4,6 @@ import { isValidEmail } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
-import { EMAIL_REGEX } from "../../lib/constants";
 
 interface LoginFormProps {
   onSubmit?: (data: { email: string; password: string }) => Promise<void>;
