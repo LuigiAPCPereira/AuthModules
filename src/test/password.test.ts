@@ -3,27 +3,27 @@ import { isPasswordStrong } from "../lib/utils";
 
 describe("Password Strength Validation", () => {
   it("should return false for passwords shorter than 8 characters", () => {
-    expect(isPasswordStrong("Short1!")).toBe(false);
+    expect(isPasswordStrong("Ab1!")).toBe(false);
   });
 
   it("should return false for passwords without uppercase letters", () => {
-    expect(isPasswordStrong("nocaps1!")).toBe(false);
+    expect(isPasswordStrong("abc1def!")).toBe(false);
   });
 
   it("should return false for passwords without lowercase letters", () => {
-    expect(isPasswordStrong("NOLOWER1!")).toBe(false);
+    expect(isPasswordStrong("ABC1DEF!")).toBe(false);
   });
 
   it("should return false for passwords without numbers", () => {
-    expect(isPasswordStrong("NoNumber!")).toBe(false);
+    expect(isPasswordStrong("Abc!Defg")).toBe(false);
   });
 
   it("should return false for passwords without special characters", () => {
-    expect(isPasswordStrong("NoSpecial1")).toBe(false);
+    expect(isPasswordStrong("Abc1Defg")).toBe(false);
   });
 
   it("should return true for strong passwords", () => {
-    expect(isPasswordStrong("ValidPass1!")).toBe(true);
-    expect(isPasswordStrong("AnotherValid1@")).toBe(true);
+    expect(isPasswordStrong("Abc1!Def")).toBe(true);
+    expect(isPasswordStrong("Xyz2@Wvu")).toBe(true);
   });
 });
