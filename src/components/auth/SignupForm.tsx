@@ -1,7 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Loader2, UserPlus } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { isValidEmail } from "@/lib/utils";
+import { isValidEmail, getErrorMessage } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import PasswordStrengthBar from "./PasswordStrengthBar";
@@ -42,8 +42,8 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
     setLoading(true);
     try {
       await onSubmit?.({ name, email, password });
-    } catch (err: any) {
-      setServerError(err?.message || "Erro ao criar conta. Tente novamente.");
+    } catch (err) {
+      setServerError(getErrorMessage(err) || "Erro ao criar conta. Tente novamente.");
     } finally {
       setLoading(false);
     }
