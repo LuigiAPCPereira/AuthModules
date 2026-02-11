@@ -1,18 +1,11 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
+import { PASSWORD_RULES } from "@/lib/utils";
 
 interface PasswordStrengthBarProps {
   password: string;
 }
-
-const rules = [
-  { label: "Mínimo 8 caracteres", test: (p: string) => p.length >= 8 },
-  { label: "Letra maiúscula", test: (p: string) => /[A-Z]/.test(p) },
-  { label: "Letra minúscula", test: (p: string) => /[a-z]/.test(p) },
-  { label: "Número", test: (p: string) => /\d/.test(p) },
-  { label: "Caractere especial", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
-];
 
 const strengthConfig = [
   { label: "Muito fraca", color: "hsl(var(--destructive))" },
@@ -23,7 +16,7 @@ const strengthConfig = [
 ];
 
 const PasswordStrengthBar = ({ password }: PasswordStrengthBarProps) => {
-  const passed = useMemo(() => rules.map((r) => r.test(password)), [password]);
+  const passed = useMemo(() => PASSWORD_RULES.map((r) => r.test(password)), [password]);
   const score = passed.filter(Boolean).length;
 
   if (!password) return null;
@@ -62,7 +55,7 @@ const PasswordStrengthBar = ({ password }: PasswordStrengthBarProps) => {
 
       {/* Rules checklist */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-        {rules.map((rule, i) => (
+        {PASSWORD_RULES.map((rule, i) => (
           <div key={i} className="flex items-center gap-1.5">
             {passed[i] ? (
               <Check size={12} className="text-[hsl(var(--success))] shrink-0" />
