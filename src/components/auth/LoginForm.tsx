@@ -37,8 +37,14 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
     setLoading(true);
     try {
       await onSubmit?.({ email, password });
-    } catch (err: any) {
-      setServerError(err?.message || "Erro ao fazer login. Tente novamente.");
+    } catch (err: unknown) {
+      let errorMessage = "";
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === "object" && err !== null && "message" in err) {
+        errorMessage = String((err as { message: unknown }).message);
+      }
+      setServerError(errorMessage || "Erro ao fazer login. Tente novamente.");
     } finally {
       setLoading(false);
     }
