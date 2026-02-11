@@ -2,14 +2,16 @@ import { useState, FormEvent } from "react";
 import { Loader2, LogIn } from "lucide-react";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
+import GoogleSignInButton from "./GoogleSignInButton";
 
 interface LoginFormProps {
   onSubmit?: (data: { email: string; password: string }) => Promise<void>;
   onForgotPassword?: () => void;
   onSignup?: () => void;
+  onGoogleSignIn?: () => Promise<void>;
 }
 
-const LoginForm = ({ onSubmit, onForgotPassword, onSignup }: LoginFormProps) => {
+const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -86,6 +88,12 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup }: LoginFormProps) => 
           {loading ? "Entrando..." : "Entrar"}
         </button>
       </form>
+
+      <div className="auth-divider">
+        <span className="text-xs text-auth-subtle">ou</span>
+      </div>
+
+      <GoogleSignInButton onGoogleSignIn={onGoogleSignIn} />
 
       <p className="mt-8 text-center text-sm text-auth-subtle">
         Não tem uma conta?{" "}
