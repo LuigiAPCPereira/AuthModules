@@ -3,7 +3,6 @@ import { Loader2, ArrowLeft, Send } from "lucide-react";
 import { isValidEmail } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import { EMAIL_REGEX } from "../../lib/constants";
 
 interface ForgotPasswordFormProps {
   onSubmit?: (email: string) => Promise<void>;
