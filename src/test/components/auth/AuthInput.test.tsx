@@ -58,4 +58,18 @@ describe("AuthInput", () => {
 
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
   });
+
+  it("associates label with input", () => {
+    render(<AuthInput label="Email" id="email-input" />);
+    const label = screen.getByText("Email");
+    expect(label).toHaveAttribute("for", "email-input");
+    const input = screen.getByLabelText("Email");
+    expect(input).toHaveAttribute("id", "email-input");
+  });
+
+  it("has accessible toggle button", () => {
+    render(<AuthInput label="Password" type="password" />);
+    const toggleButton = screen.getByLabelText("Mostrar senha");
+    expect(toggleButton).not.toHaveAttribute("tabIndex", "-1");
+  });
 });
