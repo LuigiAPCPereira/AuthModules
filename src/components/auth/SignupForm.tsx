@@ -6,6 +6,7 @@ import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import PasswordStrengthBar from "./PasswordStrengthBar";
 import GoogleSignInButton from "./GoogleSignInButton";
+import { EMAIL_REGEX } from "../../lib/constants";
 
 interface SignupFormProps {
   onSubmit?: (data: { name: string; email: string; password: string }) => Promise<void>;
