@@ -1,6 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Loader2, UserPlus } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
+import { isValidEmail } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import PasswordStrengthBar from "./PasswordStrengthBar";
@@ -26,7 +27,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
     const e: Record<string, string> = {};
     if (!name.trim()) e.name = "Nome é obrigatório";
     if (!email.trim()) e.email = "E-mail é obrigatório";
-    else if (!EMAIL_REGEX.test(email)) e.email = "E-mail inválido";
+    else if (!isValidEmail(email)) e.email = "E-mail inválido";
     if (!password) e.password = "Senha é obrigatória";
     else if (password.length < 8) e.password = "Mínimo de 8 caracteres";
     if (password !== confirmPassword) e.confirmPassword = "As senhas não coincidem";
