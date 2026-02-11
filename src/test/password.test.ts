@@ -7,30 +7,30 @@ describe("isStrongPassword", () => {
   });
 
   it("should return false for passwords without uppercase letters", () => {
-    expect(isStrongPassword("password123!")).toBe(false);
+    expect(isStrongPassword("testpass1!")).toBe(false);
   });
 
   it("should return false for passwords without lowercase letters", () => {
-    expect(isStrongPassword("PASSWORD123!")).toBe(false);
+    expect(isStrongPassword("TESTPASS1!")).toBe(false);
   });
 
   it("should return false for passwords without numbers", () => {
-    expect(isStrongPassword("Password!")).toBe(false);
+    expect(isStrongPassword("TestPass!")).toBe(false);
   });
 
   it("should return false for passwords without special characters", () => {
-    expect(isStrongPassword("Password123")).toBe(false);
+    expect(isStrongPassword("TestPass123")).toBe(false);
   });
 
   it("should return true for strong passwords", () => {
-    expect(isStrongPassword("StrongP@ssw0rd")).toBe(true);
-    expect(isStrongPassword("AnotherStrong1!")).toBe(true);
+    expect(isStrongPassword("TestPass1!")).toBe(true);
+    expect(isStrongPassword("OtherTest1@")).toBe(true);
   });
 
   it("should handle edge cases", () => {
     expect(isStrongPassword("")).toBe(false);
     expect(isStrongPassword(" ")).toBe(false);
     // 8 chars exact
-    expect(isStrongPassword("Abcd123!")).toBe(true);
+    expect(isStrongPassword("Test123!")).toBe(true);
   });
 });
