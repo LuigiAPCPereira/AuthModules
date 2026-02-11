@@ -27,8 +27,17 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
     try {
       await onSubmit?.(email);
       setSent(true);
-    } catch (err: any) {
-      setError(err?.message || "Erro ao enviar. Tente novamente.");
+    } catch (err: unknown) {
+      let message = "";
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (err && typeof err === "object" && "message" in err) {
+        const msg = (err as { message: unknown }).message;
+        if (msg) {
+          message = String(msg);
+        }
+      }
+      setError(message || "Erro ao enviar. Tente novamente.");
     } finally {
       setLoading(false);
     }
