@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
-import SignupForm from "@/components/auth/SignupForm";
-import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
-import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
-import EmailVerification from "@/components/auth/EmailVerification";
-import EmailVerified from "@/components/auth/EmailVerified";
-import LogoutCard from "@/components/auth/LogoutCard";
 import ThemeToggle from "@/components/auth/ThemeToggle";
+
+const SignupForm = lazy(() => import("@/components/auth/SignupForm"));
+const ForgotPasswordForm = lazy(() => import("@/components/auth/ForgotPasswordForm"));
+const ResetPasswordForm = lazy(() => import("@/components/auth/ResetPasswordForm"));
+const EmailVerification = lazy(() => import("@/components/auth/EmailVerification"));
+const EmailVerified = lazy(() => import("@/components/auth/EmailVerified"));
+const LogoutCard = lazy(() => import("@/components/auth/LogoutCard"));
 
 type Screen =
   | "login"
@@ -29,6 +31,12 @@ const screenLabels: Record<Screen, string> = {
 };
 
 const screens: Screen[] = ["login", "signup", "forgot", "reset", "verify", "verified", "logout"];
+
+const LoadingFallback = () => (
+  <div className="flex h-[400px] w-full items-center justify-center rounded-xl border bg-card text-card-foreground shadow">
+    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  </div>
+);
 
 const Index = () => {
   const [active, setActive] = useState<Screen>("login");
@@ -76,52 +84,54 @@ const Index = () => {
             transition={{ duration: 0.25 }}
             className="w-full max-w-md"
           >
-            {active === "login" && (
-              <LoginForm
-                onSubmit={simulateAsync}
-                onForgotPassword={() => setActive("forgot")}
-                onSignup={() => setActive("signup")}
-                onGoogleSignIn={simulateAsync}
-              />
-            )}
-            {active === "signup" && (
-              <SignupForm
-                onSubmit={simulateAsync}
-                onLogin={() => setActive("login")}
-                onGoogleSignIn={simulateAsync}
-              />
-            )}
-            {active === "forgot" && (
-              <ForgotPasswordForm
-                onSubmit={simulateAsync}
-                onBack={() => setActive("login")}
-              />
-            )}
-            {active === "reset" && (
-              <ResetPasswordForm
-                onSubmit={simulateAsync}
-                onLogin={() => setActive("login")}
-              />
-            )}
-            {active === "verify" && (
-              <EmailVerification
-                email="demo@email.com"
-                onVerify={simulateAsync}
-                onResend={simulateAsync}
-                onBack={() => setActive("login")}
-              />
-            )}
-            {active === "verified" && (
-              <EmailVerified onContinue={() => setActive("login")} />
-            )}
-            {active === "logout" && (
-              <LogoutCard
-                userName="João Silva"
-                userEmail="joao@email.com"
-                onLogout={simulateAsync}
-                onCancel={() => setActive("login")}
-              />
-            )}
+            <Suspense fallback={<LoadingFallback />}>
+              {active === "login" && (
+                <LoginForm
+                  onSubmit={simulateAsync}
+                  onForgotPassword={() => setActive("forgot")}
+                  onSignup={() => setActive("signup")}
+                  onGoogleSignIn={simulateAsync}
+                />
+              )}
+              {active === "signup" && (
+                <SignupForm
+                  onSubmit={simulateAsync}
+                  onLogin={() => setActive("login")}
+                  onGoogleSignIn={simulateAsync}
+                />
+              )}
+              {active === "forgot" && (
+                <ForgotPasswordForm
+                  onSubmit={simulateAsync}
+                  onBack={() => setActive("login")}
+                />
+              )}
+              {active === "reset" && (
+                <ResetPasswordForm
+                  onSubmit={simulateAsync}
+                  onLogin={() => setActive("login")}
+                />
+              )}
+              {active === "verify" && (
+                <EmailVerification
+                  email="demo@email.com"
+                  onVerify={simulateAsync}
+                  onResend={simulateAsync}
+                  onBack={() => setActive("login")}
+                />
+              )}
+              {active === "verified" && (
+                <EmailVerified onContinue={() => setActive("login")} />
+              )}
+              {active === "logout" && (
+                <LogoutCard
+                  userName="João Silva"
+                  userEmail="joao@email.com"
+                  onLogout={simulateAsync}
+                  onCancel={() => setActive("login")}
+                />
+              )}
+            </Suspense>
           </motion.div>
         </AnimatePresence>
       </div>
