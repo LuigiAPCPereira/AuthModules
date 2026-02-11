@@ -1,14 +1,18 @@
 import { useState, FormEvent } from "react";
 import { Loader2, UserPlus } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
+import PasswordStrengthBar from "./PasswordStrengthBar";
+import GoogleSignInButton from "./GoogleSignInButton";
 
 interface SignupFormProps {
   onSubmit?: (data: { name: string; email: string; password: string }) => Promise<void>;
   onLogin?: () => void;
+  onGoogleSignIn?: () => Promise<void>;
 }
 
-const SignupForm = ({ onSubmit, onLogin }: SignupFormProps) => {
+const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -77,6 +81,10 @@ const SignupForm = ({ onSubmit, onLogin }: SignupFormProps) => {
           error={errors.password}
           autoComplete="new-password"
         />
+        <AnimatePresence>
+          <PasswordStrengthBar password={password} />
+        </AnimatePresence>
+
         <AuthInput
           id="signup-confirm"
           label="Confirmar senha"
@@ -99,6 +107,12 @@ const SignupForm = ({ onSubmit, onLogin }: SignupFormProps) => {
           {loading ? "Criando..." : "Criar conta"}
         </button>
       </form>
+
+      <div className="auth-divider">
+        <span className="text-xs text-auth-subtle">ou</span>
+      </div>
+
+      <GoogleSignInButton onGoogleSignIn={onGoogleSignIn} label="Registrar com Google" />
 
       <p className="mt-8 text-center text-sm text-auth-subtle">
         Já tem uma conta?{" "}

@@ -81,12 +81,14 @@ const Index = () => {
                 onSubmit={simulateAsync}
                 onForgotPassword={() => setActive("forgot")}
                 onSignup={() => setActive("signup")}
+                onGoogleSignIn={simulateAsync}
               />
             )}
             {active === "signup" && (
               <SignupForm
                 onSubmit={simulateAsync}
                 onLogin={() => setActive("login")}
+                onGoogleSignIn={simulateAsync}
               />
             )}
             {active === "forgot" && (

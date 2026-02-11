@@ -1,7 +1,9 @@
 import { useState, FormEvent } from "react";
 import { Loader2, KeyRound } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
+import PasswordStrengthBar from "./PasswordStrengthBar";
 
 interface ResetPasswordFormProps {
   onSubmit?: (password: string) => Promise<void>;
@@ -72,6 +74,10 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
           autoComplete="new-password"
           autoFocus
         />
+        <AnimatePresence>
+          <PasswordStrengthBar password={password} />
+        </AnimatePresence>
+
         <AuthInput
           id="reset-confirm"
           label="Confirmar nova senha"
