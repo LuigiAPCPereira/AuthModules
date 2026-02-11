@@ -1,5 +1,6 @@
 import { useState, FormEvent } from "react";
 import { Loader2, ArrowLeft, Send } from "lucide-react";
+import { isValidEmail } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 
@@ -16,7 +17,7 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email.trim() || !isValidEmail(email)) {
       setError("Insira um e-mail válido");
       return;
     }

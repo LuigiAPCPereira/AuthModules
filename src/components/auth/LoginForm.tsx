@@ -1,5 +1,6 @@
 import { useState, FormEvent } from "react";
 import { Loader2, LogIn } from "lucide-react";
+import { isValidEmail } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
@@ -21,7 +22,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!email.trim()) newErrors.email = "E-mail é obrigatório";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "E-mail inválido";
+    else if (!isValidEmail(email)) newErrors.email = "E-mail inválido";
     if (!password) newErrors.password = "Senha é obrigatória";
     else if (password.length < 6) newErrors.password = "Mínimo de 6 caracteres";
     setErrors(newErrors);
