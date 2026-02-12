@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { reducer, toast } from "./use-toast";
+import { reducer, toast, resetToastState, TOAST_REMOVE_DELAY, type Action } from "./use-toast";
 
 describe("use-toast", () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    resetToastState();
   });
 
   afterEach(() => {
@@ -14,7 +15,11 @@ describe("use-toast", () => {
   it("reducer should NOT trigger side effect (setTimeout) on DISMISS_TOAST anymore", () => {
     const id = "test-id-" + Math.random().toString();
     const state = { toasts: [{ id, title: "Test", open: true }] };
-    const action = { type: "DISMISS_TOAST", toastId: id } as any;
+
+    const action: Action = {
+      type: "DISMISS_TOAST",
+      toastId: id
+    };
 
     const spy = vi.spyOn(global, "setTimeout");
 
@@ -30,6 +35,6 @@ describe("use-toast", () => {
     const { dismiss } = toast({ title: "Test Toast" });
     dismiss();
 
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith(expect.any(Function), TOAST_REMOVE_DELAY);
   });
 });

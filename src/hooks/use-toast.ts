@@ -3,7 +3,7 @@ import * as React from "react";
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+export const TOAST_REMOVE_DELAY = 1000000;
 
 type ToasterToast = ToastProps & {
   id: string;
@@ -28,7 +28,7 @@ function genId() {
 
 type ActionType = typeof actionTypes;
 
-type Action =
+export type Action =
   | {
       type: ActionType["ADD_TOAST"];
       toast: ToasterToast;
@@ -183,6 +183,13 @@ function useToast() {
     toast,
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   };
+}
+
+export function resetToastState() {
+  memoryState = { toasts: [] };
+  toastTimeouts.forEach((timeout) => clearTimeout(timeout));
+  toastTimeouts.clear();
+  count = 0;
 }
 
 export { useToast, toast };
