@@ -1,6 +1,7 @@
 import { useState, useRef, KeyboardEvent, ClipboardEvent } from "react";
 import { Loader2, Mail, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import { getErrorMessage } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 
 interface EmailVerificationProps {
@@ -52,8 +53,8 @@ const EmailVerification = ({ email = "seu@email.com", onVerify, onResend, onBack
     setLoading(true);
     try {
       await onVerify?.(fullCode);
-    } catch (err: any) {
-      setError(err?.message || "Código inválido. Tente novamente.");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || "Código inválido. Tente novamente.");
       setCode(Array(6).fill(""));
       refs.current[0]?.focus();
     } finally {

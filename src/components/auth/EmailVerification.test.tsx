@@ -46,4 +46,18 @@ describe("EmailVerification Component", () => {
     fireEvent.change(inputs[1], { target: { value: "" } });
     expect((inputs[1] as HTMLInputElement).value).toBe("");
   });
+
+  it("displays error message on verification failure", async () => {
+    const onVerifyMock = vi.fn().mockRejectedValue(new Error("Verification failed"));
+    render(<EmailVerification onVerify={onVerifyMock} />);
+    const inputs = screen.getAllByRole("textbox", { name: /Dígito/i });
+
+    // Fill all inputs to trigger submission
+    for (let i = 0; i < 6; i++) {
+        fireEvent.change(inputs[i], { target: { value: String(i + 1) } });
+    }
+
+    // Wait for the error message to appear
+    await screen.findByText("Verification failed");
+  });
 });
