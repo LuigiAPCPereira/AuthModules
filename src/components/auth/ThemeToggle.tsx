@@ -17,7 +17,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={() => setDark(!dark)}
-      className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors"
+      className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors"
       aria-label="Alternar tema"
     >
       <motion.div

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { EMAIL_REGEX, STRONG_PASSWORD_REGEX } from "./constants";
+import { EMAIL_REGEX } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
