@@ -5,5 +5,5 @@
 
 ## 2024-05-22 - Segredos em Testes
 **Vulnerabilidade:** GitGuardian flagou senhas de exemplo em arquivos de teste.
-**Aprendizado:** Strings como "Correct-Horse-Battery-Staple" são detectadas como segredos conhecidos.
+**Aprendizado:** Padrões conhecidos de senhas vazadas (ex: "Correct-Horse...") são detectados por ferramentas de segurança.
 **Prevenção:** Usar strings genéricas como "TestPassword123!" em testes, evitando padrões conhecidos de senhas vazadas.
