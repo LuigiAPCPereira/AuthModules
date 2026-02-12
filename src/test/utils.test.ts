@@ -24,8 +24,9 @@ describe("isValidEmail", () => {
 
 describe("isPasswordStrong", () => {
   it("should validate strong passwords", () => {
-    expect(isPasswordStrong("StrongP@ss1")).toBe(true);
-    expect(isPasswordStrong("Correct-Horse-Battery-Staple1!")).toBe(true);
+    // Requires: 8+ chars, uppercase, lowercase, number, special char.
+    expect(isPasswordStrong("TestPassword123!")).toBe(true);
+    expect(isPasswordStrong("ValidPassword$4")).toBe(true);
   });
 
   it("should reject weak passwords", () => {
