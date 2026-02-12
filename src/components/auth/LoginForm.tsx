@@ -39,7 +39,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
   const handleFormSubmit = async (data: LoginFormData) => {
     setServerError("");
     try {
-      await onSubmit?.(data);
+      await onSubmit?.({ email: data.email!, password: data.password! });
     } catch (err: unknown) {
       let errorMessage = "";
       if (err instanceof Error) {
