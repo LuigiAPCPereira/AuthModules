@@ -22,7 +22,7 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
   const validate = () => {
     const e: Record<string, string> = {};
     if (!password) e.password = "Nova senha é obrigatória";
-    else if (!isPasswordStrong(password)) e.password = "Requer 8+ chars, maiúscula, número e símbolo";
+    else if (!isPasswordStrong(password)) e.password = "A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um símbolo.";
     if (password !== confirmPassword) e.confirmPassword = "As senhas não coincidem";
     setErrors(e);
     return Object.keys(e).length === 0;
