@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, type KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
@@ -43,18 +43,55 @@ const Index = () => {
 
   const simulateAsync = () => new Promise<void>((r) => setTimeout(r, 1500));
 
+  const handleScreenKeyNavigation = (event: KeyboardEvent<HTMLDivElement>) => {
+    const currentIndex = screens.indexOf(active);
+
+    // A11y: seta horizontal permite trocar de formulário sem precisar usar mouse.
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      setActive(screens[(currentIndex + 1) % screens.length]);
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      setActive(screens[(currentIndex - 1 + screens.length) % screens.length]);
+      return;
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      setActive(screens[0]);
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      setActive(screens[screens.length - 1]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
       <ThemeToggle />
 
       {/* Nav pills */}
       <div className="pt-8 pb-4 px-4">
-        <div className="flex flex-wrap justify-center gap-2 max-w-2xl mx-auto">
+        <div
+          role="tablist"
+          aria-label="Navegação de telas de autenticação"
+          onKeyDown={handleScreenKeyNavigation}
+          className="flex flex-wrap justify-center gap-2 max-w-2xl mx-auto"
+        >
           {screens.map((s) => (
             <button
               key={s}
               onClick={() => setActive(s)}
-              className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 ${
+              role="tab"
+              aria-selected={active === s}
+              aria-controls={`auth-screen-${s}`}
+              id={`auth-tab-${s}`}
+              tabIndex={active === s ? 0 : -1}
+              className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                 active === s
                   ? "text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -78,6 +115,9 @@ const Index = () => {
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
+            role="tabpanel"
+            aria-labelledby={`auth-tab-${active}`}
+            id={`auth-screen-${active}`}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
