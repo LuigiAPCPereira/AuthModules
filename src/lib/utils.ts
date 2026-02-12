@@ -13,7 +13,7 @@ export const isValidEmail = (email: string) => {
 // Security: Enforce password complexity to mitigate brute-force and credential stuffing attacks.
 // Requires: 8+ chars, uppercase, lowercase, number, special char.
 export const isPasswordStrong = (password: string) => {
-  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password);
+  return STRONG_PASSWORD_REGEX.test(password);
 };
 
 export const getErrorMessage = (error: unknown): string => {
