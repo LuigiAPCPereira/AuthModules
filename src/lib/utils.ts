@@ -9,3 +9,17 @@ export function cn(...inputs: ClassValue[]) {
 export const isValidEmail = (email: string) => {
   return EMAIL_REGEX.test(email);
 };
+
+// Security: Enforce password complexity to mitigate brute-force and credential stuffing attacks.
+// Requires: 8+ chars, uppercase, lowercase, number, special char.
+export const isPasswordStrong = (password: string) => {
+  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password);
+};
+
+export const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error !== null && "message" in error) {
+    return String((error as { message: unknown }).message);
+  }
+  return String(error);
+};

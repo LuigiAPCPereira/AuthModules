@@ -1,7 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Loader2, UserPlus } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { isValidEmail } from "@/lib/utils";
+import { isValidEmail, isPasswordStrong, getErrorMessage } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import PasswordStrengthBar from "./PasswordStrengthBar";
@@ -28,7 +28,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
     if (!email.trim()) e.email = "E-mail é obrigatório";
     else if (!isValidEmail(email)) e.email = "E-mail inválido";
     if (!password) e.password = "Senha é obrigatória";
-    else if (password.length < 8) e.password = "Mínimo de 8 caracteres";
+    else if (!isPasswordStrong(password)) e.password = "Requer 8+ chars, maiúscula, número e símbolo";
     if (password !== confirmPassword) e.confirmPassword = "As senhas não coincidem";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -41,8 +41,8 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
     setLoading(true);
     try {
       await onSubmit?.({ name, email, password });
-    } catch (err: any) {
-      setServerError(err?.message || "Erro ao criar conta. Tente novamente.");
+    } catch (err: unknown) {
+      setServerError(getErrorMessage(err) || "Erro ao criar conta. Tente novamente.");
     } finally {
       setLoading(false);
     }

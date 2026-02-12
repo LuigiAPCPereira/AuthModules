@@ -1,6 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Loader2, KeyRound } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
+import { isPasswordStrong, getErrorMessage } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import PasswordStrengthBar from "./PasswordStrengthBar";
@@ -21,7 +22,7 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
   const validate = () => {
     const e: Record<string, string> = {};
     if (!password) e.password = "Nova senha é obrigatória";
-    else if (password.length < 8) e.password = "Mínimo de 8 caracteres";
+    else if (!isPasswordStrong(password)) e.password = "Requer 8+ chars, maiúscula, número e símbolo";
     if (password !== confirmPassword) e.confirmPassword = "As senhas não coincidem";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -35,8 +36,8 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
     try {
       await onSubmit?.(password);
       setSuccess(true);
-    } catch (err: any) {
-      setServerError(err?.message || "Erro ao redefinir senha.");
+    } catch (err: unknown) {
+      setServerError(getErrorMessage(err) || "Erro ao redefinir senha.");
     } finally {
       setLoading(false);
     }
