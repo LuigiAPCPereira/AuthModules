@@ -1,6 +1,8 @@
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Loader2, LogIn } from "lucide-react";
-import { isValidEmail } from "@/lib/utils";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
@@ -12,30 +14,32 @@ interface LoginFormProps {
   onGoogleSignIn?: () => Promise<void>;
 }
 
+const loginSchema = z.object({
+  email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
+  password: z.string().min(1, "Senha é obrigatória").min(6, "Mínimo de 6 caracteres"),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
 const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: LoginFormProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!email.trim()) newErrors.email = "E-mail é obrigatório";
-    else if (!isValidEmail(email)) newErrors.email = "E-mail inválido";
-    if (!password) newErrors.password = "Senha é obrigatória";
-    else if (password.length < 6) newErrors.password = "Mínimo de 6 caracteres";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleFormSubmit = async (data: LoginFormData) => {
     setServerError("");
-    if (!validate()) return;
-    setLoading(true);
     try {
-      await onSubmit?.({ email, password });
+      await onSubmit?.(data);
     } catch (err: unknown) {
       let errorMessage = "";
       if (err instanceof Error) {
@@ -44,34 +48,30 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
         errorMessage = String((err as { message: unknown }).message);
       }
       setServerError(errorMessage || "Erro ao fazer login. Tente novamente.");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <AuthCard title="Entrar" subtitle="Bem-vindo de volta. Faça login na sua conta.">
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5" noValidate>
         <AuthInput
           id="login-email"
           label="E-mail"
           type="email"
           placeholder="seu@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={errors.email}
+          error={!isSubmitting ? errors.email?.message : undefined}
           autoComplete="email"
           autoFocus
+          {...register("email")}
         />
         <AuthInput
           id="login-password"
           label="Senha"
           type="password"
           placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={errors.password}
+          error={!isSubmitting ? errors.password?.message : undefined}
           autoComplete="current-password"
+          {...register("password")}
         />
 
         <div className="flex justify-end">
@@ -90,9 +90,9 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           </div>
         )}
 
-        <button type="submit" disabled={loading} className="auth-btn-primary flex items-center justify-center gap-2">
-          {loading ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
-          {loading ? "Entrando..." : "Entrar"}
+        <button type="submit" disabled={isSubmitting} className="auth-btn-primary flex items-center justify-center gap-2">
+          {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
+          {isSubmitting ? "Entrando..." : "Entrar"}
         </button>
       </form>
 
