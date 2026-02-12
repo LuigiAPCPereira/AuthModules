@@ -11,6 +11,14 @@ describe("AuthInput", () => {
     expect(screen.getByPlaceholderText("Enter email")).toBeInTheDocument();
   });
 
+  it("associates label with input using htmlFor and id", () => {
+    render(<AuthInput label="Test Label" id="test-input" />);
+
+    // This verifies the label is correctly associated with the input
+    expect(screen.getByLabelText("Test Label")).toBeInTheDocument();
+    expect(screen.getByLabelText("Test Label")).toHaveAttribute("id", "test-input");
+  });
+
   it("toggles password visibility", () => {
     render(<AuthInput label="Password" type="password" placeholder="Enter password" />);
 
@@ -28,6 +36,16 @@ describe("AuthInput", () => {
     fireEvent.click(hideButton);
 
     expect(input.type).toBe("password");
+  });
+
+  it("password toggle button is keyboard accessible", () => {
+    render(<AuthInput label="Password" id="password-input" type="password" />);
+
+    const toggleButton = screen.getByLabelText("Mostrar senha");
+    expect(toggleButton).toBeInTheDocument();
+
+    // Ensure the button is keyboard accessible (not tabIndex="-1")
+    expect(toggleButton).not.toHaveAttribute("tabIndex", "-1");
   });
 
   it("does not show toggle button for non-password types", () => {
