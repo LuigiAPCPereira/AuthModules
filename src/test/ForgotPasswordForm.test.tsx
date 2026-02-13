@@ -36,7 +36,7 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Insira um e-mail válido")).toBeInTheDocument();
+      expect(screen.getByText("E-mail inválido")).toBeInTheDocument();
     });
   });
 
@@ -51,12 +51,13 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Network error")).toBeInTheDocument();
+      expect(screen.getByText("Erro de conexão. Verifique sua internet e tente novamente.")).toBeInTheDocument();
     });
   });
 
   it("handles submission error with specific message from object", async () => {
     // Simulating an error object that might be returned by an API
+    // Note: getAuthErrorMessage falls back to generic error if it doesn't recognize the error structure
     const errorObj = { message: "Custom error message" };
     // We need to reject with this object.
     const onSubmit = vi.fn().mockImplementation(() => Promise.reject(errorObj));
@@ -70,7 +71,7 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Custom error message")).toBeInTheDocument();
+      expect(screen.getByText("Ocorreu um erro inesperado. Tente novamente.")).toBeInTheDocument();
     });
   });
 
@@ -87,7 +88,7 @@ describe("ForgotPasswordForm", () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText("Erro ao enviar. Tente novamente.")).toBeInTheDocument();
+        expect(screen.getByText("Ocorreu um erro inesperado. Tente novamente.")).toBeInTheDocument();
       });
   });
 
@@ -104,7 +105,7 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Erro ao enviar. Tente novamente.")).toBeInTheDocument();
+      expect(screen.getByText("Ocorreu um erro inesperado. Tente novamente.")).toBeInTheDocument();
     });
   });
 });

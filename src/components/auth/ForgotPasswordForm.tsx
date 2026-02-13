@@ -14,11 +14,12 @@ interface ForgotPasswordFormProps {
 }
 
 const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
-  const [sent, setSent] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
 
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -30,13 +31,13 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
   const handleFormSubmit = async (data: ForgotPasswordFormData) => {
     try {
       await onSubmit?.(data.email);
-      setSent(true);
+      setSubmittedEmail(data.email);
     } catch (err: unknown) {
-      throw err;
+      setError("root", { message: getAuthErrorMessage(err) });
     }
   };
 
-  if (sent) {
+  if (submittedEmail) {
     return (
       <AuthCard title="E-mail enviado" subtitle="Verifique sua caixa de entrada.">
         <div className="text-center space-y-4">
@@ -44,7 +45,7 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
             <Send size={28} />
           </div>
           <p className="text-sm text-auth-subtle">
-            Enviamos um link de redefinição para <span className="font-medium text-foreground">{watch("email")}</span>. Verifique também a pasta de spam.
+            Enviamos um link de redefinição para <span className="font-medium text-foreground">{submittedEmail}</span>. Verifique também a pasta de spam.
           </p>
           <button type="button" onClick={onBack} className="auth-btn-secondary flex items-center justify-center gap-2 mt-4">
             <ArrowLeft size={16} />
