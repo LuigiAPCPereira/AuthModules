@@ -40,7 +40,7 @@ describe("SignupForm", () => {
     );
 
     const passwordInput = screen.getByLabelText("Senha");
-    fireEvent.change(passwordInput, { target: { value: "123" } });
+    fireEvent.change(passwordInput, { target: { value: "123" } }); // ggignore
 
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
@@ -56,7 +56,7 @@ describe("SignupForm", () => {
     );
 
     const passwordInput = screen.getByLabelText("Senha");
-    fireEvent.change(passwordInput, { target: { value: "TestPassword123!" } });
+    fireEvent.change(passwordInput, { target: { value: "TestPassword123!" } }); // ggignore
 
     // Verifica se o PasswordStrengthBar aparece
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -70,7 +70,7 @@ describe("SignupForm", () => {
 
     fireEvent.change(screen.getByLabelText("Nome completo"), { target: { value: "João Silva" } });
     fireEvent.change(screen.getByLabelText("E-mail"), { target: { value: "joao@email.com" } });
-    fireEvent.change(screen.getByLabelText("Senha"), { target: { value: "TestPassword123!" } });
+    fireEvent.change(screen.getByLabelText("Senha"), { target: { value: "TestPassword123!" } }); // ggignore
 
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
@@ -79,7 +79,7 @@ describe("SignupForm", () => {
       expect(onSubmit).toHaveBeenCalledWith({
         name: "João Silva",
         email: "joao@email.com",
-        password: "TestPassword123!",
+        password: "TestPassword123!", // ggignore
       });
     });
   });
