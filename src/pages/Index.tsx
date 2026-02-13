@@ -74,14 +74,16 @@ const Index = () => {
     <div className="min-h-screen bg-background transition-colors duration-300">
       <ThemeToggle />
 
-      {/* Nav pills */}
-      <div className="pt-8 pb-4 px-4">
-        <div
-          role="tablist"
-          aria-label="Navegação de telas de autenticação"
-          onKeyDown={handleScreenKeyNavigation}
-          className="flex flex-wrap justify-center gap-2 max-w-2xl mx-auto"
-        >
+      {/* Skip links */}
+      <SkipLink href="#main-content" />
+
+      {/* Auth Navigation Tabs */}
+      <div
+        role="tablist"
+        aria-label="Navegação de telas de autenticação"
+        onKeyDown={handleScreenKeyNavigation}
+        className="flex flex-wrap justify-center gap-2 max-w-2xl mx-auto pt-8"
+      >
           {screens.map((s) => (
             <button
               key={s}
