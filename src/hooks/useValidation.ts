@@ -37,11 +37,11 @@ export const useValidation = ({
   }, []);
 
   const validateField = useCallback(
-    (field: string) => (e: React.FocusEvent) => {
+    (field: string) => (e: React.FocusEvent<HTMLInputElement>) => {
       const rule = rules.find((r) => r.field === field);
       if (!rule) return;
 
-      const result = rule.validate(e.target as HTMLInputElement);
+      const result = rule.validate(e.target.value);
       if (result !== true) {
         setErrors((prev) => ({ ...prev, [field]: rule.error }));
       } else {

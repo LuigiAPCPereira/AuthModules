@@ -27,11 +27,6 @@ test: {
         "src/index.ts",
         "src/vite-env.d.ts",
         "src/components/NavLink.tsx",
-        "src/hooks/**",
-        "src/components/auth/ResetPasswordForm.tsx",
-        "src/components/auth/LogoutCard.tsx",
-        "src/components/auth/SkipLink.tsx",
-        "src/components/auth/EmailVerified.tsx",
       ],
       thresholds: {
         statements: 80,
