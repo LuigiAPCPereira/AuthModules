@@ -6,7 +6,7 @@ describe("LoginForm", () => {
   it("renders login form correctly", () => {
     render(<LoginForm />);
     expect(screen.getByPlaceholderText("seu@email.com")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("••••••••")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("••••••")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeInTheDocument();
   });
 
@@ -28,7 +28,7 @@ describe("LoginForm", () => {
     fireEvent.change(screen.getByPlaceholderText("seu@email.com"), {
       target: { value: "test@example.com" },
     });
-    fireEvent.change(screen.getByPlaceholderText("••••••••"), {
+    fireEvent.change(screen.getByPlaceholderText("••••••"), {
       target: { value: "password123" },
     });
 

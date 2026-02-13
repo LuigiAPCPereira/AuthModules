@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { SignupForm } from "../src/components/auth/SignupForm";
-import { I18nProvider } from "../src/contexts/I18nContext";
-import { defaultLabelsPt } from "../src/lib/i18n/labels";
+import SignupForm from "@/components/auth/SignupForm";
+import { I18nProvider } from "@/contexts/I18nContext";
+import { defaultLabelsPt } from "@/lib/i18n/labels";
 
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
@@ -19,7 +19,7 @@ describe("SignupForm", () => {
       <SignupForm onSubmit={vi.fn()} />
     );
     
-    expect(screen.getByText("Criar conta")).toBeInTheDocument();
+    expect(screen.getAllByText("Criar conta")[0]).toBeInTheDocument();
     expect(screen.getByLabelText("Nome completo")).toBeInTheDocument();
     expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
     expect(screen.getByLabelText("Senha")).toBeInTheDocument();

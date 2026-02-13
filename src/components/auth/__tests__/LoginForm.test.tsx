@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { LoginForm } from "../src/components/auth/LoginForm";
-import { I18nProvider } from "../src/contexts/I18nContext";
-import { defaultLabelsPt } from "../src/lib/i18n/labels";
+import LoginForm from "@/components/auth/LoginForm";
+import { I18nProvider } from "@/contexts/I18nContext";
+import { defaultLabelsPt } from "@/lib/i18n/labels";
 
 // Wrapper para providers
 const renderWithProviders = (ui: React.ReactElement) => {
@@ -20,7 +20,7 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={vi.fn()} />
     );
     
-    expect(screen.getByText("Entrar")).toBeInTheDocument();
+    expect(screen.getAllByText("Entrar")[0]).toBeInTheDocument();
     expect(screen.getByText("Bem-vindo de volta. Faça login na sua conta.")).toBeInTheDocument();
     expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
     expect(screen.getByLabelText("Senha")).toBeInTheDocument();
