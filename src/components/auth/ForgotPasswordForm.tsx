@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, ArrowLeft, Send } from "lucide-react";
 import { forgotPasswordSchema, type ForgotPasswordFormData } from "@/lib/schemas/auth";
-import { getAuthErrorMessage } from "@/lib/errorMessages";
+import { getAuthErrorMessage, AUTH_ERROR_MESSAGES } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 
@@ -19,6 +19,8 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
   const {
     register,
     handleSubmit,
+    watch,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -32,7 +34,23 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
       await onSubmit?.(data.email);
       setSent(true);
     } catch (err: unknown) {
-      throw err;
+      // Security: We catch all errors and show success message to prevent user enumeration.
+      // Only network/server errors should be shown to the user so they can retry.
+      const message = getAuthErrorMessage(err);
+
+      if (
+        message === AUTH_ERROR_MESSAGES.NETWORK_ERROR ||
+        message === AUTH_ERROR_MESSAGES.SERVER_UNAVAILABLE ||
+        message === AUTH_ERROR_MESSAGES.TIMEOUT
+      ) {
+        setError("root", { message });
+        return;
+      }
+
+      // For all other errors (including "Email not found"), we pretend success.
+      // In a real app, we should log this error to a monitoring service.
+      console.error("Forgot password error (suppressed for security):", err);
+      setSent(true);
     }
   };
 
