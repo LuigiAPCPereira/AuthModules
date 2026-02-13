@@ -10,7 +10,7 @@ interface SkipLinkProps {
   className?: string;
 }
 
-export const SkipLink = ({ href, className = "" }: SkipLinkProps) => {
+const SkipLink = ({ href, className = "" }: SkipLinkProps) => {
   return (
     <a
       href={href}
@@ -21,3 +21,5 @@ export const SkipLink = ({ href, className = "" }: SkipLinkProps) => {
     </a>
   );
 };
+
+export default SkipLink;
