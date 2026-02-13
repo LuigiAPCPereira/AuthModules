@@ -95,6 +95,11 @@ jobs:
       - name: Build demo
         run: npm run build
         
+      - name: Copiar arquivos estáticos
+        run: |
+          cp .nojekyll dist/
+          cp _config.yml dist/ 2>/dev/null || true
+        
       - name: Setup Pages
         uses: actions/configure-pages@v4
         

@@ -1,0 +1,28 @@
+# Desabilitar processamento Jekyll para servir arquivos estáticos diretamente
+# Isso é necessário para SPAs (Single Page Applications) com React
+
+# Configurações básicas
+title: Auth Modules
+description: Biblioteca completa de componentes de autenticação
+
+# Desabilitar Jekyll (usamos arquivos estáticos)
+# O arquivo .nojekyll também faz isso, mas mantemos aqui por segurança
+include:
+  - assets
+  - ".nojekyll"
+
+# Configurações de build
+# Não processar arquivos com underscore (padrão Jekyll)
+exclude:
+  - node_modules
+  - src
+  - .github
+  - .gitignore
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - vite.config.ts
+  - vitest.config.ts
+  - "*.config.ts"
+  - "*.test.tsx"
+  - "*.test.ts"
