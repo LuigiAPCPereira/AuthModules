@@ -1,6 +1,9 @@
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Loader2, ArrowLeft, Send } from "lucide-react";
-import { isValidEmail } from "@/lib/utils";
+import { forgotPasswordSchema, type ForgotPasswordFormData } from "@/lib/schemas/auth";
 import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
@@ -11,26 +14,25 @@ interface ForgotPasswordFormProps {
 }
 
 const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!email.trim() || !isValidEmail(email)) {
-      setError("Insira um e-mail válido");
-      return;
-    }
-    setError("");
-    setLoading(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const handleFormSubmit = async (data: ForgotPasswordFormData) => {
     try {
-      await onSubmit?.(email);
+      await onSubmit?.(data.email);
       setSent(true);
     } catch (err: unknown) {
-      setError(getAuthErrorMessage(err));
-    } finally {
-      setLoading(false);
+      throw err;
     }
   };
 
@@ -42,7 +44,7 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
             <Send size={28} />
           </div>
           <p className="text-sm text-auth-subtle">
-            Enviamos um link de redefinição para <span className="font-medium text-foreground">{email}</span>. Verifique também a pasta de spam.
+            Enviamos um link de redefinição para <span className="font-medium text-foreground">{watch("email")}</span>. Verifique também a pasta de spam.
           </p>
           <button type="button" onClick={onBack} className="auth-btn-secondary flex items-center justify-center gap-2 mt-4">
             <ArrowLeft size={16} />
@@ -55,32 +57,32 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
 
   return (
     <AuthCard title="Esqueceu a senha?" subtitle="Insira seu e-mail para receber o link de redefinição.">
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5" noValidate>
         <AuthInput
           id="forgot-email"
           label="E-mail"
           type="email"
           placeholder="seu@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={error}
+          error={errors.email?.message}
           autoComplete="email"
           autoFocus
+          {...register("email")}
         />
-        {error && (
+
+        {errors.root && (
           <div
             id="forgot-server-error"
             role="alert"
             aria-live="assertive"
             className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center"
           >
-            {error}
+            {errors.root.message}
           </div>
         )}
 
-        <button type="submit" disabled={loading} className="auth-btn-primary flex items-center justify-center gap-2">
-          {loading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-          {loading ? "Enviando..." : "Enviar link"}
+        <button type="submit" disabled={isSubmitting} className="auth-btn-primary flex items-center justify-center gap-2">
+          {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+          {isSubmitting ? "Enviando..." : "Enviar link"}
         </button>
       </form>
       <button type="button" onClick={onBack} className="mt-6 flex items-center justify-center gap-1.5 mx-auto auth-link">

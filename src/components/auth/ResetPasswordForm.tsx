@@ -1,7 +1,11 @@
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Loader2, KeyRound } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { isPasswordStrong } from "@/lib/utils";
+import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/schemas/auth";
 import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
@@ -13,20 +17,27 @@ interface ResetPasswordFormProps {
 }
 
 const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [serverError, setServerError] = useState("");
 
-  const validate = () => {
-    const e: Record<string, string> = {};
-    if (!password) e.password = "Nova senha é obrigatória";
-    else if (!isPasswordStrong(password)) e.password = "A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um símbolo.";
-    if (password !== confirmPassword) e.confirmPassword = "As senhas não coincidem";
-    setErrors(e);
-    return Object.keys(e).length === 0;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const handleFormSubmit = async (data: ResetPasswordFormData) => {
+    try {
+      await onSubmit?.(data.password);
+      setSuccess(true);
+    } catch (err: unknown) {
+      throw err;
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -64,47 +75,36 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
 
   return (
     <AuthCard title="Redefinir senha" subtitle="Escolha uma nova senha para sua conta.">
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5" noValidate>
         <AuthInput
           id="reset-password"
           label="Nova senha"
           type="password"
           placeholder="Mínimo 8 caracteres"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={errors.password}
+          error={errors.password?.message}
           autoComplete="new-password"
           autoFocus
+          {...register("password")}
         />
+
         <AnimatePresence>
-          <PasswordStrengthBar password={password} />
+          <PasswordStrengthBar password={watch("password")} />
         </AnimatePresence>
 
-        <AuthInput
-          id="reset-confirm"
-          label="Confirmar nova senha"
-          type="password"
-          placeholder="Repita a nova senha"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          error={errors.confirmPassword}
-          autoComplete="new-password"
-        />
-
-        {serverError && (
+        {errors.root && (
           <div
             id="reset-server-error"
             role="alert"
             aria-live="assertive"
             className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center"
           >
-            {serverError}
+            {errors.root.message}
           </div>
         )}
 
-        <button type="submit" disabled={loading} className="auth-btn-primary flex items-center justify-center gap-2">
-          {loading ? <Loader2 size={18} className="animate-spin" /> : <KeyRound size={18} />}
-          {loading ? "Redefinindo..." : "Redefinir senha"}
+        <button type="submit" disabled={isSubmitting} className="auth-btn-primary flex items-center justify-center gap-2">
+          {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <KeyRound size={18} />}
+          {isSubmitting ? "Redefinindo..." : "Redefinir senha"}
         </button>
       </form>
     </AuthCard>
