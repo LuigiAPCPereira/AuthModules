@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
 import ThemeToggle from "@/components/auth/ThemeToggle";
-import { SkipLink } from "@/components/auth/SkipLink";
+import SkipLink from "@/components/auth/SkipLink";
 
 const SignupForm = lazy(() => import("@/components/auth/SignupForm"));
 const ForgotPasswordForm = lazy(() => import("@/components/auth/ForgotPasswordForm"));
