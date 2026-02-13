@@ -36,7 +36,7 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
     } catch (err: unknown) {
       // For now, re-throw or handle as needed.
       // Assuming parent handles it or swallowed by hook form if not set on root.
-      console.error(err);
+      // Log to a secure monitoring service instead
     }
   };
 
