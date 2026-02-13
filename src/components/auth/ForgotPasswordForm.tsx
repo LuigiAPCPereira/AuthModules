@@ -19,6 +19,8 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
   const {
     register,
     handleSubmit,
+    setError,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -32,7 +34,8 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
       await onSubmit?.(data.email);
       setSent(true);
     } catch (err: unknown) {
-      throw err;
+      const message = getAuthErrorMessage(err);
+      setError("root", { message });
     }
   };
 

@@ -1,9 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { SignupForm } from "../src/components/auth/SignupForm";
-import { I18nProvider } from "../src/contexts/I18nContext";
-import { defaultLabelsPt } from "../src/lib/i18n/labels";
+import SignupForm from "../SignupForm";
+import { I18nProvider } from "@/contexts/I18nContext";
+import { defaultLabelsPt } from "@/lib/i18n/labels";
 
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
@@ -18,8 +17,8 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
-    expect(screen.getByText("Criar conta")).toBeInTheDocument();
+
+    expect(screen.getByRole("heading", { name: "Criar conta" })).toBeInTheDocument();
     expect(screen.getByLabelText("Nome completo")).toBeInTheDocument();
     expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
     expect(screen.getByLabelText("Senha")).toBeInTheDocument();
@@ -29,7 +28,7 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     // Verifica que não existe label "Confirmar senha"
     expect(screen.queryByLabelText(/confirmar/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/confirmar senha/i)).not.toBeInTheDocument();
@@ -39,13 +38,13 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     const passwordInput = screen.getByLabelText("Senha");
-    await userEvent.type(passwordInput, "123");
-    
+    fireEvent.change(passwordInput, { target: { value: "123" } }); // ggignore
+
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText(/mínimo de 8 caracteres/i)).toBeInTheDocument();
     });
@@ -55,10 +54,10 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     const passwordInput = screen.getByLabelText("Senha");
-    await userEvent.type(passwordInput, "SenhaForte123!");
-    
+    fireEvent.change(passwordInput, { target: { value: "TestPassword123!" } }); // ggignore
+
     // Verifica se o PasswordStrengthBar aparece
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
@@ -68,19 +67,19 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={onSubmit} />
     );
-    
-    await userEvent.type(screen.getByLabelText("Nome completo"), "João Silva");
-    await userEvent.type(screen.getByLabelText("E-mail"), "joao@email.com");
-    await userEvent.type(screen.getByLabelText("Senha"), "SenhaForte123!");
-    
+
+    fireEvent.change(screen.getByLabelText("Nome completo"), { target: { value: "João Silva" } });
+    fireEvent.change(screen.getByLabelText("E-mail"), { target: { value: "joao@email.com" } });
+    fireEvent.change(screen.getByLabelText("Senha"), { target: { value: "TestPassword123!" } }); // ggignore
+
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({
         name: "João Silva",
         email: "joao@email.com",
-        password: "SenhaForte123!",
+        password: "TestPassword123!", // ggignore
       });
     });
   });

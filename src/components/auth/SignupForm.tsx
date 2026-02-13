@@ -23,6 +23,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
