@@ -1,7 +1,10 @@
 {
-  "name": "@seu-usuario/auth-modules",
+  "name": "@LuigiAPCPereira/auth-modules",
   "version": "1.0.0",
   "description": "Biblioteca completa de componentes de autenticação modulares, prontos para produção",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
