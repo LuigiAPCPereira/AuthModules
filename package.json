@@ -1,16 +1,50 @@
 {
-  "name": "vite_react_shadcn_ts",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@seu-usuario/auth-modules",
+  "version": "1.0.0",
+  "description": "Biblioteca completa de componentes de autenticação modulares, prontos para produção",
   "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "build:lib": "vite build --config vite.lib.config.ts",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build:lib"
+  },
+  "keywords": [
+    "react",
+    "authentication",
+    "auth",
+    "components",
+    "ui",
+    "typescript",
+    "zod",
+    "react-hook-form"
+  ],
+  "author": "LuigiAPCPereira",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LuigiAPCPereira/auth-modules.git"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
