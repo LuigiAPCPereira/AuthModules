@@ -49,7 +49,7 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
 
       // For all other errors (including "Email not found"), we pretend success.
       // In a real app, we should log this error to a monitoring service.
-      console.error("Forgot password error (suppressed for security):", err);
+      // Log to a secure monitoring service instead
       setSent(true);
     }
   };
