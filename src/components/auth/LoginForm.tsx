@@ -80,7 +80,6 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
         >
           Esqueceu a senha?
         </button>
-        </label>
 
         {serverError && (
           <div
@@ -93,7 +92,12 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           </div>
         )}
 
-        <button type="submit" disabled={isSubmitting} className="auth-btn-primary flex items-center justify-center gap-2">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="auth-btn-primary flex items-center justify-center gap-2"
+          aria-busy={isSubmitting}
+        >
           {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
           {isSubmitting ? "Entrando..." : "Entrar"}
         </button>

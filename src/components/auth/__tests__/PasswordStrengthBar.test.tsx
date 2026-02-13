@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { PasswordStrengthBar } from "../src/components/auth/PasswordStrengthBar";
-import { I18nProvider } from "../src/contexts/I18nContext";
-import { defaultLabelsPt } from "../src/lib/i18n/labels";
+import PasswordStrengthBar from "@/components/auth/PasswordStrengthBar";
+import { I18nProvider } from "@/contexts/I18nContext";
+import { defaultLabelsPt } from "@/lib/i18n/labels";
 
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(

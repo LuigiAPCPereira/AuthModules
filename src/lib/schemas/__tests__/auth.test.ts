@@ -4,7 +4,7 @@ import {
   signupSchema, 
   forgotPasswordSchema,
   resetPasswordSchema 
-} from "../src/lib/schemas/auth";
+} from "@/lib/schemas/auth";
 
 describe("Schemas de Validação", () => {
   describe("loginSchema", () => {
