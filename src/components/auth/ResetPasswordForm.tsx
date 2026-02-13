@@ -1,7 +1,8 @@
 import { useState, FormEvent } from "react";
 import { Loader2, KeyRound } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { isPasswordStrong, getErrorMessage } from "@/lib/utils";
+import { isPasswordStrong } from "@/lib/utils";
+import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import PasswordStrengthBar from "./PasswordStrengthBar";
@@ -37,7 +38,7 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
       await onSubmit?.(password);
       setSuccess(true);
     } catch (err: unknown) {
-      setServerError(getErrorMessage(err) || "Erro ao redefinir senha.");
+      setServerError(getAuthErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -91,7 +92,12 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
         />
 
         {serverError && (
-          <div className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center">
+          <div
+            id="reset-server-error"
+            role="alert"
+            aria-live="assertive"
+            className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center"
+          >
             {serverError}
           </div>
         )}

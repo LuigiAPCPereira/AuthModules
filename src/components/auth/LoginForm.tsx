@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, LogIn } from "lucide-react";
+import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
@@ -41,13 +42,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
     try {
       await onSubmit?.(data);
     } catch (err: unknown) {
-      let errorMessage = "";
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else if (typeof err === "object" && err !== null && "message" in err) {
-        errorMessage = String((err as { message: unknown }).message);
-      }
-      setServerError(errorMessage || "Erro ao fazer login. Tente novamente.");
+      setServerError(getAuthErrorMessage(err));
     }
   };
 
@@ -85,7 +80,12 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
         </div>
 
         {serverError && (
-          <div className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center">
+          <div
+            id="login-server-error"
+            role="alert"
+            aria-live="assertive"
+            className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center"
+          >
             {serverError}
           </div>
         )}

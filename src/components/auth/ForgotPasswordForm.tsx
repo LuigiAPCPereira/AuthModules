@@ -1,6 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Loader2, ArrowLeft, Send } from "lucide-react";
 import { isValidEmail } from "@/lib/utils";
+import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 
@@ -27,16 +28,7 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
       await onSubmit?.(email);
       setSent(true);
     } catch (err: unknown) {
-      let message = "";
-      if (err instanceof Error) {
-        message = err.message;
-      } else if (err && typeof err === "object" && "message" in err) {
-        const msg = (err as { message: unknown }).message;
-        if (msg) {
-          message = String(msg);
-        }
-      }
-      setError(message || "Erro ao enviar. Tente novamente.");
+      setError(getAuthErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -75,6 +67,17 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
           autoComplete="email"
           autoFocus
         />
+        {error && (
+          <div
+            id="forgot-server-error"
+            role="alert"
+            aria-live="assertive"
+            className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center"
+          >
+            {error}
+          </div>
+        )}
+
         <button type="submit" disabled={loading} className="auth-btn-primary flex items-center justify-center gap-2">
           {loading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
           {loading ? "Enviando..." : "Enviar link"}

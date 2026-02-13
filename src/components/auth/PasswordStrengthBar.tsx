@@ -38,7 +38,15 @@ const PasswordStrengthBar = ({ password }: PasswordStrengthBarProps) => {
       className="space-y-3"
     >
       {/* Bar */}
-      <div className="flex gap-1.5">
+      <div
+        role="progressbar"
+        aria-valuenow={score}
+        aria-valuemin={0}
+        aria-valuemax={5}
+        aria-label={`Força da senha: ${config.label}, ${score} de 5 requisitos atendidos`}
+        aria-describedby="password-requirements"
+        className="flex gap-1.5"
+      >
         {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
@@ -61,13 +69,18 @@ const PasswordStrengthBar = ({ password }: PasswordStrengthBarProps) => {
       </div>
 
       {/* Rules checklist */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+      <div
+        id="password-requirements"
+        role="list"
+        aria-label="Requisitos de senha"
+        className="grid grid-cols-2 gap-x-4 gap-y-1"
+      >
         {rules.map((rule, i) => (
           <div key={i} className="flex items-center gap-1.5">
             {passed[i] ? (
-              <Check size={12} className="text-[hsl(var(--success))] shrink-0" />
+              <Check size={12} className="text-[hsl(var(--success))] shrink-0" aria-hidden="true" />
             ) : (
-              <X size={12} className="text-auth-subtle shrink-0" />
+              <X size={12} className="text-auth-subtle shrink-0" aria-hidden="true" />
             )}
             <span
               className={`text-xs transition-colors duration-200 ${

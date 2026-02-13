@@ -1,7 +1,8 @@
 import { useState, FormEvent } from "react";
 import { Loader2, UserPlus } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { isValidEmail, isPasswordStrong, getErrorMessage } from "@/lib/utils";
+import { isValidEmail, isPasswordStrong } from "@/lib/utils";
+import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import PasswordStrengthBar from "./PasswordStrengthBar";
@@ -17,7 +18,6 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
@@ -29,7 +29,6 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
     else if (!isValidEmail(email)) e.email = "E-mail inválido";
     if (!password) e.password = "Senha é obrigatória";
     else if (!isPasswordStrong(password)) e.password = "A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um símbolo.";
-    if (password !== confirmPassword) e.confirmPassword = "As senhas não coincidem";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -42,7 +41,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
     try {
       await onSubmit?.({ name, email, password });
     } catch (err: unknown) {
-      setServerError(getErrorMessage(err) || "Erro ao criar conta. Tente novamente.");
+      setServerError(getAuthErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -86,19 +85,13 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           <PasswordStrengthBar password={password} />
         </AnimatePresence>
 
-        <AuthInput
-          id="signup-confirm"
-          label="Confirmar senha"
-          type="password"
-          placeholder="Repita a senha"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          error={errors.confirmPassword}
-          autoComplete="new-password"
-        />
-
         {serverError && (
-          <div className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center">
+          <div
+            id="signup-server-error"
+            role="alert"
+            aria-live="assertive"
+            className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center"
+          >
             {serverError}
           </div>
         )}
