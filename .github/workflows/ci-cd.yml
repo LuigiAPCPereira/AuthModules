@@ -145,13 +145,16 @@ jobs:
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           FULL_NAME="${PACKAGE_NAME}@${PACKAGE_VERSION}"
           
-          if npm view $FULL_NAME --registry https://npm.pkg.github.com 2>/dev/null; then
-            echo "Version $FULL_NAME already exists, skipping publish"
+          echo "Checking if $FULL_NAME exists..."
+          
+          # Verifica se versão existe (ignora erro se não existir)
+          if npm view "$FULL_NAME" --registry https://npm.pkg.github.com > /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✓ Version $FULL_NAME already exists - skipping publish"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
+            echo "✓ Version $FULL_NAME does not exist - will publish"
           fi
-        continue-on-error: true
         
       - name: Publicar no GitHub Packages
         if: steps.check-version.outputs.exists != 'true'
