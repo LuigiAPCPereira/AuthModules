@@ -69,6 +69,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           autoComplete="current-password"
           {...register("password")}
         />
+        {/* TODO: wire remember-me to react-hook-form */}
         <div className="flex items-center gap-2 mt-2">
           <Checkbox id="remember-me" />
           <label

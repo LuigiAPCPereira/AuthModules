@@ -20,6 +20,7 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
     register,
     handleSubmit,
     watch,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -29,8 +30,15 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
   });
 
   const handleFormSubmit = async (data: ForgotPasswordFormData) => {
-    await onSubmit?.(data.email);
-    setSent(true);
+    try {
+      await onSubmit?.(data.email);
+      setSent(true);
+    } catch (err: unknown) {
+      setError("root", {
+        type: "submit",
+        message: "Erro ao enviar. Tente novamente.",
+      });
+    }
   };
 
   if (sent) {
