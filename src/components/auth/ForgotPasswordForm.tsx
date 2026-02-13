@@ -38,11 +38,13 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
       // Only network/server errors should be shown to the user so they can retry.
       const message = getAuthErrorMessage(err);
 
-      if (
-        message === AUTH_ERROR_MESSAGES.NETWORK_ERROR ||
-        message === AUTH_ERROR_MESSAGES.SERVER_UNAVAILABLE ||
-        message === AUTH_ERROR_MESSAGES.TIMEOUT
-      ) {
+      const networkErrors = [
+        AUTH_ERROR_MESSAGES.NETWORK_ERROR,
+        AUTH_ERROR_MESSAGES.SERVER_UNAVAILABLE,
+        AUTH_ERROR_MESSAGES.TIMEOUT,
+      ];
+
+      if (networkErrors.includes(message)) {
         setError("root", { message });
         return;
       }
