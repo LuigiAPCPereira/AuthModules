@@ -51,7 +51,7 @@ export const forgotPasswordSchema = z.object({
 });
 
 /**
- * Schema para redefinir senha
+ * Schema para redefinir senha (SEM confirmar senha - quick win)
  */
 export const resetPasswordSchema = z.object({
   password: z

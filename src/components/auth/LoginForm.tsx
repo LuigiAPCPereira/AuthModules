@@ -63,21 +63,24 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           id="login-password"
           label="Senha"
           type="password"
-          placeholder="••••••••"
+          placeholder="••••••"
           error={!isSubmitting ? errors.password?.message : undefined}
           autoComplete="current-password"
           {...register("password")}
         />
+        <label className="flex items-center gap-2 mt-2">
+          <input type="checkbox" className="rounded border-input" />
+          <span className="text-sm text-auth-subtle">Lembrar de mim</span>
+        </label>
 
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={onForgotPassword}
-            className="auth-link"
-          >
-            Esqueceu a senha?
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onForgotPassword}
+          className="auth-link mt-2"
+        >
+          Esqueceu a senha?
+        </button>
+        </label>
 
         {serverError && (
           <div
