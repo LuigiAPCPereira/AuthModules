@@ -14,23 +14,22 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
         
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20'
-          cache: 'npm'
+          bun-version: latest
           
       - name: Instalar dependências
-        run: npm ci
+        run: bun install --frozen-lockfile
         
       - name: Type check
-        run: npm run typecheck
+        run: bun run typecheck
         
       - name: Lint
-        run: npm run lint
+        run: bun run lint
         
       - name: Testes
-        run: npm run test:coverage
+        run: bun run test:coverage
         
       - name: Upload coverage
         uses: codecov/codecov-action@v3
@@ -46,17 +45,16 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
         
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20'
-          cache: 'npm'
+          bun-version: latest
           
       - name: Instalar dependências
-        run: npm ci
+        run: bun install --frozen-lockfile
         
       - name: Build biblioteca
-        run: npm run build:lib
+        run: bun run build:lib
         
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -82,17 +80,16 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
         
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20'
-          cache: 'npm'
+          bun-version: latest
           
       - name: Instalar dependências
-        run: npm ci
+        run: bun install --frozen-lockfile
         
       - name: Build demo
-        run: npm run build
+        run: bun run build
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
