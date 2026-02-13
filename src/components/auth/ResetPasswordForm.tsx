@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, KeyRound } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { isPasswordStrong } from "@/lib/utils";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/schemas/auth";
 import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";

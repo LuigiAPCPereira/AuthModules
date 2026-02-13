@@ -67,7 +67,7 @@ export const useValidation = ({
         }
       });
     };
-  }, [rules, validateOnBlur]);
+  }, [rules, validateOnBlur]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     errors,
