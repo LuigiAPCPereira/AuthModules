@@ -10,3 +10,7 @@
 
 **Aprendizado:** `watch()` do `react-hook-form` é poderoso, mas perigoso. Usá-lo no corpo do componente para renderizar uma mensagem de sucesso (que só aparece DEPOIS do submit) causa re-renders desnecessários a cada tecla digitada.
 **Ação:** Mover dados estáticos pós-submit (como o e-mail enviado) para um estado local (`useState`) que é preenchido apenas no `onSubmit`. Isso isola a renderização do formulário da renderização do resultado, eliminando N re-renders (onde N é o tamanho do input).
+
+## 2026-02-13 - [Coverage Dependency Mismatch]
+**Learning:** Running mixed versions of `vitest` and `@vitest/coverage-v8` causes runtime errors. They must match exactly.
+**Action:** Always ensure the major and minor versions of these two packages are synchronized in `package.json`.

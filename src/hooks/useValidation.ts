@@ -3,7 +3,7 @@
  * Adiciona validação em blur para melhor UX
  */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface ValidationRule {
   field: string;
@@ -28,25 +28,28 @@ export const useValidation = ({
 }: UseValidationOptions): UseValidationReturn => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const clearError = (field: string) => {
+  const clearError = useCallback((field: string) => {
     setErrors((prev) => {
       const newErrors = { ...prev };
       delete newErrors[field];
       return newErrors;
     });
-  };
+  }, []);
 
-  const validateField = (field: string) => (e: React.FocusEvent) => {
-    const rule = rules.find((r) => r.field === field);
-    if (!rule) return;
+  const validateField = useCallback(
+    (field: string) => (e: React.FocusEvent) => {
+      const rule = rules.find((r) => r.field === field);
+      if (!rule) return;
 
-    const result = rule.validate(e.target as HTMLInputElement);
-    if (result !== true) {
-      setErrors((prev) => ({ ...prev, [field]: rule.error }));
-    } else {
-      clearError(field);
-    }
-  };
+      const result = rule.validate(e.target as HTMLInputElement);
+      if (result !== true) {
+        setErrors((prev) => ({ ...prev, [field]: rule.error }));
+      } else {
+        clearError(field);
+      }
+    },
+    [rules, clearError]
+  );
 
   useEffect(() => {
     if (validateOnBlur) {
@@ -67,7 +70,7 @@ export const useValidation = ({
         }
       });
     };
-  }, [rules, validateOnBlur]);
+  }, [rules, validateOnBlur, errors, validateField]);
 
   return {
     errors,
