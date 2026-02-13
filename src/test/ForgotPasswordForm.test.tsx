@@ -36,7 +36,7 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Insira um e-mail válido")).toBeInTheDocument();
+      expect(screen.getByText("E-mail inválido")).toBeInTheDocument();
     });
   });
 
@@ -51,7 +51,7 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Network error")).toBeInTheDocument();
+      expect(screen.getByText("Erro de conexão. Verifique sua internet e tente novamente.")).toBeInTheDocument();
     });
   });
 
@@ -70,7 +70,7 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Custom error message")).toBeInTheDocument();
+      expect(screen.getByText("Ocorreu um erro inesperado. Tente novamente.")).toBeInTheDocument();
     });
   });
 
@@ -87,7 +87,7 @@ describe("ForgotPasswordForm", () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText("Erro ao enviar. Tente novamente.")).toBeInTheDocument();
+        expect(screen.getByText("Ocorreu um erro inesperado. Tente novamente.")).toBeInTheDocument();
       });
   });
 
@@ -104,7 +104,7 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Erro ao enviar. Tente novamente.")).toBeInTheDocument();
+      expect(screen.getByText("Ocorreu um erro inesperado. Tente novamente.")).toBeInTheDocument();
     });
   });
 });

@@ -80,7 +80,6 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
         >
           Esqueceu a senha?
         </button>
-        </label>
 
         {serverError && (
           <div

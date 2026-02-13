@@ -21,3 +21,5 @@ export const SkipLink = ({ href, className = "" }: SkipLinkProps) => {
     </a>
   );
 };
+
+export default SkipLink;
