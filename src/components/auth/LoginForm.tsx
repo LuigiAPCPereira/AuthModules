@@ -7,6 +7,7 @@ import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface LoginFormProps {
   onSubmit?: (data: { email: string; password: string }) => Promise<void>;
@@ -68,10 +69,15 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           autoComplete="current-password"
           {...register("password")}
         />
-        <label className="flex items-center gap-2 mt-2">
-          <input type="checkbox" className="rounded border-input" />
-          <span className="text-sm text-auth-subtle">Lembrar de mim</span>
-        </label>
+        <div className="flex items-center gap-2 mt-2">
+          <Checkbox id="remember-me" />
+          <label
+            htmlFor="remember-me"
+            className="text-sm text-auth-subtle cursor-pointer select-none"
+          >
+            Lembrar de mim
+          </label>
+        </div>
 
         <button
           type="button"
@@ -80,7 +86,6 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
         >
           Esqueceu a senha?
         </button>
-        </label>
 
         {serverError && (
           <div

@@ -22,6 +22,8 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
   const {
     register,
     handleSubmit,
+    watch,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -35,22 +37,9 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
       await onSubmit?.(data.password);
       setSuccess(true);
     } catch (err: unknown) {
-      throw err;
-    }
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setServerError("");
-    if (!validate()) return;
-    setLoading(true);
-    try {
-      await onSubmit?.(password);
-      setSuccess(true);
-    } catch (err: unknown) {
-      setServerError(getAuthErrorMessage(err));
-    } finally {
-      setLoading(false);
+      setError("root", {
+        message: getAuthErrorMessage(err),
+      });
     }
   };
 
