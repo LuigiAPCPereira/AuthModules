@@ -31,7 +31,7 @@ describe("PasswordStrengthBar", () => {
 
   it("tem atributos ARIA corretos para acessibilidade", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="SenhaForte123!" />
+      <PasswordStrengthBar password="TestPassword123!" />
     );
 
     const progressbar = screen.getByRole("progressbar");
@@ -51,7 +51,7 @@ describe("PasswordStrengthBar", () => {
 
   it("mostra força 'Forte' para senha completa", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="SenhaForte123!" />
+      <PasswordStrengthBar password="TestPassword123!" />
     );
 
     expect(screen.getByText("Forte")).toBeInTheDocument();
