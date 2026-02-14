@@ -37,7 +37,7 @@ const ChartContainer = React.forwardRef<
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  const chartId = `chart-${(id || uniqueId).replace(/:/g, "").replace(/[^a-zA-Z0-9-]/g, "_")}`;
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -64,6 +64,8 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     [config],
   );
   const styleRef = React.useRef<HTMLStyleElement>(null);
+  // Security: Sanitize id to prevent CSS injection
+  const safeId = id.replace(/[^a-zA-Z0-9-]/g, "_");
 
   React.useLayoutEffect(() => {
     if (!styleRef.current || !colorConfig.length) {
@@ -73,7 +75,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     styleRef.current.textContent = Object.entries(THEMES)
       .map(
         ([theme, prefix]) => `
-${prefix} [data-chart='${id}'] {
+${prefix} [data-chart='${safeId}'] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
@@ -84,7 +86,7 @@ ${colorConfig
 `,
       )
       .join("\n");
-  }, [id, config, colorConfig]);
+  }, [safeId, config, colorConfig]);
 
   if (!colorConfig.length) {
     return null;
