@@ -1,9 +1,9 @@
-import { Control, useWatch } from "react-hook-form";
+import { Control, FieldValues, useWatch } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import PasswordStrengthBar from "./PasswordStrengthBar";
 
 interface PasswordStrengthIndicatorProps {
-  control: Control<any>;
+  control: Control<FieldValues>;
 }
 
 const PasswordStrengthIndicator = ({ control }: PasswordStrengthIndicatorProps) => {
