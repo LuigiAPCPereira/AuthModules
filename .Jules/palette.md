@@ -5,3 +5,7 @@
 ## 2026-02-12 - Navegação por teclado em tabs de autenticação
 **Aprendizado:** Em navegação tipo "pills" para trocar telas, tratar o grupo como `tablist` com `aria-selected`, `tabIndex` em roving e atalhos `ArrowLeft/ArrowRight/Home/End` melhora bastante a usabilidade sem alterar layout.
 **Ação:** Reutilizar esse padrão em qualquer seletor horizontal de telas/etapas para manter experiência consistente entre mouse, teclado e leitor de tela.
+
+## 2025-02-20 - Feedback de Caps Lock em Inputs
+**Aprendizado:** Detectar o estado do Caps Lock via `KeyboardEvent.getModifierState("CapsLock")` é uma melhoria simples mas de alto impacto UX para campos de senha, prevenindo erros frustrantes.
+**Ação:** Implementar este padrão em todos os inputs do tipo `password`, usando um aviso visual não-intrusivo (role="alert") que não conflite com erros de validação.
