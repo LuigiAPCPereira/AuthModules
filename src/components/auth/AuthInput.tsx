@@ -1,5 +1,5 @@
 import { useState, InputHTMLAttributes, forwardRef } from "react";
-import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -10,8 +10,42 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
 const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
   ({ label, error, type, className = "", ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [capsLockOn, setCapsLockOn] = useState(false);
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
+
+    const checkCapsLock = (e: React.KeyboardEvent | React.MouseEvent | React.FocusEvent) => {
+      if (e.getModifierState) {
+        setCapsLockOn(e.getModifierState("CapsLock"));
+      }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onKeyDown?.(e);
+    };
+
+    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onKeyUp?.(e);
+    };
+
+    const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onClick?.(e);
+    };
+
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onFocus?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      // We could clear Caps Lock warning on blur, but keeping it based on state
+      // is more consistent with how the OS behaves (state persists).
+      // However, usually we update it on focus.
+      props.onBlur?.(e);
+    };
 
     return (
       <div className="space-y-1.5">
@@ -26,6 +60,11 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             aria-invalid={!!error}
             aria-describedby={error ? `${props.id}-error` : undefined}
             {...props}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
+            onClick={handleClick}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
           {isPassword && (
             <button
@@ -39,6 +78,18 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
           )}
         </div>
         <AnimatePresence>
+          {capsLockOn && isPassword && !error && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              className="text-xs font-medium flex items-center gap-1.5 mt-1.5 text-[hsl(var(--warning))]"
+              role="alert"
+            >
+              <ArrowUp size={14} />
+              Caps Lock ativado
+            </motion.p>
+          )}
           {error && (
             <motion.p
               initial={{ opacity: 0, y: -4 }}
