@@ -7,7 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/schemas/auth";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import PasswordStrengthBar from "./PasswordStrengthBar";
+import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 
 interface ResetPasswordFormProps {
   onSubmit?: (password: string) => Promise<void>;
@@ -20,7 +20,7 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -73,7 +73,9 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
         />
 
         <AnimatePresence>
-          <PasswordStrengthBar password={watch("password") || ""} />
+          {/* ⚡ Performance Optimization: Using PasswordStrengthIndicator instead of watch("password")
+              to prevent re-rendering the entire form on every keystroke. */}
+          <PasswordStrengthIndicator control={control} />
         </AnimatePresence>
 
         {errors.root && (

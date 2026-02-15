@@ -8,7 +8,7 @@ import { signupSchema, type SignupFormData } from "@/lib/schemas/auth";
 import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import PasswordStrengthBar from "./PasswordStrengthBar";
+import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 import GoogleSignInButton from "./GoogleSignInButton";
 
 interface SignupFormProps {
@@ -23,7 +23,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -76,7 +76,9 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
         />
 
         <AnimatePresence>
-          <PasswordStrengthBar password={watch("password")} />
+          {/* ⚡ Performance Optimization: Using PasswordStrengthIndicator instead of watch("password")
+              to prevent re-rendering the entire form on every keystroke. */}
+          <PasswordStrengthIndicator control={control} />
         </AnimatePresence>
 
         {serverError && (
