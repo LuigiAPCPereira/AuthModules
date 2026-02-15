@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Security Headers -->
+    <!-- CSP configured for React/Vite development environment. 'unsafe-inline' and 'unsafe-eval' are required for HMR and dev tools.
+         'connect-src' includes common Supabase domains often used in this stack, though current code uses mocks. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://lovable.dev; connect-src 'self' https://*.supabase.co https://*.supabase.in; object-src 'none'; base-uri 'self';" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <!-- TODO: Set the document title to the name of your application -->
     <title>Lovable App</title>
     <meta name="description" content="Lovable Generated Project" />
