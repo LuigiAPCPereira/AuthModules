@@ -3,10 +3,13 @@
  * Cada erro tem uma mensagem clara e acionável
  */
 
+// Security: Generic error message to prevent user enumeration
+const GENERIC_LOGIN_ERROR = "E-mail ou senha incorretos. Verifique e tente novamente.";
+
 export const AUTH_ERROR_MESSAGES = {
   // Login errors
-  INVALID_CREDENTIALS: "E-mail ou senha incorretos. Verifique e tente novamente.",
-  EMAIL_NOT_FOUND: "Nenhuma conta encontrada com este e-mail.",
+  INVALID_CREDENTIALS: GENERIC_LOGIN_ERROR,
+  EMAIL_NOT_FOUND: GENERIC_LOGIN_ERROR,
   ACCOUNT_LOCKED: "Conta temporariamente bloqueada. Tente novamente em 15 minutos.",
   TOO_MANY_ATTEMPTS: "Muitas tentativas. Aguarde 5 minutos antes de tentar novamente.",
 
@@ -47,7 +50,8 @@ export const getAuthErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
 
-    if (message.includes("invalid") || message.includes("incorret")) {
+    // Security: Catch "not found" errors and map to generic credential error
+    if (message.includes("invalid") || message.includes("incorret") || message.includes("not found")) {
       return AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS;
     }
     if (message.includes("locked") || message.includes("bloqueada")) {
@@ -69,6 +73,10 @@ export const getAuthErrorMessage = (error: unknown): string => {
     }
     if (lower.includes("inválido") || lower.includes("invalid")) {
       return AUTH_ERROR_MESSAGES.INVALID_EMAIL;
+    }
+    // Security: Catch "not found" string errors too
+    if (lower.includes("not found") || lower.includes("não encontrada")) {
+      return AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS;
     }
   }
 
