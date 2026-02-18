@@ -1,5 +1,5 @@
 import { useState, InputHTMLAttributes, forwardRef, useId } from "react";
-import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, TriangleAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -12,8 +12,30 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
     const generatedId = useId();
     const id = propsId || generatedId;
     const [showPassword, setShowPassword] = useState(false);
+    const [capsLockActive, setCapsLockActive] = useState(false);
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
+
+    const checkCapsLock = (e: React.KeyboardEvent | React.MouseEvent) => {
+      if (e.getModifierState) {
+        setCapsLockActive(e.getModifierState("CapsLock"));
+      }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onKeyDown?.(e);
+    };
+
+    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onKeyUp?.(e);
+    };
+
+    const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onClick?.(e);
+    };
 
     return (
       <div className="space-y-1.5">
@@ -29,6 +51,9 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             aria-invalid={!!error}
             aria-describedby={error ? `${id}-error` : undefined}
             {...props}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
+            onClick={handleClick}
           />
           {isPassword && (
             <button
@@ -44,6 +69,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
         <AnimatePresence>
           {error && (
             <motion.p
+              key="error"
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
@@ -53,6 +79,20 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             >
               <AlertCircle size={14} />
               {error}
+            </motion.p>
+          )}
+          {!error && capsLockActive && isPassword && (
+            <motion.p
+              key="caps-warning"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              className="text-sm mt-1.5 flex items-center gap-1.5 text-[hsl(var(--warning))]"
+              id={`${id}-caps-warning`}
+              role="alert"
+            >
+              <TriangleAlert size={14} />
+              Caps Lock ativado
             </motion.p>
           )}
         </AnimatePresence>
