@@ -17,4 +17,11 @@ describe("getAuthErrorMessage", () => {
     const errorWithCode = { code: "INVALID_CREDENTIALS" };
     expect(getAuthErrorMessage(errorWithCode)).toBe(AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS);
   });
+
+  it("SECURITY: handles conflicting strings by returning generic error to prevent user enumeration", () => {
+    // When a message contains both "invalid" and "not found", return generic error
+    // This prevents attackers from distinguishing between invalid email format vs non-existent user
+    const conflictingError = "invalid user not found";
+    expect(getAuthErrorMessage(conflictingError)).toBe(AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS);
+  });
 });
