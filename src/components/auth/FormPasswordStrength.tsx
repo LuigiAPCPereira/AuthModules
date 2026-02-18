@@ -1,10 +1,10 @@
-import { Control, useWatch, FieldValues } from "react-hook-form";
+import { Control, useWatch, FieldValues, Path } from "react-hook-form";
 import { AnimatePresence } from "framer-motion";
 import PasswordStrengthBar from "./PasswordStrengthBar";
 
 interface FormPasswordStrengthProps<T extends FieldValues> {
   control: Control<T>;
-  name: string;
+  name: Path<T>;
 }
 
 const FormPasswordStrength = <T extends FieldValues>({ control, name }: FormPasswordStrengthProps<T>) => {
