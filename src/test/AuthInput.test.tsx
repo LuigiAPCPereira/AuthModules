@@ -1,4 +1,3 @@
-
 import { render, screen } from "@testing-library/react";
 import AuthInput from "../components/auth/AuthInput";
 import { describe, it, expect } from "vitest";
@@ -20,5 +19,15 @@ describe("AuthInput Accessibility", () => {
     expect(input).toBeInTheDocument();
     expect(input.id).toBeTruthy(); // Should have SOME ID
     expect(input.id).not.toBe("");
+  });
+
+  it("associates aria-describedby with error message when error is provided", () => {
+    render(<AuthInput label="Error Label" error="Some error" />);
+
+    const errorNode = screen.getByText("Some error");
+    expect(errorNode.id).toBeTruthy();
+
+    const input = screen.getByLabelText("Error Label");
+    expect(input.getAttribute("aria-describedby")).toBe(errorNode.id);
   });
 });

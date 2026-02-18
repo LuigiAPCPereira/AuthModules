@@ -15,7 +15,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
     // This ensures that the label is always correctly associated with the input (click-to-focus)
     // and that screen readers can announce the field correctly, even if the developer forgets to pass an ID.
     const generatedId = useId();
-    const id = props.id || generatedId;
+    const id = props.id ?? generatedId;
 
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
@@ -27,6 +27,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
         </label>
         <div className="relative">
           <input
+            {...props}
             id={id}
             ref={ref}
             type={inputType}
@@ -34,7 +35,6 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             aria-invalid={!!error}
             // Associates the error message with the input field for screen readers
             aria-describedby={error ? `${id}-error` : undefined}
-            {...props}
           />
           {isPassword && (
             <button
