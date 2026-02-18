@@ -1,5 +1,5 @@
 import { useState, InputHTMLAttributes, forwardRef, useId } from "react";
-import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, TriangleAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -8,17 +8,37 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
-  ({ label, error, type, className = "", ...props }, ref) => {
-    const [showPassword, setShowPassword] = useState(false);
-
+  ({ label, error, type, className = "", id: propsId, ...props }, ref) => {
     // Auto-generate a unique ID if none is provided.
     // This ensures that the label is always correctly associated with the input (click-to-focus)
     // and that screen readers can announce the field correctly, even if the developer forgets to pass an ID.
     const generatedId = useId();
-    const id = props.id ?? generatedId;
-
+    const id = propsId ?? generatedId;
+    const [showPassword, setShowPassword] = useState(false);
+    const [capsLockActive, setCapsLockActive] = useState(false);
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
+
+    const checkCapsLock = (e: React.KeyboardEvent | React.MouseEvent) => {
+      if (e.getModifierState) {
+        setCapsLockActive(e.getModifierState("CapsLock"));
+      }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onKeyDown?.(e);
+    };
+
+    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onKeyUp?.(e);
+    };
+
+    const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
+      checkCapsLock(e);
+      props.onClick?.(e);
+    };
 
     return (
       <div className="space-y-1.5">
@@ -33,8 +53,10 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             id={id}
             className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
             aria-invalid={!!error}
-            // Associates the error message with the input field for screen readers
             aria-describedby={error ? `${id}-error` : undefined}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
+            onClick={handleClick}
           />
           {isPassword && (
             <button
@@ -50,6 +72,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
         <AnimatePresence>
           {error && (
             <motion.p
+              key="error"
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
@@ -59,6 +82,20 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             >
               <AlertCircle size={14} />
               {error}
+            </motion.p>
+          )}
+          {!error && capsLockActive && isPassword && (
+            <motion.p
+              key="caps-warning"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              className="text-sm mt-1.5 flex items-center gap-1.5 text-[hsl(var(--warning))]"
+              id={`${id}-caps-warning`}
+              role="alert"
+            >
+              <TriangleAlert size={14} />
+              Caps Lock ativado
             </motion.p>
           )}
         </AnimatePresence>

@@ -3,11 +3,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, KeyRound } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/schemas/auth";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import PasswordStrengthBar from "./PasswordStrengthBar";
+import FormPasswordStrength from "./FormPasswordStrength";
 
 interface ResetPasswordFormProps {
   onSubmit?: (password: string) => Promise<void>;
@@ -20,7 +19,7 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -72,9 +71,7 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
           {...register("password")}
         />
 
-        <AnimatePresence>
-          <PasswordStrengthBar password={watch("password") || ""} />
-        </AnimatePresence>
+        <FormPasswordStrength control={control} name="password" />
 
         {errors.root && (
           <div

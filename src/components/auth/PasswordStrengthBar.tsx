@@ -76,7 +76,7 @@ const PasswordStrengthBar = ({ password }: PasswordStrengthBarProps) => {
         className="grid grid-cols-2 gap-x-4 gap-y-1"
       >
         {rules.map((rule, i) => (
-          <div key={i} className="flex items-center gap-1.5">
+          <div key={i} className="flex items-center gap-1.5" role="listitem">
             {passed[i] ? (
               <Check size={12} className="text-[hsl(var(--success))] shrink-0" aria-hidden="true" />
             ) : (
@@ -88,6 +88,9 @@ const PasswordStrengthBar = ({ password }: PasswordStrengthBarProps) => {
               }`}
             >
               {rule.label}
+              <span className="sr-only">
+                {passed[i] ? " - atendido" : " - pendente"}
+              </span>
             </span>
           </div>
         ))}
