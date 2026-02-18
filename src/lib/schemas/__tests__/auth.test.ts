@@ -41,7 +41,7 @@ describe("Schemas de Validação", () => {
       const result = signupSchema.safeParse({
         name: "João Silva",
         email: "joao@email.com",
-        password: "SenhaForte123!",
+        password: "TestPassword123!", // ggignore
       });
       
       expect(result.success).toBe(true);
@@ -51,7 +51,7 @@ describe("Schemas de Validação", () => {
       const result = signupSchema.safeParse({
         name: "João Silva",
         email: "joao@email.com",
-        password: "SenhaForte123!",
+        password: "TestPassword123!", // ggignore
       });
       
       expect(result.success).toBe(true);
@@ -74,9 +74,9 @@ describe("Schemas de Validação", () => {
       const result = signupSchema.safeParse({
         name: "",
         email: "joao@email.com",
-        password: "SenhaForte123!",
+        password: "TestPassword123!", // ggignore
       });
-      
+
       expect(result.success).toBe(false);
     });
 
@@ -94,7 +94,7 @@ describe("Schemas de Validação", () => {
       const result = signupSchema.safeParse({
         name: "A".repeat(101),
         email: "joao@email.com",
-        password: "SenhaForte123!",
+        password: "TestPassword123!", // ggignore
       });
 
       expect(result.success).toBe(false);
@@ -122,7 +122,7 @@ describe("Schemas de Validação", () => {
   describe("resetPasswordSchema", () => {
     it("NÃO requer confirmPassword (quick win)", () => {
       const result = resetPasswordSchema.safeParse({
-        password: "NovaSenhaForte123!",
+        password: "TestPassword123!", // ggignore
       });
       
       expect(result.success).toBe(true);
