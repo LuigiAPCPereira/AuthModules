@@ -9,8 +9,11 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
   ({ label, error, type, className = "", id: propsId, ...props }, ref) => {
+    // Auto-generate a unique ID if none is provided.
+    // This ensures that the label is always correctly associated with the input (click-to-focus)
+    // and that screen readers can announce the field correctly, even if the developer forgets to pass an ID.
     const generatedId = useId();
-    const id = propsId || generatedId;
+    const id = propsId ?? generatedId;
     const [showPassword, setShowPassword] = useState(false);
     const [capsLockActive, setCapsLockActive] = useState(false);
     const isPassword = type === "password";
@@ -44,13 +47,13 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
         </label>
         <div className="relative">
           <input
+            {...props}
             ref={ref}
-            id={id}
             type={inputType}
+            id={id}
             className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
             aria-invalid={!!error}
             aria-describedby={error ? `${id}-error` : undefined}
-            {...props}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
             onClick={handleClick}
