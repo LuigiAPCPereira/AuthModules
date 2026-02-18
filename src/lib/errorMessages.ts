@@ -47,11 +47,21 @@ export const getAuthErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
 
+    // SECURITY: Check "not found" BEFORE "invalid" to prevent bypass
+    // "invalid user not found" would match "invalid" first, leaking user info
+    if (message.includes("not found") || message.includes("não encontrada")) {
+      return AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS;
+    }
     if (message.includes("invalid") || message.includes("incorret")) {
       return AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS;
     }
+    // SECURITY: Map account status errors to generic login error
+    // to prevent user enumeration (attacker can detect if account exists)
     if (message.includes("locked") || message.includes("bloqueada")) {
-      return AUTH_ERROR_MESSAGES.ACCOUNT_LOCKED;
+      return AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS;
+    }
+    if (message.includes("too many") || message.includes("muitas tentativas")) {
+      return AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS;
     }
     if (message.includes("network") || message.includes("conexão")) {
       return AUTH_ERROR_MESSAGES.NETWORK_ERROR;
@@ -64,8 +74,10 @@ export const getAuthErrorMessage = (error: unknown): string => {
   // String errors
   if (typeof error === "string") {
     const lower = error.toLowerCase();
+    // SECURITY: Return generic message to prevent signup enumeration
+    // Attacker could detect if email is registered by checking error message
     if (lower.includes("já existe") || lower.includes("already")) {
-      return AUTH_ERROR_MESSAGES.EMAIL_ALREADY_EXISTS;
+      return AUTH_ERROR_MESSAGES.INVALID_CREDENTIALS;
     }
     if (lower.includes("inválido") || lower.includes("invalid")) {
       return AUTH_ERROR_MESSAGES.INVALID_EMAIL;
