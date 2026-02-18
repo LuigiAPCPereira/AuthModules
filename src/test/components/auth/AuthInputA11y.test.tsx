@@ -14,6 +14,16 @@ describe("AuthInput Accessibility", () => {
     expect(label.getAttribute("for")).toBe(input.id);
   });
 
+  it("should generate an ID for password inputs", () => {
+    render(<AuthInput label="Senha" type="password" />);
+
+    const input = screen.getByLabelText("Senha");
+
+    expect(input.id).toBeDefined();
+    expect(input.id).not.toBe("");
+    expect(input).toHaveAttribute("type", "password");
+  });
+
   it("should use the provided ID", () => {
     const testId = "custom-id";
     render(<AuthInput label="Test Label" id={testId} />);
