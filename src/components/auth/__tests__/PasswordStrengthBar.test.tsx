@@ -68,4 +68,29 @@ describe("PasswordStrengthBar", () => {
     expect(screen.getByText("Número")).toBeInTheDocument();
     expect(screen.getByText("Caractere especial")).toBeInTheDocument();
   });
+
+  it("renderiza requisitos como itens de lista acessíveis", () => {
+    renderWithProviders(<PasswordStrengthBar password="senha" />);
+
+    const list = screen.getByRole("list");
+    expect(list).toBeInTheDocument();
+
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(5);
+  });
+
+  it("tem texto acessível indicando status dos requisitos", () => {
+    renderWithProviders(<PasswordStrengthBar password="Senha" />);
+
+    // "Senha" -> Uppercase: met, Lowercase: met. Length: unmet. Number: unmet. Special: unmet.
+
+    const items = screen.getAllByRole("listitem");
+
+    // Find specific items and check their full text content including hidden text
+    const uppercaseItem = items.find(item => item.textContent?.includes("Letra maiúscula"));
+    expect(uppercaseItem).toHaveTextContent("Letra maiúscula - atendido");
+
+    const lengthItem = items.find(item => item.textContent?.includes("Mínimo 8 caracteres"));
+    expect(lengthItem).toHaveTextContent("Mínimo 8 caracteres - pendente");
+  });
 });
