@@ -3,12 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, UserPlus } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
 import { signupSchema, type SignupFormData } from "@/lib/schemas/auth";
 import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import PasswordStrengthBar from "./PasswordStrengthBar";
+import FormPasswordStrength from "./FormPasswordStrength";
 import GoogleSignInButton from "./GoogleSignInButton";
 
 interface SignupFormProps {
@@ -23,7 +22,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -75,9 +74,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           {...register("password")}
         />
 
-        <AnimatePresence>
-          <PasswordStrengthBar password={watch("password")} />
-        </AnimatePresence>
+        <FormPasswordStrength control={control} name="password" />
 
         {serverError && (
           <div
