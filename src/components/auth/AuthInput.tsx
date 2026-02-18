@@ -1,4 +1,4 @@
-import { useState, InputHTMLAttributes, forwardRef } from "react";
+import { useState, InputHTMLAttributes, forwardRef, useId } from "react";
 import { Eye, EyeOff, AlertCircle, TriangleAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -8,7 +8,9 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
-  ({ label, error, type, className = "", ...props }, ref) => {
+  ({ label, error, type, className = "", id: propsId, ...props }, ref) => {
+    const generatedId = useId();
+    const id = propsId || generatedId;
     const [showPassword, setShowPassword] = useState(false);
     const [capsLockActive, setCapsLockActive] = useState(false);
     const isPassword = type === "password";
@@ -37,16 +39,17 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
 
     return (
       <div className="space-y-1.5">
-        <label className="auth-label" htmlFor={props.id}>
+        <label className="auth-label" htmlFor={id}>
           {label}
         </label>
         <div className="relative">
           <input
             ref={ref}
+            id={id}
             type={inputType}
             className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
             aria-invalid={!!error}
-            aria-describedby={error ? `${props.id}-error` : undefined}
+            aria-describedby={error ? `${id}-error` : undefined}
             {...props}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
@@ -71,7 +74,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               className="auth-error"
-              id={`${props.id}-error`}
+              id={`${id}-error`}
               role="alert"
             >
               <AlertCircle size={14} />
@@ -85,7 +88,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               className="text-sm mt-1.5 flex items-center gap-1.5 text-[hsl(var(--warning))]"
-              id={`${props.id}-caps-warning`}
+              id={`${id}-caps-warning`}
               role="alert"
             >
               <TriangleAlert size={14} />
