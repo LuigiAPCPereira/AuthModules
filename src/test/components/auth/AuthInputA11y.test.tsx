@@ -9,7 +9,6 @@ describe("AuthInput Accessibility", () => {
     const input = screen.getByRole("textbox");
     const label = screen.getByText("Test Label");
 
-    expect(input.id).toBeDefined();
     expect(input.id).not.toBe("");
     expect(label.getAttribute("for")).toBe(input.id);
   });
@@ -19,7 +18,6 @@ describe("AuthInput Accessibility", () => {
 
     const input = screen.getByLabelText("Senha");
 
-    expect(input.id).toBeDefined();
     expect(input.id).not.toBe("");
     expect(input).toHaveAttribute("type", "password");
   });
@@ -48,7 +46,7 @@ describe("AuthInput Accessibility", () => {
 
     // Check association
     const describedBy = input.getAttribute("aria-describedby");
-    expect(describedBy).toBeDefined();
+    expect(describedBy).not.toBeNull();
     expect(describedBy).toBe(error.id);
 
     // Ensure IDs are consistent
