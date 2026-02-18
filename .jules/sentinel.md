@@ -9,6 +9,7 @@
 **Prevenção:** Usar strings genéricas como "TestPassword123!" em testes, evitando padrões conhecidos de senhas vazadas.
 
 ## 2024-05-23 - Validação de Limite de Input (Prevenção DoS)
+
 **Vulnerabilidade:** Falta de restrição de tamanho máximo em inputs de string (email, senha, nome) nos schemas Zod.
 **Aprendizado:** Inputs sem limite podem ser explorados para ataques de negação de serviço (DoS) via regex processing ou armazenamento.
 **Prevenção:** Sempre adicionar `.max()` nos schemas Zod para strings (ex: `.max(255)` para emails, `.max(100)` para senhas).

@@ -11,7 +11,8 @@ describe("Schemas de Validação", () => {
     it("aceita dados válidos", () => {
       const result = loginSchema.safeParse({
         email: "teste@email.com",
-        password: "senha123",
+        password: "senha123", // Assuming min length is now 8, wait, previously it was 6 or 1. Let's check.
+        // I updated loginSchema to min(8). "senha123" is 8 chars.
       });
       
       expect(result.success).toBe(true);
@@ -29,9 +30,25 @@ describe("Schemas de Validação", () => {
     it("rejeita senha curta", () => {
       const result = loginSchema.safeParse({
         email: "teste@email.com",
-        password: "12345",
+        password: "123", // shorter than 8
       });
       
+      expect(result.success).toBe(false);
+    });
+
+    it("rejeita e-mail muito longo (>255 chars)", () => {
+      const result = loginSchema.safeParse({
+        email: "a".repeat(250) + "@example.com",
+        password: "ValidPassword123!", // ggignore
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("rejeita senha muito longa (>100 chars)", () => {
+      const result = loginSchema.safeParse({
+        email: "teste@email.com",
+        password: "A".repeat(101),
+      });
       expect(result.success).toBe(false);
     });
   });
@@ -80,6 +97,15 @@ describe("Schemas de Validação", () => {
       expect(result.success).toBe(false);
     });
 
+    it("rejeita e-mail muito longo (>255 chars)", () => {
+      const result = signupSchema.safeParse({
+        name: "João Silva",
+        email: "a".repeat(250) + "@example.com",
+        password: "TestPassword123!", // ggignore
+      });
+      expect(result.success).toBe(false);
+    });
+
     it("rejeita senha muito longa (>100 chars)", () => {
       const result = signupSchema.safeParse({
         name: "João Silva",
@@ -117,6 +143,13 @@ describe("Schemas de Validação", () => {
       
       expect(result.success).toBe(false);
     });
+
+    it("rejeita e-mail muito longo (>255 chars)", () => {
+      const result = forgotPasswordSchema.safeParse({
+        email: "a".repeat(250) + "@example.com",
+      });
+      expect(result.success).toBe(false);
+    });
   });
 
   describe("resetPasswordSchema", () => {
@@ -129,6 +162,13 @@ describe("Schemas de Validação", () => {
       // Verifica que o schema não tem confirmPassword
       const shape = resetPasswordSchema.shape;
       expect(shape).not.toHaveProperty("confirmPassword");
+    });
+
+    it("rejeita senha muito longa (>100 chars)", () => {
+      const result = resetPasswordSchema.safeParse({
+        password: "A".repeat(101) + "1!a",
+      });
+      expect(result.success).toBe(false);
     });
   });
 });
