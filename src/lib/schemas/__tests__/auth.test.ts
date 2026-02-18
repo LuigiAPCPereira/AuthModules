@@ -11,8 +11,7 @@ describe("Schemas de Validação", () => {
     it("aceita dados válidos", () => {
       const result = loginSchema.safeParse({
         email: "teste@email.com",
-        password: "senha123", // Assuming min length is now 8, wait, previously it was 6 or 1. Let's check.
-        // I updated loginSchema to min(8). "senha123" is 8 chars.
+        password: "senha123",
       });
       
       expect(result.success).toBe(true);

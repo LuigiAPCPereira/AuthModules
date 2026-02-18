@@ -26,9 +26,9 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   name: z
     .string({ required_error: "Nome é obrigatório" })
+    .trim()
     .min(1, "Nome é obrigatório")
-    .max(100, "Máximo de 100 caracteres")
-    .trim(),
+    .max(100, "Máximo de 100 caracteres"),
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
