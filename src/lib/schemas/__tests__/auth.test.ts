@@ -11,7 +11,7 @@ describe("Schemas de Validação", () => {
     it("aceita dados válidos", () => {
       const result = loginSchema.safeParse({
         email: "teste@email.com",
-        password: "senha123",
+        password: "TestPassword123!", // ggignore
       });
       
       expect(result.success).toBe(true);
@@ -20,7 +20,7 @@ describe("Schemas de Validação", () => {
     it("rejeita e-mail inválido", () => {
       const result = loginSchema.safeParse({
         email: "email-invalido",
-        password: "senha123",
+        password: "TestPassword123!", // ggignore
       });
       
       expect(result.success).toBe(false);
