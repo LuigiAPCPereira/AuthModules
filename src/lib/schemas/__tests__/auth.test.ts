@@ -79,6 +79,26 @@ describe("Schemas de Validação", () => {
       
       expect(result.success).toBe(false);
     });
+
+    it("rejeita senha muito longa (>100 chars)", () => {
+      const result = signupSchema.safeParse({
+        name: "João Silva",
+        email: "joao@email.com",
+        password: "A".repeat(101) + "1!a",
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it("rejeita nome muito longo (>100 chars)", () => {
+      const result = signupSchema.safeParse({
+        name: "A".repeat(101),
+        email: "joao@email.com",
+        password: "SenhaForte123!",
+      });
+
+      expect(result.success).toBe(false);
+    });
   });
 
   describe("forgotPasswordSchema", () => {
