@@ -28,9 +28,9 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
         <div className="relative">
           <input
             {...props}
-            id={id}
             ref={ref}
             type={inputType}
+            id={id}
             className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
             aria-invalid={!!error}
             // Associates the error message with the input field for screen readers
