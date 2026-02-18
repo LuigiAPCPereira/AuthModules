@@ -41,9 +41,9 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-      // We could clear Caps Lock warning on blur, but keeping it based on state
-      // is more consistent with how the OS behaves (state persists).
-      // However, usually we update it on focus.
+      // Não limpamos o aviso de Caps Lock no blur para manter a consistência
+      // com o comportamento do sistema operacional (o estado do Caps Lock persiste).
+      // O estado será reavaliado quando o campo receber foco novamente.
       props.onBlur?.(e);
     };
 
