@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, LogIn } from "lucide-react";
 import { getAuthErrorMessage } from "@/lib/errorMessages";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
@@ -68,10 +70,15 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           autoComplete="current-password"
           {...register("password")}
         />
-        <label className="flex items-center gap-2 mt-2">
-          <input type="checkbox" className="rounded border-input" />
-          <span className="text-sm text-auth-subtle">Lembrar de mim</span>
-        </label>
+        <div className="flex items-center gap-2 mt-2">
+          <Checkbox id="remember-me" />
+          <Label
+            htmlFor="remember-me"
+            className="text-sm font-normal text-auth-subtle cursor-pointer"
+          >
+            Lembrar de mim
+          </Label>
+        </div>
 
         <button
           type="button"
