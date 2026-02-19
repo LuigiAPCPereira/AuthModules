@@ -1,4 +1,4 @@
-import { useState, InputHTMLAttributes, forwardRef, useId } from "react";
+import { useState, useCallback, InputHTMLAttributes, forwardRef, useId } from "react";
 import { Eye, EyeOff, AlertCircle, TriangleAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -8,7 +8,7 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
-  ({ label, error, type, className = "", id: propsId, ...props }, ref) => {
+  ({ label, error, type, className = "", id: propsId, onKeyDown, onKeyUp, onClick, ...props }, ref) => {
     // Auto-generate a unique ID if none is provided.
     // This ensures that the label is always correctly associated with the input (click-to-focus)
     // and that screen readers can announce the field correctly, even if the developer forgets to pass an ID.
@@ -19,26 +19,26 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
-    const checkCapsLock = (e: React.KeyboardEvent | React.MouseEvent) => {
+    const checkCapsLock = useCallback((e: React.KeyboardEvent | React.MouseEvent) => {
       if (e.getModifierState) {
         setCapsLockActive(e.getModifierState("CapsLock"));
       }
-    };
+    }, []);
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
       checkCapsLock(e);
-      props.onKeyDown?.(e);
-    };
+      onKeyDown?.(e);
+    }, [checkCapsLock, onKeyDown]);
 
-    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyUp = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
       checkCapsLock(e);
-      props.onKeyUp?.(e);
-    };
+      onKeyUp?.(e);
+    }, [checkCapsLock, onKeyUp]);
 
-    const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    const handleClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
       checkCapsLock(e);
-      props.onClick?.(e);
-    };
+      onClick?.(e);
+    }, [checkCapsLock, onClick]);
 
     return (
       <div className="space-y-1.5">
