@@ -9,3 +9,7 @@
 ## 2025-02-24 - [Otimização de Ícones com Code Splitting]
 **Aprendizado:** Bibliotecas granulares como `lucide-react` não devem ser incluídas em `manualChunks` em builds Vite/Rollup. Isso força todos os ícones utilizados em qualquer parte da aplicação (mesmo rotas lazy) para dentro de um único chunk inicial, anulando o benefício do tree-shaking por rota.
 **Ação:** Remover bibliotecas de ícones ou componentes granulares de configurações manuais de chunks para permitir que o bundler divida o código corretamente entre chunks iniciais e lazy-loaded.
+
+## 2025-05-18 - [Optimization of Input Event Handlers]
+**Learning:** `AuthInput` component recreates event handlers (`onKeyDown`, `onKeyUp`, `onClick`) on every render, causing unnecessary updates to the underlying DOM input element's event listeners, especially in controlled forms.
+**Action:** Use `useCallback` to memoize these handlers, ensuring stable function references and reducing work for React's reconciliation process.
