@@ -1,17 +1,24 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_UPPERCASE_REGEX,
+  PASSWORD_LOWERCASE_REGEX,
+  PASSWORD_NUMBER_REGEX,
+  PASSWORD_SPECIAL_REGEX,
+} from "@/lib/constants";
 
 interface PasswordStrengthBarProps {
   password: string;
 }
 
 const rules = [
-  { label: "Mínimo 8 caracteres", test: (p: string) => p.length >= 8 },
-  { label: "Letra maiúscula", test: (p: string) => /[A-Z]/.test(p) },
-  { label: "Letra minúscula", test: (p: string) => /[a-z]/.test(p) },
-  { label: "Número", test: (p: string) => /\d/.test(p) },
-  { label: "Caractere especial", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+  { label: `Mínimo ${PASSWORD_MIN_LENGTH} caracteres`, test: (p: string) => p.length >= PASSWORD_MIN_LENGTH },
+  { label: "Letra maiúscula", test: (p: string) => PASSWORD_UPPERCASE_REGEX.test(p) },
+  { label: "Letra minúscula", test: (p: string) => PASSWORD_LOWERCASE_REGEX.test(p) },
+  { label: "Número", test: (p: string) => PASSWORD_NUMBER_REGEX.test(p) },
+  { label: "Caractere especial", test: (p: string) => PASSWORD_SPECIAL_REGEX.test(p) },
 ];
 
 const strengthConfig = [

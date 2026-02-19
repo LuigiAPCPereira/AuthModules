@@ -4,6 +4,13 @@
  */
 
 import { z } from "zod";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_UPPERCASE_REGEX,
+  PASSWORD_LOWERCASE_REGEX,
+  PASSWORD_NUMBER_REGEX,
+  PASSWORD_SPECIAL_REGEX,
+} from "../constants";
 
 /**
  * Schema de Login (JÁ EXISTE em LoginForm, mantido para referência)
@@ -33,11 +40,11 @@ export const signupSchema = z.object({
     .email("E-mail inválido"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
-    .min(8, "Mínimo de 8 caracteres")
-    .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
-    .regex(/[a-z]/, "Deve conter uma letra minúscula")
-    .regex(/\d/, "Deve conter um número")
-    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)"),
+    .min(PASSWORD_MIN_LENGTH, `Mínimo de ${PASSWORD_MIN_LENGTH} caracteres`)
+    .regex(PASSWORD_UPPERCASE_REGEX, "Deve conter uma letra maiúscula")
+    .regex(PASSWORD_LOWERCASE_REGEX, "Deve conter uma letra minúscula")
+    .regex(PASSWORD_NUMBER_REGEX, "Deve conter um número")
+    .regex(PASSWORD_SPECIAL_REGEX, "Deve conter um símbolo (@#$%, etc.)"),
 });
 
 /**
@@ -56,11 +63,11 @@ export const forgotPasswordSchema = z.object({
 export const resetPasswordSchema = z.object({
   password: z
     .string({ required_error: "Nova senha é obrigatória" })
-    .min(8, "Mínimo de 8 caracteres")
-    .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
-    .regex(/[a-z]/, "Deve conter uma letra minúscula")
-    .regex(/\d/, "Deve conter um número")
-    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)"),
+    .min(PASSWORD_MIN_LENGTH, `Mínimo de ${PASSWORD_MIN_LENGTH} caracteres`)
+    .regex(PASSWORD_UPPERCASE_REGEX, "Deve conter uma letra maiúscula")
+    .regex(PASSWORD_LOWERCASE_REGEX, "Deve conter uma letra minúscula")
+    .regex(PASSWORD_NUMBER_REGEX, "Deve conter um número")
+    .regex(PASSWORD_SPECIAL_REGEX, "Deve conter um símbolo (@#$%, etc.)"),
 });
 
 // Tipos inferidos para uso nos formulários
