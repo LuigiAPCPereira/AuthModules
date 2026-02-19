@@ -71,10 +71,10 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           {...register("password")}
         />
         <div className="flex items-center gap-2 mt-2">
-          <Checkbox id="remember-me" />
+          <Checkbox id="login-remember-me" className="cursor-pointer" />
           <Label
-            htmlFor="remember-me"
-            className="text-sm font-normal text-auth-subtle cursor-pointer"
+            htmlFor="login-remember-me"
+            className="font-normal text-auth-subtle cursor-pointer"
           >
             Lembrar de mim
           </Label>
