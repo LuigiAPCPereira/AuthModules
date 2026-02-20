@@ -1,4 +1,4 @@
-import { useState, InputHTMLAttributes, forwardRef, useId } from "react";
+import { useState, InputHTMLAttributes, forwardRef, useId, memo } from "react";
 import { Eye, EyeOff, AlertCircle, TriangleAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -7,7 +7,7 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
+const AuthInput = memo(forwardRef<HTMLInputElement, AuthInputProps>(
   ({ label, error, type, className = "", id: propsId, ...props }, ref) => {
     // Auto-generate a unique ID if none is provided.
     // This ensures that the label is always correctly associated with the input (click-to-focus)
@@ -102,7 +102,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
       </div>
     );
   }
-);
+));
 
 AuthInput.displayName = "AuthInput";
 

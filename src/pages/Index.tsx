@@ -39,10 +39,10 @@ const LoadingFallback = () => (
   </div>
 );
 
+const simulateAsync = () => new Promise<void>((r) => setTimeout(r, 1500));
+
 const Index = () => {
   const [active, setActive] = useState<Screen>("login");
-
-  const simulateAsync = () => new Promise<void>((r) => setTimeout(r, 1500));
 
   const handleScreenKeyNavigation = (event: KeyboardEvent<HTMLDivElement>) => {
     const currentIndex = screens.indexOf(active);
