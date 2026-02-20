@@ -50,6 +50,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           id="signup-name"
           label="Nome completo"
           type="text"
+          required
           placeholder="Seu nome"
           error={errors.name?.message}
           autoComplete="name"
@@ -60,6 +61,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           id="signup-email"
           label="E-mail"
           type="email"
+          required
           placeholder="seu@email.com"
           error={errors.email?.message}
           autoComplete="email"
@@ -69,6 +71,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           id="signup-password"
           label="Senha"
           type="password"
+          required
           placeholder="Mínimo 8 caracteres"
           error={errors.password?.message}
           autoComplete="new-password"

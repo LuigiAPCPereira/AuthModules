@@ -22,8 +22,8 @@ describe("LoginForm", () => {
     
     expect(screen.getAllByText("Entrar")[0]).toBeInTheDocument();
     expect(screen.getByText("Bem-vindo de volta. Faça login na sua conta.")).toBeInTheDocument();
-    expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
-    expect(screen.getByLabelText("Senha")).toBeInTheDocument();
+    expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Senha/i)).toBeInTheDocument();
   });
 
   it("valida campos obrigatórios", async () => {
@@ -45,7 +45,7 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={vi.fn()} />
     );
     
-    const emailInput = screen.getByLabelText("E-mail");
+    const emailInput = screen.getByLabelText(/E-mail/i);
     await userEvent.type(emailInput, "email-invalido");
     
     const submitButton = screen.getByRole("button", { name: /entrar/i });
@@ -62,8 +62,8 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={onSubmit} />
     );
     
-    const emailInput = screen.getByLabelText("E-mail");
-    const passwordInput = screen.getByLabelText("Senha");
+    const emailInput = screen.getByLabelText(/E-mail/i);
+    const passwordInput = screen.getByLabelText(/^Senha/i);
     
     await userEvent.type(emailInput, "teste@email.com");
     await userEvent.type(passwordInput, "Senha123!");
@@ -85,8 +85,8 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={onSubmit} />
     );
     
-    const emailInput = screen.getByLabelText("E-mail");
-    const passwordInput = screen.getByLabelText("Senha");
+    const emailInput = screen.getByLabelText(/E-mail/i);
+    const passwordInput = screen.getByLabelText(/^Senha/i);
     
     await userEvent.type(emailInput, "teste@email.com");
     await userEvent.type(passwordInput, "Senha123!");
@@ -105,8 +105,8 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={onSubmit} />
     );
     
-    const emailInput = screen.getByLabelText("E-mail");
-    const passwordInput = screen.getByLabelText("Senha");
+    const emailInput = screen.getByLabelText(/E-mail/i);
+    const passwordInput = screen.getByLabelText(/^Senha/i);
     
     await userEvent.type(emailInput, "teste@email.com");
     await userEvent.type(passwordInput, "Senha123!");
