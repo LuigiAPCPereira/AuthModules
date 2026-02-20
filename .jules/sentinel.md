@@ -7,3 +7,8 @@
 **Vulnerabilidade:** GitGuardian flagou senhas de exemplo em arquivos de teste.
 **Aprendizado:** Padrões conhecidos de senhas vazadas (ex: "Correct-Horse...") são detectados por ferramentas de segurança.
 **Prevenção:** Usar strings genéricas como "TestPassword123!" em testes, evitando padrões conhecidos de senhas vazadas.
+
+## 2024-05-23 - Input Length Limits & Schema Centralization
+**Vulnerabilidade:** Falta de limites de tamanho máximo em inputs de autenticação (e-mail, senha, nome) permitia DoS/ReDoS.
+**Aprendizado:** Schemas locais (ex: em `LoginForm`) duplicavam lógica e divergiam da fonte de verdade centralizada.
+**Prevenção:** Usar `.max()` em todos os campos de string no `zod` e garantir que componentes importem schemas de `@/lib/schemas/auth` em vez de redefini-los.
