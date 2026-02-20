@@ -64,6 +64,7 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
           id="reset-password"
           label="Nova senha"
           type="password"
+          required
           placeholder="Mínimo 8 caracteres"
           error={errors.password?.message}
           autoComplete="new-password"
