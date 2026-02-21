@@ -66,7 +66,7 @@ describe("LoginForm", () => {
     const passwordInput = screen.getByLabelText(/^Senha/i);
     
     await userEvent.type(emailInput, "teste@email.com");
-    await userEvent.type(passwordInput, "Senha123!");
+    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
     
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
@@ -74,7 +74,7 @@ describe("LoginForm", () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({
         email: "teste@email.com",
-        password: "Senha123!",
+        password: "TestPassword123!", // ggignore
       });
     });
   });
@@ -89,7 +89,7 @@ describe("LoginForm", () => {
     const passwordInput = screen.getByLabelText(/^Senha/i);
     
     await userEvent.type(emailInput, "teste@email.com");
-    await userEvent.type(passwordInput, "Senha123!");
+    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
     
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
@@ -109,7 +109,7 @@ describe("LoginForm", () => {
     const passwordInput = screen.getByLabelText(/^Senha/i);
     
     await userEvent.type(emailInput, "teste@email.com");
-    await userEvent.type(passwordInput, "Senha123!");
+    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
     
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
