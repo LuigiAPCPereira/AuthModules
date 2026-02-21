@@ -1,28 +1,21 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Loader2, LogIn } from "lucide-react";
 import { getAuthErrorMessage } from "@/lib/errorMessages";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { loginSchema, type LoginFormData } from "@/lib/schemas/auth";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
 
 interface LoginFormProps {
-  onSubmit?: (data: { email: string; password: string }) => Promise<void>;
+  onSubmit?: (data: LoginFormData) => Promise<void>;
   onForgotPassword?: () => void;
   onSignup?: () => void;
   onGoogleSignIn?: () => Promise<void>;
 }
-
-const loginSchema = z.object({
-  email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
-  password: z.string().min(1, "Senha é obrigatória").min(6, "Mínimo de 6 caracteres"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: LoginFormProps) => {
   const [serverError, setServerError] = useState("");

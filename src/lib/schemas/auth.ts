@@ -12,11 +12,13 @@ export const loginSchema = z.object({
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
-    .email("E-mail inválido"),
+    .email("E-mail inválido")
+    .max(255, "E-mail muito longo"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
     .min(1, "Senha é obrigatória")
-    .min(6, "Mínimo de 6 caracteres"),
+    .min(6, "Mínimo de 6 caracteres")
+    .max(100, "Senha muito longa"),
 });
 
 /**
@@ -26,18 +28,21 @@ export const signupSchema = z.object({
   name: z
     .string({ required_error: "Nome é obrigatório" })
     .min(1, "Nome é obrigatório")
-    .trim(),
+    .trim()
+    .max(100, "Nome muito longo"),
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
-    .email("E-mail inválido"),
+    .email("E-mail inválido")
+    .max(255, "E-mail muito longo"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
     .min(8, "Mínimo de 8 caracteres")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
     .regex(/\d/, "Deve conter um número")
-    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)"),
+    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)")
+    .max(100, "Senha muito longa"),
 });
 
 /**
@@ -47,7 +52,8 @@ export const forgotPasswordSchema = z.object({
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
-    .email("E-mail inválido"),
+    .email("E-mail inválido")
+    .max(255, "E-mail muito longo"),
 });
 
 /**
@@ -60,7 +66,8 @@ export const resetPasswordSchema = z.object({
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
     .regex(/\d/, "Deve conter um número")
-    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)"),
+    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)")
+    .max(100, "Senha muito longa"),
 });
 
 // Tipos inferidos para uso nos formulários

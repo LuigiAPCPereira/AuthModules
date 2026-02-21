@@ -34,6 +34,24 @@ describe("Schemas de Validação", () => {
       
       expect(result.success).toBe(false);
     });
+
+    it("rejeita e-mail muito longo", () => {
+      const result = loginSchema.safeParse({
+        email: "a".repeat(256) + "@email.com",
+        password: "senha123",
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it("rejeita senha muito longa", () => {
+      const result = loginSchema.safeParse({
+        email: "teste@email.com",
+        password: "a".repeat(101),
+      });
+
+      expect(result.success).toBe(false);
+    });
   });
 
   describe("signupSchema", () => {
@@ -77,6 +95,16 @@ describe("Schemas de Validação", () => {
         password: "SenhaForte123!",
       });
       
+      expect(result.success).toBe(false);
+    });
+
+    it("rejeita nome muito longo", () => {
+      const result = signupSchema.safeParse({
+        name: "a".repeat(101),
+        email: "joao@email.com",
+        password: "SenhaForte123!",
+      });
+
       expect(result.success).toBe(false);
     });
   });
