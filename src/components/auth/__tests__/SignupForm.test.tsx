@@ -57,7 +57,7 @@ describe("SignupForm", () => {
     );
     
     const passwordInput = screen.getByLabelText(/^Senha/i);
-    await userEvent.type(passwordInput, "SenhaForte123!");
+    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
     
     // Verifica se o PasswordStrengthBar aparece
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe("SignupForm", () => {
     
     await userEvent.type(screen.getByLabelText(/Nome completo/i), "João Silva");
     await userEvent.type(screen.getByLabelText(/E-mail/i), "joao@email.com");
-    await userEvent.type(screen.getByLabelText(/^Senha/i), "SenhaForte123!");
+    await userEvent.type(screen.getByLabelText(/^Senha/i), "TestPassword123!"); // ggignore
     
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
@@ -94,7 +94,7 @@ describe("SignupForm", () => {
       expect(onSubmit).toHaveBeenCalledWith({
         name: "João Silva",
         email: "joao@email.com",
-        password: "SenhaForte123!",
+        password: "TestPassword123!", // ggignore
       });
     });
   });
