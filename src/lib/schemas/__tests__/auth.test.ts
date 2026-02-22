@@ -125,7 +125,7 @@ describe("Schemas de Validação", () => {
       const result = signupSchema.safeParse({
         name: "a".repeat(101),
         email: "joao@email.com",
-        password: "SenhaForte123!",
+        password: "TestPassword123!", // ggignore
       });
 
       expect(result.success).toBe(false);
