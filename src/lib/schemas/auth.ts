@@ -40,11 +40,12 @@ export const signupSchema = z.object({
   password: z
     .string({ required_error: "Senha é obrigatória" })
     .min(8, "Mínimo de 8 caracteres")
+    .trim()
+    .max(100, "Senha muito longa")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
     .regex(/\d/, "Deve conter um número")
-    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)")
-    .max(100, "Senha muito longa"),
+    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)"),
 });
 
 /**
@@ -66,12 +67,12 @@ export const resetPasswordSchema = z.object({
   password: z
     .string({ required_error: "Nova senha é obrigatória" })
     .min(8, "Mínimo de 8 caracteres")
+    .trim()
     .max(100, "Senha muito longa")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
     .regex(/\d/, "Deve conter um número")
-    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)")
-    .max(100, "Senha muito longa"),
+    .regex(/[^A-Za-z0-9]/, "Deve conter um símbolo (@#$%, etc.)"),
 });
 
 // Tipos inferidos para uso nos formulários
