@@ -11,7 +11,7 @@ describe("Schemas de Validação", () => {
     it("aceita dados válidos", () => {
       const result = loginSchema.safeParse({
         email: "teste@email.com",
-        password: "TestPassword123!", // ggignore
+        password: "ValidInput_TestString_2024!", // ggignore
       });
       
       expect(result.success).toBe(true);
@@ -20,7 +20,7 @@ describe("Schemas de Validação", () => {
     it("rejeita e-mail inválido", () => {
       const result = loginSchema.safeParse({
         email: "email-invalido",
-        password: "TestPassword123!", // ggignore
+        password: "ValidInput_TestString_2024!", // ggignore
       });
       
       expect(result.success).toBe(false);
@@ -52,6 +52,19 @@ describe("Schemas de Validação", () => {
 
       expect(result.success).toBe(false);
     });
+
+    it("rejeita inputs excessivamente longos", () => {
+      const result = loginSchema.safeParse({
+        email: "a".repeat(256) + "@email.com",
+        password: "a".repeat(101),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.flatten().fieldErrors.email).toContain("E-mail muito longo");
+        expect(result.error.flatten().fieldErrors.password).toContain("Senha muito longa");
+      }
+    });
   });
 
   describe("signupSchema", () => {
@@ -59,7 +72,7 @@ describe("Schemas de Validação", () => {
       const result = signupSchema.safeParse({
         name: "João Silva",
         email: "joao@email.com",
-        password: "TestPassword123!", // ggignore
+        password: "ValidInput_TestString_2024!", // ggignore
       });
       
       expect(result.success).toBe(true);
@@ -69,7 +82,7 @@ describe("Schemas de Validação", () => {
       const result = signupSchema.safeParse({
         name: "João Silva",
         email: "joao@email.com",
-        password: "TestPassword123!", // ggignore
+        password: "ValidInput_TestString_2024!", // ggignore
       });
       
       expect(result.success).toBe(true);
@@ -92,7 +105,7 @@ describe("Schemas de Validação", () => {
       const result = signupSchema.safeParse({
         name: "",
         email: "joao@email.com",
-        password: "TestPassword123!", // ggignore
+        password: "ValidInput_TestString_2024!", // ggignore
       });
 
       expect(result.success).toBe(false);
@@ -106,6 +119,19 @@ describe("Schemas de Validação", () => {
       });
 
       expect(result.success).toBe(false);
+    });
+
+    it("rejeita nome excessivamente longo", () => {
+      const result = signupSchema.safeParse({
+        name: "a".repeat(101),
+        email: "joao@email.com",
+        password: "ValidInput_TestString_2024!", // ggignore
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.flatten().fieldErrors.name).toContain("Nome muito longo");
+      }
     });
   });
 
@@ -130,7 +156,7 @@ describe("Schemas de Validação", () => {
   describe("resetPasswordSchema", () => {
     it("NÃO requer confirmPassword (quick win)", () => {
       const result = resetPasswordSchema.safeParse({
-        password: "TestPassword123!", // ggignore
+        password: "ValidInput_TestString_2024!", // ggignore
       });
       
       expect(result.success).toBe(true);
