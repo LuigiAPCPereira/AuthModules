@@ -34,6 +34,19 @@ describe("Schemas de Validação", () => {
       
       expect(result.success).toBe(false);
     });
+
+    it("rejeita inputs excessivamente longos", () => {
+      const result = loginSchema.safeParse({
+        email: "a".repeat(256) + "@email.com",
+        password: "a".repeat(101),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.flatten().fieldErrors.email).toContain("E-mail muito longo");
+        expect(result.error.flatten().fieldErrors.password).toContain("Senha muito longa");
+      }
+    });
   });
 
   describe("signupSchema", () => {
@@ -78,6 +91,19 @@ describe("Schemas de Validação", () => {
       });
       
       expect(result.success).toBe(false);
+    });
+
+    it("rejeita nome excessivamente longo", () => {
+      const result = signupSchema.safeParse({
+        name: "a".repeat(101),
+        email: "joao@email.com",
+        password: "SenhaForte123!",
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.flatten().fieldErrors.name).toContain("Nome muito longo");
+      }
     });
   });
 
