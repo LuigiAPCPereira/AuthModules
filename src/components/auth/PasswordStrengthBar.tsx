@@ -23,7 +23,7 @@ const strengthConfig = [
   { label: "Forte", color: "hsl(var(--success))" },
 ];
 
-const PasswordStrengthBar = ({ password, id = "password-requirements" }: PasswordStrengthBarProps) => {
+const PasswordStrengthBar = ({ password, id }: PasswordStrengthBarProps) => {
   const passed = useMemo(() => rules.map((r) => r.test(password)), [password]);
   const score = passed.filter(Boolean).length;
 
