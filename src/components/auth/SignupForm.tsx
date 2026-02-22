@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -18,6 +18,7 @@ interface SignupFormProps {
 
 const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
   const [serverError, setServerError] = useState("");
+  const passwordRequirementsId = useId();
 
   const {
     register,
@@ -71,10 +72,15 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           placeholder="Mínimo 8 caracteres"
           error={errors.password?.message}
           autoComplete="new-password"
+          aria-describedby={passwordRequirementsId}
           {...register("password")}
         />
 
-        <FormPasswordStrength control={control} name="password" />
+        <FormPasswordStrength
+          control={control}
+          name="password"
+          id={passwordRequirementsId}
+        />
 
         {serverError && (
           <div

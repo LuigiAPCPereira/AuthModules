@@ -19,6 +19,15 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
+    // Combine external aria-describedby with internal error/warning IDs
+    const describedBy = [
+      error ? `${id}-error` : undefined,
+      !error && capsLockActive && isPassword ? `${id}-caps-warning` : undefined,
+      props["aria-describedby"],
+    ]
+      .filter(Boolean)
+      .join(" ") || undefined;
+
     const checkCapsLock = (e: React.KeyboardEvent | React.MouseEvent) => {
       if (e.getModifierState) {
         setCapsLockActive(e.getModifierState("CapsLock"));
@@ -53,7 +62,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             id={id}
             className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
             aria-invalid={!!error}
-            aria-describedby={error ? `${id}-error` : undefined}
+            aria-describedby={describedBy}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
             onClick={handleClick}

@@ -63,6 +63,20 @@ describe("SignupForm", () => {
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
+  it("associa corretamente o input de senha com os requisitos via aria-describedby", async () => {
+    renderWithProviders(<SignupForm onSubmit={vi.fn()} />);
+
+    const passwordInput = screen.getByLabelText("Senha");
+    await userEvent.type(passwordInput, "a");
+
+    const strengthMeter = screen.getByRole("list", { name: /requisitos/i });
+    const meterId = strengthMeter.getAttribute("id");
+    const describedBy = passwordInput.getAttribute("aria-describedby");
+
+    expect(meterId).toBeTruthy();
+    expect(describedBy).toContain(meterId);
+  });
+
   it("chama onSubmit com dados válidos", async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     renderWithProviders(
