@@ -66,6 +66,7 @@ export const resetPasswordSchema = z.object({
   password: z
     .string({ required_error: "Nova senha é obrigatória" })
     .min(8, "Mínimo de 8 caracteres")
+    .max(100, "Senha muito longa")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
     .regex(/\d/, "Deve conter um número")
