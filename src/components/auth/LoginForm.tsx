@@ -55,6 +55,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           id="login-email"
           label="E-mail"
           type="email"
+          required
           placeholder="seu@email.com"
           error={!isSubmitting ? errors.email?.message : undefined}
           autoComplete="email"
@@ -65,6 +66,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           id="login-password"
           label="Senha"
           type="password"
+          required
           placeholder="••••••"
           error={!isSubmitting ? errors.password?.message : undefined}
           autoComplete="current-password"
