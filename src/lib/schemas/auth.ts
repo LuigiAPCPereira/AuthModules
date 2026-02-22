@@ -12,8 +12,9 @@ export const loginSchema = z.object({
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
-    .email("E-mail inválido")
-    .max(255, "E-mail muito longo"),
+    .max(255, "E-mail muito longo")
+    .trim()
+    .email("E-mail inválido"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
     .min(1, "Senha é obrigatória")
@@ -28,13 +29,14 @@ export const signupSchema = z.object({
   name: z
     .string({ required_error: "Nome é obrigatório" })
     .min(1, "Nome é obrigatório")
-    .trim()
-    .max(100, "Nome muito longo"),
+    .max(100, "Nome muito longo")
+    .trim(),
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
-    .email("E-mail inválido")
-    .max(255, "E-mail muito longo"),
+    .max(255, "E-mail muito longo")
+    .trim()
+    .email("E-mail inválido"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
     .min(8, "Mínimo de 8 caracteres")
@@ -52,8 +54,9 @@ export const forgotPasswordSchema = z.object({
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
-    .email("E-mail inválido")
-    .max(255, "E-mail muito longo"),
+    .max(255, "E-mail muito longo")
+    .trim()
+    .email("E-mail inválido"),
 });
 
 /**
