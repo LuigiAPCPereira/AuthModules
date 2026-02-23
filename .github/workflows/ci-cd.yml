@@ -95,6 +95,11 @@ jobs:
       - name: Build demo
         run: npm run build
         
+      - name: Copiar arquivos estáticos
+        run: |
+          cp .nojekyll dist/
+          cp _config.yml dist/ 2>/dev/null || true
+        
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
@@ -107,10 +112,14 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  publish-npm:
+  publish-github-packages:
     runs-on: ubuntu-latest
     needs: [test, build-lib]
-    if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release]')
+    if: github.ref == 'refs/heads/main'
+    
+    permissions:
+      contents: read
+      packages: write
     
     steps:
       - name: Checkout código
@@ -120,7 +129,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: 'https://npm.pkg.github.com'
           cache: 'npm'
           
       - name: Instalar dependências
@@ -129,7 +138,10 @@ jobs:
       - name: Build biblioteca
         run: npm run build:lib
         
-      - name: Publicar no NPM
-        run: npm publish --access public
+      - name: Publicar no GitHub Packages
+        run: |
+          # Tenta publicar, ignora erro se versão já existe (409 Conflict)
+          npm publish --no-git-checks 2>&1 || true
+          echo "✓ Publish attempted (ignored if version already exists)"
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

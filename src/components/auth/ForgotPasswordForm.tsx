@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, ArrowLeft, Send } from "lucide-react";
 import { forgotPasswordSchema, type ForgotPasswordFormData } from "@/lib/schemas/auth";
-import { getAuthErrorMessage } from "@/lib/errorMessages";
+import { getAuthErrorMessage, AUTH_ERROR_MESSAGES } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 
@@ -19,8 +19,8 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
   const {
     register,
     handleSubmit,
-    setError,
     watch,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -34,8 +34,25 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
       await onSubmit?.(data.email);
       setSent(true);
     } catch (err: unknown) {
+      // Security: We catch all errors and show success message to prevent user enumeration.
+      // Only network/server errors should be shown to the user so they can retry.
       const message = getAuthErrorMessage(err);
-      setError("root", { message });
+
+      const networkErrors = [
+        AUTH_ERROR_MESSAGES.NETWORK_ERROR,
+        AUTH_ERROR_MESSAGES.SERVER_UNAVAILABLE,
+        AUTH_ERROR_MESSAGES.TIMEOUT,
+      ];
+
+      if (networkErrors.includes(message)) {
+        setError("root", { message });
+        return;
+      }
+
+      // For all other errors (including "Email not found"), we pretend success.
+      // In a real app, we should log this error to a monitoring service.
+      // Log to a secure monitoring service instead
+      setSent(true);
     }
   };
 
@@ -65,6 +82,7 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
           id="forgot-email"
           label="E-mail"
           type="email"
+          required
           placeholder="seu@email.com"
           error={errors.email?.message}
           autoComplete="email"

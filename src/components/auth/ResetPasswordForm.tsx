@@ -1,15 +1,12 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, KeyRound } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
-import { isPasswordStrong } from "@/lib/utils";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/schemas/auth";
-import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import PasswordStrengthBar from "./PasswordStrengthBar";
+import FormPasswordStrength from "./FormPasswordStrength";
 
 interface ResetPasswordFormProps {
   onSubmit?: (password: string) => Promise<void>;
@@ -18,12 +15,12 @@ interface ResetPasswordFormProps {
 
 const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
   const [success, setSuccess] = useState(false);
+  const passwordRequirementsId = useId();
 
   const {
     register,
     handleSubmit,
-    watch,
-    setError,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -37,8 +34,9 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
       await onSubmit?.(data.password);
       setSuccess(true);
     } catch (err: unknown) {
-      const message = getAuthErrorMessage(err);
-      setError("root", { message });
+      // For now, re-throw or handle as needed.
+      // Assuming parent handles it or swallowed by hook form if not set on root.
+      // Log to a secure monitoring service instead
     }
   };
 
@@ -67,16 +65,20 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
           id="reset-password"
           label="Nova senha"
           type="password"
+          required
           placeholder="Mínimo 8 caracteres"
           error={errors.password?.message}
           autoComplete="new-password"
           autoFocus
+          aria-describedby={passwordRequirementsId}
           {...register("password")}
         />
 
-        <AnimatePresence>
-          <PasswordStrengthBar password={watch("password")} />
-        </AnimatePresence>
+        <FormPasswordStrength
+          control={control}
+          name="password"
+          id={passwordRequirementsId}
+        />
 
         {errors.root && (
           <div

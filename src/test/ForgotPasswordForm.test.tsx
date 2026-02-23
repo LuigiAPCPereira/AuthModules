@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 import { describe, it, expect, vi } from "vitest";
+import { AUTH_ERROR_MESSAGES } from "@/lib/errorMessages";
 
 describe("ForgotPasswordForm", () => {
   it("renders correctly", () => {
@@ -40,8 +41,9 @@ describe("ForgotPasswordForm", () => {
     });
   });
 
-  it("handles submission error with generic message", async () => {
-    const onSubmit = vi.fn().mockRejectedValue(new Error("Network error"));
+  it("handles network error by showing error message", async () => {
+    // Simulate a network error (which getAuthErrorMessage detects by 'network' or 'conexão' string)
+    const onSubmit = vi.fn().mockRejectedValue(new Error("Network connection failed"));
     render(<ForgotPasswordForm onSubmit={onSubmit} />);
 
     const emailInput = screen.getByPlaceholderText("seu@email.com");
@@ -51,15 +53,15 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Erro de conexão. Verifique sua internet e tente novamente.")).toBeInTheDocument();
+      expect(screen.getByText(AUTH_ERROR_MESSAGES.NETWORK_ERROR)).toBeInTheDocument();
     });
   });
 
-  it("handles submission error with specific message from object", async () => {
-    // Simulating an error object that might be returned by an API
-    const errorObj = { message: "Custom error message" };
-    // We need to reject with this object.
-    const onSubmit = vi.fn().mockImplementation(() => Promise.reject(errorObj));
+  it("swallows generic errors and shows success (User Enumeration Prevention)", async () => {
+    // Simulating an error object that implies 'Email not found' or other server errors
+    // The message doesn't match network/server unavailable, so it should be swallowed.
+    const errorObj = { message: "Email not found" };
+    const onSubmit = vi.fn().mockRejectedValue(errorObj);
 
     render(<ForgotPasswordForm onSubmit={onSubmit} />);
 
@@ -69,31 +71,15 @@ describe("ForgotPasswordForm", () => {
     const submitButton = screen.getByRole("button", { name: /enviar link/i });
     fireEvent.click(submitButton);
 
+    // Expect success screen instead of error
     await waitFor(() => {
-      expect(screen.getByText("Ocorreu um erro inesperado. Tente novamente.")).toBeInTheDocument();
+      expect(screen.getByText("E-mail enviado")).toBeInTheDocument();
     });
   });
 
-  it("handles submission error with empty message (fallback)", async () => {
-      const errorObj = { message: "" };
-      const onSubmit = vi.fn().mockImplementation(() => Promise.reject(errorObj));
-
-      render(<ForgotPasswordForm onSubmit={onSubmit} />);
-
-      const emailInput = screen.getByPlaceholderText("seu@email.com");
-      fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-
-      const submitButton = screen.getByRole("button", { name: /enviar link/i });
-      fireEvent.click(submitButton);
-
-      await waitFor(() => {
-        expect(screen.getByText("Ocorreu um erro inesperado. Tente novamente.")).toBeInTheDocument();
-      });
-  });
-
-  it("handles submission error with null message (fallback)", async () => {
-    const errorObj = { message: null };
-    const onSubmit = vi.fn().mockImplementation(() => Promise.reject(errorObj));
+  it("swallows empty/null errors and shows success (User Enumeration Prevention)", async () => {
+    const errorObj = { message: "" };
+    const onSubmit = vi.fn().mockRejectedValue(errorObj);
 
     render(<ForgotPasswordForm onSubmit={onSubmit} />);
 
@@ -104,7 +90,7 @@ describe("ForgotPasswordForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Ocorreu um erro inesperado. Tente novamente.")).toBeInTheDocument();
+      expect(screen.getByText("E-mail enviado")).toBeInTheDocument();
     });
   });
 });

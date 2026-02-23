@@ -11,6 +11,8 @@
     "skipLibCheck": true,
     "allowJs": true,
     "noUnusedLocals": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "declaration": true,
+    "emitDeclarationOnly": false
   }
 }
