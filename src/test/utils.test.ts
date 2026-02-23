@@ -25,15 +25,15 @@ describe("isValidEmail", () => {
 describe("isPasswordStrong", () => {
   it("should validate strong passwords", () => {
     // Requires: 8+ chars, uppercase, lowercase, number, special char.
-    expect(isPasswordStrong("TestPassword123!")).toBe(true);
-    expect(isPasswordStrong("ValidPassword$4")).toBe(true);
+    expect(isPasswordStrong("TestPassword123!")).toBe(true); // ggignore
+    expect(isPasswordStrong("ValidPassword$4")).toBe(true); // ggignore
   });
 
   it("should reject weak passwords", () => {
     expect(isPasswordStrong("weak")).toBe(false);
-    expect(isPasswordStrong("Short1!")).toBe(false);
-    expect(isPasswordStrong("NoSpecialChar1")).toBe(false);
-    expect(isPasswordStrong("NoNumber!")).toBe(false);
-    expect(isPasswordStrong("nouppercase1!")).toBe(false);
+    expect(isPasswordStrong("Short1!")).toBe(false); // ggignore
+    expect(isPasswordStrong("NoSpecialChar1")).toBe(false); // ggignore
+    expect(isPasswordStrong("NoNumber!")).toBe(false); // ggignore
+    expect(isPasswordStrong("nouppercase1!")).toBe(false); // ggignore
   });
 });

@@ -7,3 +7,7 @@
 **Vulnerabilidade:** GitGuardian flagou senhas de exemplo em arquivos de teste.
 **Aprendizado:** Padrões conhecidos de senhas vazadas (ex: "Correct-Horse...") são detectados por ferramentas de segurança.
 **Prevenção:** Usar strings genéricas como "TestPassword123!" em testes, evitando padrões conhecidos de senhas vazadas.
+
+## 2025-05-18 - [GitGuardian Remediation]
+**Learning:** GitGuardian scans the entire history of a Pull Request. If a secret is uncovered in the commit history (even if remediated in the latest commit), the history must be cleaned.
+**Action:** Use `git fetch origin main && git reset --soft origin/main` to squash dirty commits before submitting to a new branch, and ensure `// ggignore` is used for test secrets.
