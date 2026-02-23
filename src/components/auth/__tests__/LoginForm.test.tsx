@@ -5,12 +5,16 @@ import LoginForm from "@/components/auth/LoginForm";
 import { I18nProvider } from "@/contexts/I18nContext";
 import { defaultLabelsPt } from "@/lib/i18n/labels";
 
+import { AuthProvider } from "@/contexts/AuthContext";
+
 // Wrapper para providers
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
-    <I18nProvider labels={defaultLabelsPt} locale="pt">
-      {ui}
-    </I18nProvider>
+    <AuthProvider>
+      <I18nProvider labels={defaultLabelsPt} locale="pt">
+        {ui}
+      </I18nProvider>
+    </AuthProvider>
   );
 };
 
@@ -19,7 +23,7 @@ describe("LoginForm", () => {
     renderWithProviders(
       <LoginForm onSubmit={vi.fn()} />
     );
-    
+
     expect(screen.getAllByText("Entrar")[0]).toBeInTheDocument();
     expect(screen.getByText("Bem-vindo de volta. Faça login na sua conta.")).toBeInTheDocument();
     expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
@@ -30,10 +34,10 @@ describe("LoginForm", () => {
     renderWithProviders(
       <LoginForm onSubmit={vi.fn()} />
     );
-    
+
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText("E-mail é obrigatório")).toBeInTheDocument();
       expect(screen.getByText("Senha é obrigatória")).toBeInTheDocument();
@@ -44,13 +48,13 @@ describe("LoginForm", () => {
     renderWithProviders(
       <LoginForm onSubmit={vi.fn()} />
     );
-    
+
     const emailInput = screen.getByLabelText(/E-mail/i);
     await userEvent.type(emailInput, "email-invalido");
-    
+
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText("E-mail inválido")).toBeInTheDocument();
     });
@@ -61,16 +65,16 @@ describe("LoginForm", () => {
     renderWithProviders(
       <LoginForm onSubmit={onSubmit} />
     );
-    
+
     const emailInput = screen.getByLabelText(/E-mail/i);
     const passwordInput = screen.getByLabelText(/^Senha/i);
-    
+
     await userEvent.type(emailInput, "teste@email.com");
     await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
-    
+
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({
         email: "teste@email.com",
@@ -84,36 +88,36 @@ describe("LoginForm", () => {
     renderWithProviders(
       <LoginForm onSubmit={onSubmit} />
     );
-    
+
     const emailInput = screen.getByLabelText(/E-mail/i);
     const passwordInput = screen.getByLabelText(/^Senha/i);
-    
+
     await userEvent.type(emailInput, "teste@email.com");
     await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
-    
+
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
     });
   });
 
   it("desabilita botão durante submissão", async () => {
-    const onSubmit = vi.fn().mockImplementation(() => new Promise(() => {}));
+    const onSubmit = vi.fn().mockImplementation(() => new Promise(() => { }));
     renderWithProviders(
       <LoginForm onSubmit={onSubmit} />
     );
-    
+
     const emailInput = screen.getByLabelText(/E-mail/i);
     const passwordInput = screen.getByLabelText(/^Senha/i);
-    
+
     await userEvent.type(emailInput, "teste@email.com");
     await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
-    
+
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(submitButton).toBeDisabled();
       expect(submitButton).toHaveAttribute("aria-busy", "true");

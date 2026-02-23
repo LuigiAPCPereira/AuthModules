@@ -1,93 +1,60 @@
-/**
- * Contexto de autenticação com estados e ações
- * Gerencia usuário, sessão e métodos de autenticação
- */
+import { createContext, useEffect, ReactNode } from "react";
+import { supabase } from "../services/supabaseClient";
+import { authService } from "../services/authService";
+import { useAuthStore } from "../store/authStore";
+import { cookieStorage } from "../utils/cookies";
 
-import { createContext, useContext, useState, ReactNode } from "react";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
+export interface AuthContextValue {
+  login: typeof authService.signInWithPassword;
+  signup: typeof authService.signUp;
+  logout: typeof authService.signOut;
+  loginWithGoogle: () => ReturnType<typeof authService.signInWithOAuth>;
 }
 
-interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-interface AuthContextValue {
-  state: AuthState;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: false,
-  });
+  const setSession = useAuthStore((state) => state.setSession);
+  const setLoading = useAuthStore((state) => state.setLoading);
 
-  const login = async (email: string, password: string) => {
-    setState((prev) => ({ ...prev, isLoading: true, isAuthenticated: false }));
-    try {
-      // Simular login - substituir por chamada real à API
-      await new Promise((resolve) => setTimeout(() => resolve(), 1000));
-      setState((prev) => ({
-        ...prev,
-        user: { id: "1", name: "João Silva", email },
-        isAuthenticated: true,
-        isLoading: false,
-      }));
-    } catch (error) {
-      setState((prev) => ({ ...prev, isLoading: false, isAuthenticated: false }));
-      throw error;
-    }
+  useEffect(() => {
+    // Fetch initial session
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (!error) {
+        setSession(session);
+        if (session) {
+          cookieStorage.set("sb-access-token", session.access_token);
+          cookieStorage.set("sb-refresh-token", session.refresh_token);
+        }
+      }
+      setLoading(false);
+    });
+
+    // Listen to changes (login, logout, token refresh)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+        cookieStorage.set("sb-access-token", session.access_token);
+        cookieStorage.set("sb-refresh-token", session.refresh_token);
+      } else {
+        cookieStorage.remove("sb-access-token");
+        cookieStorage.remove("sb-refresh-token");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [setSession, setLoading]);
+
+  const value: AuthContextValue = {
+    login: authService.signInWithPassword,
+    signup: authService.signUp,
+    logout: authService.signOut,
+    loginWithGoogle: () => authService.signInWithOAuth("google"),
   };
 
-  const signup = async (name: string, email: string, password: string) => {
-    setState((prev) => ({ ...prev, isLoading: true }));
-    try {
-      await new Promise((resolve) => setTimeout(() => resolve(), 1000));
-      setState((prev) => ({
-        ...prev,
-        user: { id: "2", name: "João Silva", email },
-        isAuthenticated: true,
-        isLoading: false,
-      }));
-    } catch (error) {
-      setState((prev) => ({ ...prev, isLoading: false }));
-      throw error;
-    }
-  };
-
-  const logout = async () => {
-    setState((prev) => ({ ...prev, isLoading: true }));
-    try {
-      await new Promise((resolve) => setTimeout(() => resolve(), 500));
-      setState({ user: null, isAuthenticated: false, isLoading: false });
-    } catch (error) {
-      setState((prev) => ({ ...prev, isLoading: false }));
-      throw error;
-    }
-  };
-
-  return (
-    <AuthContext.Provider value={{ state, login, signup, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth deve ser usado dentro de AuthProvider");
-  }
-  return context;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

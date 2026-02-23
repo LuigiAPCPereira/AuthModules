@@ -6,13 +6,13 @@ import AuthInput from "@/components/auth/AuthInput";
 describe("AuthInput A11y", () => {
   it("uses internal error ID in aria-describedby when error is present", () => {
     render(<AuthInput label="Test" id="test-input" error="Something went wrong" />);
-    const input = screen.getByLabelText("Test");
+    const input = screen.getByLabelText(/Test/i);
     expect(input).toHaveAttribute("aria-describedby", "test-input-error");
   });
 
   it("uses external aria-describedby when provided", () => {
     render(<AuthInput label="Test" id="test-input" aria-describedby="external-helper" />);
-    const input = screen.getByLabelText("Test");
+    const input = screen.getByLabelText(/Test/i);
     expect(input).toHaveAttribute("aria-describedby", "external-helper");
   });
 
@@ -25,7 +25,7 @@ describe("AuthInput A11y", () => {
         aria-describedby="external-helper"
       />
     );
-    const input = screen.getByLabelText("Test");
+    const input = screen.getByLabelText(/Test/i);
     const describedBy = input.getAttribute("aria-describedby");
     expect(describedBy).toContain("test-input-error");
     expect(describedBy).toContain("external-helper");
@@ -41,7 +41,7 @@ describe("AuthInput A11y", () => {
       />
     );
 
-    const input = screen.getByLabelText("Password");
+    const input = screen.getByLabelText(/Password/i);
 
     // Create a custom event with mocked getModifierState
     const event = createEvent.keyDown(input, { key: "A", code: "KeyA" });

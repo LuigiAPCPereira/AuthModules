@@ -9,6 +9,8 @@ import { loginSchema, type LoginFormData } from "@/lib/schemas/auth";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
+import { rateLimit } from "../../utils/rateLimit";
+import { sanitize } from "../../utils/sanitize";
 
 interface LoginFormProps {
   onSubmit?: (data: LoginFormData) => Promise<void>;
@@ -33,9 +35,20 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
   });
 
   const handleFormSubmit = async (data: LoginFormData) => {
+    // Basic sanitization
+    const sanitizedEmail = sanitize(data.email);
+
     setServerError("");
+    // Rate limit checks
+    const rl = rateLimit.check("login_attempt", 5, 15);
+    if (!rl.allowed) {
+      setServerError(`Muitas tentativas. Tente novamente em ${Math.ceil(rl.remainingMs / 60000)} minutos.`);
+      return;
+    }
+
     try {
-      await onSubmit?.(data);
+      await onSubmit?.({ ...data, email: sanitizedEmail });
+      rateLimit.reset("login_attempt");
     } catch (err: unknown) {
       setServerError(getAuthErrorMessage(err));
     }
@@ -52,7 +65,6 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           placeholder="seu@email.com"
           error={!isSubmitting ? errors.email?.message : undefined}
           autoComplete="email"
-          autoFocus
           {...register("email")}
         />
         <AuthInput
@@ -101,7 +113,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           aria-busy={isSubmitting}
         >
           {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
-          {isSubmitting ? "Entrando..." : "Entrar"}
+          {isSubmitting ? "Entrando…" : "Entrar"}
         </button>
       </form>
 
