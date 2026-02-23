@@ -1,17 +1,20 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Export the singleton supabase client to be initialized
+export let supabase: SupabaseClient;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn("Supabase URL or Anon Key is missing. Check your environment variables.");
-}
+/**
+ * Initializes the Supabase client. To be called by AuthProvider before rendering.
+ */
+export const initializeSupabase = (url: string, key: string) => {
+    if (!supabase) {
+        // Provide a fallback dummy URL and KEY ONLY if both are missing (e.g. tests)
+        const finalUrl = url || "https://placeholder-project.supabase.co";
+        const finalKey = key || "placeholder-anon-key";
 
-// Provide a fallback dummy URL and KEY ONLY if both are missing AND we're in a test environment (or similar) to avoid crashing.
-// In production, missing these vars will lead to actual connection errors, but for unit tests, creating the client shouldn't throw.
-const finalUrl = supabaseUrl || "https://placeholder-project.supabase.co";
-const finalKey = supabaseAnonKey || "placeholder-anon-key";
-
-export const supabase = createClient(finalUrl, finalKey);
+        supabase = createClient(finalUrl, finalKey);
+    }
+    return supabase;
+};
 
 export const isBrowser = typeof window !== "undefined";

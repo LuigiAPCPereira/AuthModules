@@ -1,5 +1,5 @@
 import { createContext, useEffect, ReactNode } from "react";
-import { supabase } from "../services/supabaseClient";
+import { supabase, initializeSupabase } from "../services/supabaseClient";
 import { authService } from "../services/authService";
 import { useAuthStore } from "../store/authStore";
 import { cookieStorage } from "../utils/cookies";
@@ -13,7 +13,18 @@ export interface AuthContextValue {
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export interface AuthProviderProps {
+  children: ReactNode;
+  supabaseUrl: string;
+  supabaseAnonKey: string;
+}
+
+export const AuthProvider = ({ children, supabaseUrl, supabaseAnonKey }: AuthProviderProps) => {
+  // Ensure the supabase client singleton is initialized safely
+  if (!supabase) {
+    initializeSupabase(supabaseUrl, supabaseAnonKey);
+  }
+
   const setSession = useAuthStore((state) => state.setSession);
   const setLoading = useAuthStore((state) => state.setLoading);
 

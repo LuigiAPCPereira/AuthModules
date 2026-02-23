@@ -9,7 +9,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
-    <AuthProvider>
+    <AuthProvider supabaseUrl="https://test-url.supabase.co" supabaseAnonKey="test-key">
       <I18nProvider labels={defaultLabelsPt} locale="pt">
         {ui}
       </I18nProvider>

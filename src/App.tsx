@@ -10,6 +10,10 @@ import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
+// In the standard Vite demo app, read the environment variables explicitly
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://placeholder-project.supabase.co";
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "placeholder-anon-key";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -21,7 +25,7 @@ const App = () => (
             v7_relativeSplatPath: true,
           }}
         >
-          <AuthProvider>
+          <AuthProvider supabaseUrl={supabaseUrl} supabaseAnonKey={supabaseAnonKey}>
             <Toaster />
             <Sonner />
             <Routes>

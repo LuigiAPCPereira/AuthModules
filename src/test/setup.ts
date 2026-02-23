@@ -65,3 +65,9 @@ Object.defineProperty(global, "localStorage", {
   value: localStorageMock,
   writable: true,
 });
+
+// Mock do window.scrollTo
+Object.defineProperty(window, "scrollTo", {
+  value: vi.fn(),
+  writable: true,
+});
