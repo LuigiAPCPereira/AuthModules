@@ -23,7 +23,7 @@ describe("PasswordStrengthBar", () => {
 
   it("renderiza quando senha tem conteúdo", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="senha" /> // ggignore
+      <PasswordStrengthBar password="senha" />
     );
 
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -31,7 +31,7 @@ describe("PasswordStrengthBar", () => {
 
   it("tem atributos ARIA corretos para acessibilidade", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="TestPassword123!" /> // ggignore
+      <PasswordStrengthBar password="SenhaForte123!" />
     );
 
     const progressbar = screen.getByRole("progressbar");
@@ -43,7 +43,7 @@ describe("PasswordStrengthBar", () => {
 
   it("mostra força 'Muito fraca' para senha curta", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="abc" /> // ggignore
+      <PasswordStrengthBar password="abc" />
     );
 
     expect(screen.getByText("Muito fraca")).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("PasswordStrengthBar", () => {
 
   it("mostra força 'Forte' para senha completa", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="TestPassword123!" /> // ggignore
+      <PasswordStrengthBar password="SenhaForte123!" />
     );
 
     expect(screen.getByText("Forte")).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe("PasswordStrengthBar", () => {
 
   it("mostra lista de requisitos", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="senha" /> // ggignore
+      <PasswordStrengthBar password="senha" />
     );
 
     expect(screen.getByText("Mínimo 8 caracteres")).toBeInTheDocument();

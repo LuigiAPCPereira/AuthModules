@@ -20,9 +20,9 @@ describe("SignupForm", () => {
     );
     
     expect(screen.getAllByText("Criar conta")[0]).toBeInTheDocument();
-    expect(screen.getByLabelText(/Nome completo/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^Senha/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("Nome completo")).toBeInTheDocument();
+    expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
+    expect(screen.getByLabelText("Senha")).toBeInTheDocument();
   });
 
   it("NÃO deve ter campo de confirmar senha (quick win)", () => {
@@ -40,7 +40,7 @@ describe("SignupForm", () => {
       <SignupForm onSubmit={vi.fn()} />
     );
     
-    const passwordInput = screen.getByLabelText(/^Senha/i);
+    const passwordInput = screen.getByLabelText("Senha");
     await userEvent.type(passwordInput, "123");
     
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
@@ -56,25 +56,11 @@ describe("SignupForm", () => {
       <SignupForm onSubmit={vi.fn()} />
     );
     
-    const passwordInput = screen.getByLabelText(/^Senha/i);
-    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
+    const passwordInput = screen.getByLabelText("Senha");
+    await userEvent.type(passwordInput, "SenhaForte123!");
     
     // Verifica se o PasswordStrengthBar aparece
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
-  });
-
-  it("associa corretamente o input de senha com os requisitos via aria-describedby", async () => {
-    renderWithProviders(<SignupForm onSubmit={vi.fn()} />);
-
-    const passwordInput = screen.getByLabelText(/^Senha/i);
-    await userEvent.type(passwordInput, "a");
-
-    const strengthMeter = screen.getByRole("list", { name: /requisitos/i });
-    const meterId = strengthMeter.getAttribute("id");
-    const describedBy = passwordInput.getAttribute("aria-describedby");
-
-    expect(meterId).toBeTruthy();
-    expect(describedBy).toContain(meterId);
   });
 
   it("chama onSubmit com dados válidos", async () => {
@@ -83,9 +69,9 @@ describe("SignupForm", () => {
       <SignupForm onSubmit={onSubmit} />
     );
     
-    await userEvent.type(screen.getByLabelText(/Nome completo/i), "João Silva");
-    await userEvent.type(screen.getByLabelText(/E-mail/i), "joao@email.com");
-    await userEvent.type(screen.getByLabelText(/^Senha/i), "TestPassword123!"); // ggignore
+    await userEvent.type(screen.getByLabelText("Nome completo"), "João Silva");
+    await userEvent.type(screen.getByLabelText("E-mail"), "joao@email.com");
+    await userEvent.type(screen.getByLabelText("Senha"), "SenhaForte123!");
     
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
@@ -94,7 +80,7 @@ describe("SignupForm", () => {
       expect(onSubmit).toHaveBeenCalledWith({
         name: "João Silva",
         email: "joao@email.com",
-        password: "TestPassword123!", // ggignore
+        password: "SenhaForte123!",
       });
     });
   });

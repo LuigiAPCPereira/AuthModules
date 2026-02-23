@@ -1,4 +1,4 @@
-import { useState, useId } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -15,7 +15,6 @@ interface ResetPasswordFormProps {
 
 const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
   const [success, setSuccess] = useState(false);
-  const passwordRequirementsId = useId();
 
   const {
     register,
@@ -65,20 +64,14 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
           id="reset-password"
           label="Nova senha"
           type="password"
-          required
           placeholder="Mínimo 8 caracteres"
           error={errors.password?.message}
           autoComplete="new-password"
           autoFocus
-          aria-describedby={passwordRequirementsId}
           {...register("password")}
         />
 
-        <FormPasswordStrength
-          control={control}
-          name="password"
-          id={passwordRequirementsId}
-        />
+        <FormPasswordStrength control={control} name="password" />
 
         {errors.root && (
           <div

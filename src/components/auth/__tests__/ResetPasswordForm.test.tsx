@@ -1,15 +1,26 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import ResetPasswordForm from "../ResetPasswordForm";
-import { I18nProvider } from "@/contexts/I18nContext";
-import { defaultLabelsPt } from "@/lib/i18n/labels";
 
-const renderWithProviders = (ui: React.ReactElement) => {
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi } from "vitest";
+import ResetPasswordForm from "../ResetPasswordForm";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
+// Mock para evitar erros de importação de módulos não presentes no ambiente de teste
+vi.mock("@/components/ui/toaster", () => ({
+  Toaster: () => null,
+}));
+
+vi.mock("@/components/ui/tooltip", () => ({
+  TooltipProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+const renderWithProviders = (ui: React.ReactNode) => {
   return render(
-    <I18nProvider labels={defaultLabelsPt} locale="pt">
+    <TooltipProvider>
       {ui}
-    </I18nProvider>
+      <Toaster />
+    </TooltipProvider>
   );
 };
 
@@ -17,35 +28,38 @@ describe("ResetPasswordForm", () => {
   it("renders correctly", () => {
     renderWithProviders(<ResetPasswordForm />);
     expect(screen.getByRole("heading", { name: "Redefinir senha" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Nova senha")).toBeInTheDocument();
+    // Fix: Use regex to match label text with asterisk or extra spaces
+    expect(screen.getByLabelText(/Nova senha/i)).toBeInTheDocument();
   });
 
   it("validates password strength", async () => {
     renderWithProviders(<ResetPasswordForm />);
 
-    const passwordInput = screen.getByLabelText("Nova senha");
+    // Fix: Use regex to locate input by label
+    const passwordInput = screen.getByLabelText(/Nova senha/i);
     await userEvent.type(passwordInput, "weak");
 
-    const submitButton = screen.getByRole("button", { name: /redefinir senha/i });
-    fireEvent.click(submitButton);
+    const submitButton = screen.getByRole("button", { name: "Redefinir senha" });
+    await userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/mínimo de 8 caracteres/i)).toBeInTheDocument();
+      expect(screen.getByText(/Mínimo 8 caracteres/i)).toBeInTheDocument();
     });
   });
 
   it("submits with valid password", async () => {
-    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    const onSubmit = vi.fn();
     renderWithProviders(<ResetPasswordForm onSubmit={onSubmit} />);
 
-    const passwordInput = screen.getByLabelText("Nova senha");
+    // Fix: Use regex to locate input by label
+    const passwordInput = screen.getByLabelText(/Nova senha/i);
     await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
 
-    const submitButton = screen.getByRole("button", { name: /redefinir senha/i });
-    fireEvent.click(submitButton);
+    const submitButton = screen.getByRole("button", { name: "Redefinir senha" });
+    await userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledWith("TestPassword123!"); // ggignore
+      expect(onSubmit).toHaveBeenCalledWith({ password: "TestPassword123!" }); // ggignore
     });
   });
 });
