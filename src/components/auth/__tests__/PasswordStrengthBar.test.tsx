@@ -17,15 +17,15 @@ describe("PasswordStrengthBar", () => {
     const { container } = renderWithProviders(
       <PasswordStrengthBar password="" />
     );
-    
+
     expect(container.firstChild).toBeNull();
   });
 
   it("renderiza quando senha tem conteúdo", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="senha" />
+      <PasswordStrengthBar password="senha" /> // ggignore
     );
-    
+
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
@@ -33,7 +33,7 @@ describe("PasswordStrengthBar", () => {
     renderWithProviders(
       <PasswordStrengthBar password="TestPassword123!" /> // ggignore
     );
-    
+
     const progressbar = screen.getByRole("progressbar");
     expect(progressbar).toHaveAttribute("aria-valuenow");
     expect(progressbar).toHaveAttribute("aria-valuemin", "0");
@@ -43,9 +43,9 @@ describe("PasswordStrengthBar", () => {
 
   it("mostra força 'Muito fraca' para senha curta", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="abc" />
+      <PasswordStrengthBar password="abc" /> // ggignore
     );
-    
+
     expect(screen.getByText("Muito fraca")).toBeInTheDocument();
   });
 
@@ -53,15 +53,15 @@ describe("PasswordStrengthBar", () => {
     renderWithProviders(
       <PasswordStrengthBar password="TestPassword123!" /> // ggignore
     );
-    
+
     expect(screen.getByText("Forte")).toBeInTheDocument();
   });
 
   it("mostra lista de requisitos", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="senha" />
+      <PasswordStrengthBar password="senha" /> // ggignore
     );
-    
+
     expect(screen.getByText("Mínimo 8 caracteres")).toBeInTheDocument();
     expect(screen.getByText("Letra maiúscula")).toBeInTheDocument();
     expect(screen.getByText("Letra minúscula")).toBeInTheDocument();
