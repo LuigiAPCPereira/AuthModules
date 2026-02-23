@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { 
-  loginSchema, 
-  signupSchema, 
+import {
+  loginSchema,
+  signupSchema,
   forgotPasswordSchema,
   resetPasswordSchema 
 } from "@/lib/schemas/auth";
@@ -13,7 +13,7 @@ describe("Schemas de Validação", () => {
         email: "teste@email.com",
         password: "ValidInput_TestString_2024!", // ggignore
       });
-      
+
       expect(result.success).toBe(true);
     });
 
@@ -22,7 +22,7 @@ describe("Schemas de Validação", () => {
         email: "email-invalido",
         password: "ValidInput_TestString_2024!", // ggignore
       });
-      
+
       expect(result.success).toBe(false);
     });
 
@@ -74,7 +74,7 @@ describe("Schemas de Validação", () => {
         email: "joao@email.com",
         password: "ValidInput_TestString_2024!", // ggignore
       });
-      
+
       expect(result.success).toBe(true);
     });
 
@@ -84,7 +84,7 @@ describe("Schemas de Validação", () => {
         email: "joao@email.com",
         password: "ValidInput_TestString_2024!", // ggignore
       });
-      
+
       expect(result.success).toBe(true);
       // Verifica que o schema não tem confirmPassword
       const shape = signupSchema.shape;
@@ -97,7 +97,7 @@ describe("Schemas de Validação", () => {
         email: "joao@email.com",
         password: "weak", // ggignore
       });
-      
+
       expect(result.success).toBe(false);
     });
 
@@ -140,7 +140,7 @@ describe("Schemas de Validação", () => {
       const result = forgotPasswordSchema.safeParse({
         email: "teste@email.com",
       });
-      
+
       expect(result.success).toBe(true);
     });
 
@@ -148,7 +148,7 @@ describe("Schemas de Validação", () => {
       const result = forgotPasswordSchema.safeParse({
         email: "email-invalido",
       });
-      
+
       expect(result.success).toBe(false);
     });
   });
@@ -158,7 +158,7 @@ describe("Schemas de Validação", () => {
       const result = resetPasswordSchema.safeParse({
         password: "ValidInput_TestString_2024!", // ggignore
       });
-      
+
       expect(result.success).toBe(true);
       // Verifica que o schema não tem confirmPassword
       const shape = resetPasswordSchema.shape;

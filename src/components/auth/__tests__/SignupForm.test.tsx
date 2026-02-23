@@ -29,7 +29,7 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     // Verifica que não existe label "Confirmar senha"
     expect(screen.queryByLabelText(/confirmar/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/confirmar senha/i)).not.toBeInTheDocument();
@@ -45,7 +45,7 @@ describe("SignupForm", () => {
     
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(screen.getByText(/mínimo de 8 caracteres/i)).toBeInTheDocument();
     });
@@ -89,7 +89,7 @@ describe("SignupForm", () => {
     
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
-    
+
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({
         name: "João Silva",
