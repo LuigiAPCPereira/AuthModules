@@ -10,6 +10,16 @@ describe("LoginForm", () => {
     expect(screen.getByRole("button", { name: "Entrar" })).toBeInTheDocument();
   });
 
+  it("renders remember me checkbox and allows toggling", () => {
+    render(<LoginForm />);
+    const checkbox = screen.getByLabelText("Lembrar de mim");
+    expect(checkbox).toBeInTheDocument();
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+  });
+
   it("shows validation errors for empty fields", async () => {
     render(<LoginForm />);
     const submitButton = screen.getByRole("button", { name: "Entrar" });
