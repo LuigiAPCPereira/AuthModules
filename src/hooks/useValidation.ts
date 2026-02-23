@@ -3,7 +3,7 @@
  * Adiciona validação em blur para melhor UX
  */
 
-import { useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface ValidationRule {
   field: string;
@@ -13,59 +13,71 @@ interface ValidationRule {
 
 interface UseValidationOptions {
   rules: ValidationRule[];
+  validateOnBlur?: boolean;
 }
 
 interface UseValidationReturn {
   errors: Record<string, string>;
-  validateField: (field: string, value: string) => boolean;
+  validateField: (field: string) => (e: React.FocusEvent) => void;
   clearError: (field: string) => void;
-  getFieldProps: (field: string) => {
-    onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  };
 }
 
 export const useValidation = ({
   rules,
+  validateOnBlur = true,
 }: UseValidationOptions): UseValidationReturn => {
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const rulesRef = useRef(rules);
-  rulesRef.current = rules;
 
-  const clearError = useCallback((field: string) => {
+  const clearError = (field: string) => {
     setErrors((prev) => {
-      if (!prev[field]) return prev;
       const newErrors = { ...prev };
       delete newErrors[field];
       return newErrors;
     });
-  }, []);
+  };
 
-  const validateField = useCallback((field: string, value: string): boolean => {
-    const rule = rulesRef.current.find((r) => r.field === field);
-    if (!rule) return true;
+  const validateField = useCallback((field: string) => (e: React.FocusEvent) => {
+    const rule = rules.find((r) => r.field === field);
+    if (!rule) return;
 
+    const value = (e.target as HTMLInputElement).value ?? "";
     const result = rule.validate(value);
     if (result !== true) {
       setErrors((prev) => ({ ...prev, [field]: rule.error }));
-      return false;
+    } else {
+      clearError(field);
     }
-    clearError(field);
-    return true;
-  }, [clearError]);
+  }, [rules]);
 
-  const getFieldProps = useCallback(
-    (field: string) => ({
-      onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
-        validateField(field, e.target.value);
-      },
-    }),
-    [validateField]
-  );
+  useEffect(() => {
+    if (validateOnBlur) {
+      // Adicionar validação no blur
+      const handlers: Record<string, (e: Event) => void> = {};
+
+      Object.keys(errors).forEach((field) => {
+        const element = document.getElementById(field) as HTMLInputElement;
+        if (element) {
+          // Cast React.FocusEvent handler to native Event handler for addEventListener
+          const handler = (e: Event) => validateField(field)(e as unknown as React.FocusEvent);
+          handlers[field] = handler;
+          element.addEventListener("blur", handler);
+        }
+      });
+
+      return () => {
+        Object.keys(handlers).forEach((field) => {
+          const element = document.getElementById(field) as HTMLInputElement;
+          if (element) {
+            element.removeEventListener("blur", handlers[field]);
+          }
+        });
+      };
+    }
+  }, [errors, validateOnBlur, validateField]);
 
   return {
     errors,
     validateField,
     clearError,
-    getFieldProps,
   };
 };

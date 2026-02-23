@@ -82,7 +82,6 @@ const ForgotPasswordForm = ({ onSubmit, onBack }: ForgotPasswordFormProps) => {
           id="forgot-email"
           label="E-mail"
           type="email"
-          required
           placeholder="seu@email.com"
           error={errors.email?.message}
           autoComplete="email"

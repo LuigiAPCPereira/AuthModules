@@ -1,13 +1,14 @@
-import { useState, useId } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, UserPlus } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import { signupSchema, type SignupFormData } from "@/lib/schemas/auth";
 import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import FormPasswordStrength from "./FormPasswordStrength";
+import PasswordStrengthBar from "./PasswordStrengthBar";
 import GoogleSignInButton from "./GoogleSignInButton";
 
 interface SignupFormProps {
@@ -18,12 +19,11 @@ interface SignupFormProps {
 
 const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
   const [serverError, setServerError] = useState("");
-  const passwordRequirementsId = useId();
 
   const {
     register,
     handleSubmit,
-    control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -50,7 +50,6 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           id="signup-name"
           label="Nome completo"
           type="text"
-          required
           placeholder="Seu nome"
           error={errors.name?.message}
           autoComplete="name"
@@ -61,7 +60,6 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           id="signup-email"
           label="E-mail"
           type="email"
-          required
           placeholder="seu@email.com"
           error={errors.email?.message}
           autoComplete="email"
@@ -71,19 +69,15 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           id="signup-password"
           label="Senha"
           type="password"
-          required
           placeholder="Mínimo 8 caracteres"
           error={errors.password?.message}
           autoComplete="new-password"
-          aria-describedby={passwordRequirementsId}
           {...register("password")}
         />
 
-        <FormPasswordStrength
-          control={control}
-          name="password"
-          id={passwordRequirementsId}
-        />
+        <AnimatePresence>
+          <PasswordStrengthBar password={watch("password")} />
+        </AnimatePresence>
 
         {serverError && (
           <div
