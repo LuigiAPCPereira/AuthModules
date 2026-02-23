@@ -66,7 +66,7 @@ describe("SignupForm", () => {
   it("associa corretamente o input de senha com os requisitos via aria-describedby", async () => {
     renderWithProviders(<SignupForm onSubmit={vi.fn()} />);
 
-    const passwordInput = screen.getByLabelText("Senha");
+    const passwordInput = screen.getByLabelText(/^Senha/i);
     await userEvent.type(passwordInput, "a");
 
     const strengthMeter = screen.getByRole("list", { name: /requisitos/i });
