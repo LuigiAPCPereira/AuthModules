@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import AuthInput from "../../../components/auth/AuthInput";
 import React from "react";
 
@@ -90,79 +91,41 @@ describe("AuthInput", () => {
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
   });
 
-  it("shows Caps Lock warning when Caps Lock is active on password field", async () => {
-    render(<AuthInput id="caps-password-input" label="Password" type="password" />);
+  it("shows warning when Caps Lock is active", async () => {
+    const user = userEvent.setup();
+    render(<AuthInput label="Password" type="password" id="caps-test-1" />);
     const input = screen.getByLabelText("Password");
 
-    // Manually create event to properly mock getModifierState method
-    const event = new KeyboardEvent("keydown", {
-      key: "A",
-      code: "KeyA",
-      bubbles: true,
-      cancelable: true,
-    });
+    await user.click(input);
+    await user.keyboard("{CapsLock}a");
 
-    // Mock getModifierState
-    Object.defineProperty(event, "getModifierState", {
-      value: (key: string) => key === "CapsLock",
-    });
-
-    fireEvent(input, event);
-
-    await waitFor(() => {
-      expect(screen.getByText("Caps Lock ativado")).toBeInTheDocument();
-    });
+    expect(await screen.findByText("Caps Lock ativado")).toBeInTheDocument();
   });
 
-  it("does not show Caps Lock warning on non-password field", () => {
-    render(<AuthInput id="caps-text-input" label="Text" type="text" />);
-    const input = screen.getByLabelText("Text");
-
-    const event = new KeyboardEvent("keydown", {
-      key: "A",
-      code: "KeyA",
-      bubbles: true,
-      cancelable: true,
-    });
-    Object.defineProperty(event, "getModifierState", {
-      value: (key: string) => key === "CapsLock",
-    });
-
-    fireEvent(input, event);
-
-    expect(screen.queryByText("Caps Lock ativado")).not.toBeInTheDocument();
-  });
-
-  it("hides Caps Lock warning when Caps Lock is deactivated", async () => {
-    render(<AuthInput id="caps-toggle-input" label="Password" type="password" />);
+  it("hides warning when Caps Lock is inactive", async () => {
+    const user = userEvent.setup();
+    render(<AuthInput label="Password" type="password" id="caps-test-2" />);
     const input = screen.getByLabelText("Password");
 
-    // Activate
-    const eventOn = new KeyboardEvent("keydown", {
-      key: "A",
-      bubbles: true,
-    });
-    Object.defineProperty(eventOn, "getModifierState", {
-      value: (key: string) => key === "CapsLock",
-    });
-    fireEvent(input, eventOn);
+    await user.click(input);
+    await user.keyboard("{CapsLock}a");
+    expect(await screen.findByText("Caps Lock ativado")).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(screen.getByText("Caps Lock ativado")).toBeInTheDocument();
-    });
-
-    // Deactivate
-    const eventOff = new KeyboardEvent("keyup", {
-      key: "A",
-      bubbles: true,
-    });
-    Object.defineProperty(eventOff, "getModifierState", {
-      value: (key: string) => false,
-    });
-    fireEvent(input, eventOff);
+    await user.keyboard("{CapsLock}a");
 
     await waitFor(() => {
       expect(screen.queryByText("Caps Lock ativado")).not.toBeInTheDocument();
     });
+  });
+
+  it("does not show Caps Lock warning for non-password inputs", async () => {
+    const user = userEvent.setup();
+    render(<AuthInput label="Email" type="email" id="caps-test-3" />);
+    const input = screen.getByLabelText("Email");
+
+    await user.click(input);
+    await user.keyboard("{CapsLock}a");
+
+    expect(screen.queryByText("Caps Lock ativado")).not.toBeInTheDocument();
   });
 });
