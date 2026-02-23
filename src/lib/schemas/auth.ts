@@ -4,6 +4,13 @@
  */
 
 import { z } from "zod";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_UPPERCASE_REGEX,
+  PASSWORD_LOWERCASE_REGEX,
+  PASSWORD_NUMBER_REGEX,
+  PASSWORD_SPECIAL_REGEX,
+} from "../constants";
 
 /**
  * Schema de Login (JÁ EXISTE em LoginForm, mantido para referência)
