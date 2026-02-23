@@ -6,6 +6,6 @@
 **Learning:** Auth forms (`LoginForm`, `SignupForm`) use controlled inputs with local `useState` for every field, causing full component re-renders on every keystroke.
 **Action:** Refactor to `react-hook-form` with `zod` to use uncontrolled inputs, significantly reducing re-renders and improving input latency.
 
-## 2025-02-14 - [React Hook Form Watch Pitfall]
-**Learning:** `useForm`'s `watch` function, when destructured at the root of a component, subscribes the entire component to field updates, negating the performance benefits of uncontrolled inputs.
-**Action:** Isolate watched fields into smaller child components using `useWatch` or pass `control` to specific consumers to keep re-renders localized.
+## 2025-02-24 - [Otimização de Ícones com Code Splitting]
+**Aprendizado:** Bibliotecas granulares como `lucide-react` não devem ser incluídas em `manualChunks` em builds Vite/Rollup. Isso força todos os ícones utilizados em qualquer parte da aplicação (mesmo rotas lazy) para dentro de um único chunk inicial, anulando o benefício do tree-shaking por rota.
+**Ação:** Remover bibliotecas de ícones ou componentes granulares de configurações manuais de chunks para permitir que o bundler divida o código corretamente entre chunks iniciais e lazy-loaded.
