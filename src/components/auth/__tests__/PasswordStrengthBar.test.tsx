@@ -23,7 +23,7 @@ describe("PasswordStrengthBar", () => {
 
   it("renderiza quando senha tem conteúdo", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="senha" />
+      <PasswordStrengthBar password="senha" /> // ggignore
     );
 
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -31,7 +31,7 @@ describe("PasswordStrengthBar", () => {
 
   it("tem atributos ARIA corretos para acessibilidade", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="SenhaForte123!" />
+      <PasswordStrengthBar password="TestPassword123!" /> // ggignore
     );
 
     const progressbar = screen.getByRole("progressbar");
@@ -43,7 +43,7 @@ describe("PasswordStrengthBar", () => {
 
   it("mostra força 'Muito fraca' para senha curta", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="abc" />
+      <PasswordStrengthBar password="abc" /> // ggignore
     );
 
     expect(screen.getByText("Muito fraca")).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("PasswordStrengthBar", () => {
 
   it("mostra força 'Forte' para senha completa", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="SenhaForte123!" />
+      <PasswordStrengthBar password="TestPassword123!" /> // ggignore
     );
 
     expect(screen.getByText("Forte")).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe("PasswordStrengthBar", () => {
 
   it("mostra lista de requisitos", () => {
     renderWithProviders(
-      <PasswordStrengthBar password="senha" />
+      <PasswordStrengthBar password="senha" /> // ggignore
     );
 
     expect(screen.getByText("Mínimo 8 caracteres")).toBeInTheDocument();
@@ -67,5 +67,30 @@ describe("PasswordStrengthBar", () => {
     expect(screen.getByText("Letra minúscula")).toBeInTheDocument();
     expect(screen.getByText("Número")).toBeInTheDocument();
     expect(screen.getByText("Caractere especial")).toBeInTheDocument();
+  });
+
+  it("renderiza requisitos como itens de lista acessíveis", () => {
+    renderWithProviders(<PasswordStrengthBar password="senha" />);
+
+    const list = screen.getByRole("list");
+    expect(list).toBeInTheDocument();
+
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(5);
+  });
+
+  it("tem texto acessível indicando status dos requisitos", () => {
+    renderWithProviders(<PasswordStrengthBar password="Senha" />);
+
+    // "Senha" -> Uppercase: met, Lowercase: met. Length: unmet. Number: unmet. Special: unmet.
+
+    const items = screen.getAllByRole("listitem");
+
+    // Find specific items and check their full text content including hidden text
+    const uppercaseItem = items.find(item => item.textContent?.includes("Letra maiúscula"));
+    expect(uppercaseItem).toHaveTextContent("Letra maiúscula - atendido");
+
+    const lengthItem = items.find(item => item.textContent?.includes("Mínimo 8 caracteres"));
+    expect(lengthItem).toHaveTextContent("Mínimo 8 caracteres - pendente");
   });
 });
