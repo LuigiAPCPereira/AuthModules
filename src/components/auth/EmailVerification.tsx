@@ -15,6 +15,8 @@ interface EmailVerificationProps {
   onBack?: () => void;
 }
 
+const DIGIT_REGEX = /^\d*$/;
+
 const EmailVerification = ({ email = "seu@email.com", onVerify, onResend, onBack }: EmailVerificationProps) => {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,6 +36,7 @@ const EmailVerification = ({ email = "seu@email.com", onVerify, onResend, onBack
   };
 
   const handleChange = (newValue: string) => {
+    if (!DIGIT_REGEX.test(newValue)) return;
     setValue(newValue);
     if (error) setError("");
   };
@@ -68,13 +71,24 @@ const EmailVerification = ({ email = "seu@email.com", onVerify, onResend, onBack
           onComplete={handleComplete}
           containerClassName="gap-3"
           disabled={loading}
+          pattern={DIGIT_REGEX.source}
         >
           <InputOTPGroup>
             <InputOTPSlot index={0} className="w-12 h-14 text-xl font-semibold rounded-md border shadow-sm" />
+          </InputOTPGroup>
+          <InputOTPGroup>
             <InputOTPSlot index={1} className="w-12 h-14 text-xl font-semibold rounded-md border shadow-sm" />
+          </InputOTPGroup>
+          <InputOTPGroup>
             <InputOTPSlot index={2} className="w-12 h-14 text-xl font-semibold rounded-md border shadow-sm" />
+          </InputOTPGroup>
+          <InputOTPGroup>
             <InputOTPSlot index={3} className="w-12 h-14 text-xl font-semibold rounded-md border shadow-sm" />
+          </InputOTPGroup>
+          <InputOTPGroup>
             <InputOTPSlot index={4} className="w-12 h-14 text-xl font-semibold rounded-md border shadow-sm" />
+          </InputOTPGroup>
+          <InputOTPGroup>
             <InputOTPSlot index={5} className="w-12 h-14 text-xl font-semibold rounded-md border shadow-sm" />
           </InputOTPGroup>
         </InputOTP>

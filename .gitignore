@@ -23,7 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 coverage/
-
-# Debug scripts and screenshots
-verify_otp.py
-verification_*.png
