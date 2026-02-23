@@ -8,7 +8,7 @@
 **Aprendizado:** Padrões conhecidos de senhas vazadas (ex: "Correct-Horse...") são detectados por ferramentas de segurança.
 **Prevenção:** Usar strings genéricas como "TestPassword123!" em testes, evitando padrões conhecidos de senhas vazadas.
 
-## 2024-05-23 - Input Length Limits & Schema Centralization
-**Vulnerabilidade:** Falta de limites de tamanho máximo em inputs de autenticação (e-mail, senha, nome) permitia DoS/ReDoS.
-**Aprendizado:** Schemas locais (ex: em `LoginForm`) duplicavam lógica e divergiam da fonte de verdade centralizada.
-**Prevenção:** Usar `.max()` em todos os campos de string no `zod` e garantir que componentes importem schemas de `@/lib/schemas/auth` em vez de redefini-los.
+## 2024-05-23 - CSS Injection via Unsanitized ID in Chart Component
+**Vulnerabilidade:** A prop `id` era usada diretamente em seletores CSS dentro de uma tag `<style>`, permitindo injeção de CSS (UI Redress) se o ID fosse controlado pelo usuário.
+**Aprendizado:** Mesmo em componentes React, a geração dinâmica de strings CSS deve tratar inputs como não confiáveis.
+**Prevenção:** Sanitizar identificadores usados em seletores CSS (ex: remover caracteres não alfanuméricos) para garantir que não escapem do contexto do seletor.

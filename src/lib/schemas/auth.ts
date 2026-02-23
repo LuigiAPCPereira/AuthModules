@@ -13,6 +13,7 @@ export const loginSchema = z.object({
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
     .max(255, "E-mail muito longo")
+    .trim()
     .email("E-mail inválido"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
@@ -34,10 +35,12 @@ export const signupSchema = z.object({
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
     .max(255, "E-mail muito longo")
+    .trim()
     .email("E-mail inválido"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
     .min(8, "Mínimo de 8 caracteres")
+    .trim()
     .max(100, "Senha muito longa")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
@@ -53,6 +56,7 @@ export const forgotPasswordSchema = z.object({
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
     .max(255, "E-mail muito longo")
+    .trim()
     .email("E-mail inválido"),
 });
 
@@ -63,6 +67,7 @@ export const resetPasswordSchema = z.object({
   password: z
     .string({ required_error: "Nova senha é obrigatória" })
     .min(8, "Mínimo de 8 caracteres")
+    .trim()
     .max(100, "Senha muito longa")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
