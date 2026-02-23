@@ -113,11 +113,7 @@ const Index = () => {
         </div>
 
       {/* Component display */}
-      <div
-        id="main-content"
-        tabIndex={-1}
-        className="flex items-center justify-center px-4 py-12 sm:py-20 focus:outline-none"
-      >
+      <div className="flex items-center justify-center px-4 py-12 sm:py-20">
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
