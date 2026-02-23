@@ -1,6 +1,7 @@
-import { useState, InputHTMLAttributes, forwardRef } from "react";
+import { useState, InputHTMLAttributes, forwardRef, useId } from "react";
 import { Eye, EyeOff, AlertCircle, ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -8,9 +9,14 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
-  ({ label, error, type, className = "", ...props }, ref) => {
+  ({ label, error, type, className = "", id, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
     const [isCapsLockActive, setIsCapsLockActive] = useState(false);
+    const generatedId = useId();
+    const inputId = id || generatedId;
+    const errorId = `${inputId}-error`;
+    const capsWarningId = `${inputId}-caps-warning`;
+
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
@@ -41,25 +47,34 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-      // We could clear Caps Lock warning on blur, but keeping it based on state
-      // is more consistent with how the OS behaves (state persists).
-      // However, usually we update it on focus.
       props.onBlur?.(e);
     };
 
+    const descriptionIds = [
+        props["aria-describedby"],
+        error ? errorId : null,
+        isCapsLockActive && isPassword && !error ? capsWarningId : null
+    ].filter(Boolean).join(" ") || undefined;
+
     return (
       <div className="space-y-1.5">
-        <label className="auth-label" htmlFor={props.id}>
+        <label className="auth-label" htmlFor={inputId}>
           {label}
         </label>
         <div className="relative">
           <input
             ref={ref}
+            id={inputId}
             type={inputType}
-            className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
+            className={cn(
+              "auth-input",
+              isPassword && "pr-12",
+              error && "ring-2 ring-destructive border-transparent",
+              className
+            )}
             aria-invalid={!!error}
-            aria-describedby={error ? `${props.id}-error` : undefined}
             {...props}
+            aria-describedby={descriptionIds}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
             onClick={handleClick}
@@ -84,6 +99,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               className="text-xs font-medium flex items-center gap-1.5 mt-1.5 text-[hsl(var(--warning))]"
+              id={capsWarningId}
               role="alert"
             >
               <ArrowUp size={14} />
@@ -96,7 +112,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               className="auth-error"
-              id={`${props.id}-error`}
+              id={errorId}
               role="alert"
             >
               <AlertCircle size={14} />
