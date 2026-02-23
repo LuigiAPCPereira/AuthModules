@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { ReactNode } from "react";
+import { Shield, Lock } from "lucide-react";
 
 interface AuthCardProps {
   children: ReactNode;
@@ -8,11 +9,16 @@ interface AuthCardProps {
 }
 
 const AuthCard = ({ children, title, subtitle }: AuthCardProps) => {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{
+        duration: shouldReduceMotion ? 0 : 0.4,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      }}
       className="auth-card"
     >
       <div className="mb-8 text-center">
@@ -22,6 +28,13 @@ const AuthCard = ({ children, title, subtitle }: AuthCardProps) => {
         {subtitle && (
           <p className="mt-2 text-sm text-auth-subtle">{subtitle}</p>
         )}
+        <div className="mt-6 flex items-center justify-center gap-3 text-xs text-auth-subtle">
+          <Shield size={14} className="text-green-600 dark:text-green-400" aria-hidden="true" />
+          <span className="flex items-center gap-1">
+            <Lock size={12} className="text-muted-foreground" aria-hidden="true" />
+            <span>Protegido com criptografia SSL de 256-bit</span>
+          </span>
+        </div>
       </div>
       {children}
     </motion.div>

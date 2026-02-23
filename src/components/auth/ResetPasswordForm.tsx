@@ -1,10 +1,12 @@
-import { useState, FormEvent } from "react";
+import { useState, useId } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Loader2, KeyRound } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
-import { isPasswordStrong, getErrorMessage } from "@/lib/utils";
+import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/schemas/auth";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import PasswordStrengthBar from "./PasswordStrengthBar";
+import FormPasswordStrength from "./FormPasswordStrength";
 
 interface ResetPasswordFormProps {
   onSubmit?: (password: string) => Promise<void>;
@@ -12,34 +14,29 @@ interface ResetPasswordFormProps {
 }
 
 const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [serverError, setServerError] = useState("");
+  const passwordRequirementsId = useId();
 
-  const validate = () => {
-    const e: Record<string, string> = {};
-    if (!password) e.password = "Nova senha é obrigatória";
-    else if (!isPasswordStrong(password)) e.password = "A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um símbolo.";
-    if (password !== confirmPassword) e.confirmPassword = "As senhas não coincidem";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      password: "",
+    },
+  });
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setServerError("");
-    if (!validate()) return;
-    setLoading(true);
+  const handleFormSubmit = async (data: ResetPasswordFormData) => {
     try {
-      await onSubmit?.(password);
+      await onSubmit?.(data.password);
       setSuccess(true);
     } catch (err: unknown) {
-      setServerError(getErrorMessage(err) || "Erro ao redefinir senha.");
-    } finally {
-      setLoading(false);
+      // For now, re-throw or handle as needed.
+      // Assuming parent handles it or swallowed by hook form if not set on root.
+      // Log to a secure monitoring service instead
     }
   };
 
@@ -63,42 +60,40 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
 
   return (
     <AuthCard title="Redefinir senha" subtitle="Escolha uma nova senha para sua conta.">
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5" noValidate>
         <AuthInput
           id="reset-password"
           label="Nova senha"
           type="password"
+          required
           placeholder="Mínimo 8 caracteres"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={errors.password}
+          error={errors.password?.message}
           autoComplete="new-password"
           autoFocus
-        />
-        <AnimatePresence>
-          <PasswordStrengthBar password={password} />
-        </AnimatePresence>
-
-        <AuthInput
-          id="reset-confirm"
-          label="Confirmar nova senha"
-          type="password"
-          placeholder="Repita a nova senha"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          error={errors.confirmPassword}
-          autoComplete="new-password"
+          aria-describedby={passwordRequirementsId}
+          {...register("password")}
         />
 
-        {serverError && (
-          <div className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center">
-            {serverError}
+        <FormPasswordStrength
+          control={control}
+          name="password"
+          id={passwordRequirementsId}
+        />
+
+        {errors.root && (
+          <div
+            id="reset-server-error"
+            role="alert"
+            aria-live="assertive"
+            className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center"
+          >
+            {errors.root.message}
           </div>
         )}
 
-        <button type="submit" disabled={loading} className="auth-btn-primary flex items-center justify-center gap-2">
-          {loading ? <Loader2 size={18} className="animate-spin" /> : <KeyRound size={18} />}
-          {loading ? "Redefinindo..." : "Redefinir senha"}
+        <button type="submit" disabled={isSubmitting} className="auth-btn-primary flex items-center justify-center gap-2">
+          {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <KeyRound size={18} />}
+          {isSubmitting ? "Redefinindo..." : "Redefinir senha"}
         </button>
       </form>
     </AuthCard>

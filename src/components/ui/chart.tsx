@@ -37,7 +37,7 @@ const ChartContainer = React.forwardRef<
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  const chartId = `chart-${(id || uniqueId).replace(/:/g, "").replace(/[^a-zA-Z0-9-]/g, "_")}`;
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -59,19 +59,23 @@ const ChartContainer = React.forwardRef<
 ChartContainer.displayName = "Chart";
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
-  const colorConfig = Object.entries(config).filter(([_, config]) => config.theme || config.color);
+  const colorConfig = React.useMemo(
+    () => Object.entries(config).filter(([_, config]) => config.theme || config.color),
+    [config],
+  );
+  const styleRef = React.useRef<HTMLStyleElement>(null);
+  // Security: Sanitize id to prevent CSS injection
+  const safeId = id.replace(/[^a-zA-Z0-9-]/g, "_");
 
-  if (!colorConfig.length) {
-    return null;
-  }
+  React.useLayoutEffect(() => {
+    if (!styleRef.current || !colorConfig.length) {
+      return;
+    }
 
-  return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
-          .map(
-            ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+    styleRef.current.textContent = Object.entries(THEMES)
+      .map(
+        ([theme, prefix]) => `
+${prefix} [data-chart='${safeId}'] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
@@ -80,11 +84,15 @@ ${colorConfig
   .join("\n")}
 }
 `,
-          )
-          .join("\n"),
-      }}
-    />
-  );
+      )
+      .join("\n");
+  }, [safeId, config, colorConfig]);
+
+  if (!colorConfig.length) {
+    return null;
+  }
+
+  return <style ref={styleRef} />;
 };
 
 const ChartTooltip = RechartsPrimitive.Tooltip;

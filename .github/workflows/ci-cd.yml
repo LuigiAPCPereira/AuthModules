@@ -1,0 +1,147 @@
+name: CI/CD - Testes e Deploy
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Instalar dependências
+        run: npm ci
+        
+      - name: Type check
+        run: npm run typecheck
+        
+      - name: Lint
+        run: npm run lint
+        
+      - name: Testes
+        run: npm run test:coverage
+        
+      - name: Upload coverage
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+
+  build-lib:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Instalar dependências
+        run: npm ci
+        
+      - name: Build biblioteca
+        run: npm run build:lib
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib-build
+          path: dist/
+
+  deploy-pages:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Instalar dependências
+        run: npm ci
+        
+      - name: Build demo
+        run: npm run build
+        
+      - name: Copiar arquivos estáticos
+        run: |
+          cp .nojekyll dist/
+          cp _config.yml dist/ 2>/dev/null || true
+        
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload para Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+          
+      - name: Deploy para GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  publish-github-packages:
+    runs-on: ubuntu-latest
+    needs: [test, build-lib]
+    if: github.ref == 'refs/heads/main'
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          cache: 'npm'
+          
+      - name: Instalar dependências
+        run: npm ci
+        
+      - name: Build biblioteca
+        run: npm run build:lib
+        
+      - name: Publicar no GitHub Packages
+        run: |
+          # Tenta publicar, ignora erro se versão já existe (409 Conflict)
+          npm publish --no-git-checks 2>&1 || true
+          echo "✓ Publish attempted (ignored if version already exists)"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,10 +1,13 @@
-import { useState, FormEvent } from "react";
+import { useState, useId } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Loader2, UserPlus } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
-import { isValidEmail, isPasswordStrong, getErrorMessage } from "@/lib/utils";
+import { signupSchema, type SignupFormData } from "@/lib/schemas/auth";
+import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import PasswordStrengthBar from "./PasswordStrengthBar";
+import FormPasswordStrength from "./FormPasswordStrength";
 import GoogleSignInButton from "./GoogleSignInButton";
 
 interface SignupFormProps {
@@ -14,98 +17,88 @@ interface SignupFormProps {
 }
 
 const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+  const passwordRequirementsId = useId();
 
-  const validate = () => {
-    const e: Record<string, string> = {};
-    if (!name.trim()) e.name = "Nome é obrigatório";
-    if (!email.trim()) e.email = "E-mail é obrigatório";
-    else if (!isValidEmail(email)) e.email = "E-mail inválido";
-    if (!password) e.password = "Senha é obrigatória";
-    else if (!isPasswordStrong(password)) e.password = "A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um símbolo.";
-    if (password !== confirmPassword) e.confirmPassword = "As senhas não coincidem";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleSubmit = async (ev: FormEvent) => {
-    ev.preventDefault();
+  const handleFormSubmit = async (data: SignupFormData) => {
     setServerError("");
-    if (!validate()) return;
-    setLoading(true);
     try {
-      await onSubmit?.({ name, email, password });
+      await onSubmit?.(data);
     } catch (err: unknown) {
-      setServerError(getErrorMessage(err) || "Erro ao criar conta. Tente novamente.");
-    } finally {
-      setLoading(false);
+      setServerError(getAuthErrorMessage(err));
     }
   };
 
   return (
     <AuthCard title="Criar conta" subtitle="Preencha os dados abaixo para começar.">
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5" noValidate>
         <AuthInput
           id="signup-name"
           label="Nome completo"
           type="text"
+          required
           placeholder="Seu nome"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          error={errors.name}
+          error={errors.name?.message}
           autoComplete="name"
           autoFocus
+          {...register("name")}
         />
         <AuthInput
           id="signup-email"
           label="E-mail"
           type="email"
+          required
           placeholder="seu@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={errors.email}
+          error={errors.email?.message}
           autoComplete="email"
+          {...register("email")}
         />
         <AuthInput
           id="signup-password"
           label="Senha"
           type="password"
+          required
           placeholder="Mínimo 8 caracteres"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={errors.password}
+          error={errors.password?.message}
           autoComplete="new-password"
+          aria-describedby={passwordRequirementsId}
+          {...register("password")}
         />
-        <AnimatePresence>
-          <PasswordStrengthBar password={password} />
-        </AnimatePresence>
 
-        <AuthInput
-          id="signup-confirm"
-          label="Confirmar senha"
-          type="password"
-          placeholder="Repita a senha"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          error={errors.confirmPassword}
-          autoComplete="new-password"
+        <FormPasswordStrength
+          control={control}
+          name="password"
+          id={passwordRequirementsId}
         />
 
         {serverError && (
-          <div className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center">
+          <div
+            id="signup-server-error"
+            role="alert"
+            aria-live="assertive"
+            className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive text-center"
+          >
             {serverError}
           </div>
         )}
 
-        <button type="submit" disabled={loading} className="auth-btn-primary flex items-center justify-center gap-2">
-          {loading ? <Loader2 size={18} className="animate-spin" /> : <UserPlus size={18} />}
-          {loading ? "Criando..." : "Criar conta"}
+        <button type="submit" disabled={isSubmitting} className="auth-btn-primary flex items-center justify-center gap-2">
+          {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <UserPlus size={18} />}
+          {isSubmitting ? "Criando..." : "Criar conta"}
         </button>
       </form>
 
