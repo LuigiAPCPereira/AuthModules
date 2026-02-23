@@ -6,7 +6,7 @@
 ## 2024-05-22 - Segredos em Testes
 **Vulnerabilidade:** GitGuardian flagou senhas de exemplo em arquivos de teste.
 **Aprendizado:** Padrões conhecidos de senhas vazadas (ex: "Correct-Horse...") são detectados por ferramentas de segurança.
-**Prevenção:** Usar strings genéricas como "TestPassword123!" em testes, evitando padrões conhecidos de senhas vazadas.
+**Prevenção:** Usar strings genéricas como "TestPassword123!" em testes, evitando padrões conhecidos de senhas vazadas. // ggignore
 
 ## 2025-05-18 - [GitGuardian Remediation]
 **Learning:** GitGuardian scans the entire history of a Pull Request. If a secret is uncovered in the commit history (even if remediated in the latest commit), the history must be cleaned.
