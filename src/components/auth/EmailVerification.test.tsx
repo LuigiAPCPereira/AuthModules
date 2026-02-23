@@ -33,8 +33,16 @@ describe("EmailVerification Component", () => {
     render(<EmailVerification onVerify={onVerifyMock} />);
     const input = screen.getByRole("textbox");
 
+    // Type the full code
     fireEvent.change(input, { target: { value: "123456" } });
 
+    // The component should call onVerify when value reaches 6 digits
+    // and handleComplete should be called
+    await waitFor(() => {
+      expect(onVerifyMock).toHaveBeenCalledWith("123456");
+    });
+
+    // Wait for error message
     await screen.findByText("Verification failed");
     await waitFor(() => expect(input).toHaveValue(""));
   });
