@@ -4,7 +4,6 @@ import { Check, X } from "lucide-react";
 
 interface PasswordStrengthBarProps {
   password: string;
-  id?: string;
 }
 
 const rules = [
@@ -23,7 +22,7 @@ const strengthConfig = [
   { label: "Forte", color: "hsl(var(--success))" },
 ];
 
-const PasswordStrengthBar = ({ password, id }: PasswordStrengthBarProps) => {
+const PasswordStrengthBar = ({ password }: PasswordStrengthBarProps) => {
   const passed = useMemo(() => rules.map((r) => r.test(password)), [password]);
   const score = passed.filter(Boolean).length;
 
@@ -45,7 +44,7 @@ const PasswordStrengthBar = ({ password, id }: PasswordStrengthBarProps) => {
         aria-valuemin={0}
         aria-valuemax={5}
         aria-label={`Força da senha: ${config.label}, ${score} de 5 requisitos atendidos`}
-        aria-describedby={id}
+        aria-describedby="password-requirements"
         className="flex gap-1.5"
       >
         {Array.from({ length: 5 }).map((_, i) => (
@@ -71,7 +70,7 @@ const PasswordStrengthBar = ({ password, id }: PasswordStrengthBarProps) => {
 
       {/* Rules checklist */}
       <div
-        id={id}
+        id="password-requirements"
         role="list"
         aria-label="Requisitos de senha"
         className="grid grid-cols-2 gap-x-4 gap-y-1"

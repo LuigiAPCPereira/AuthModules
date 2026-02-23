@@ -18,7 +18,3 @@
 ## 2026-03-05 - Status acessível em listas de requisitos
 **Aprendizado:** Listas de requisitos (como força de senha) visíveis apenas por cor/ícone são inacessíveis para leitores de tela. Usar `role="listitem"` e texto oculto (`sr-only`) indicando explicitamente o estado ("Atendido"/"Pendente") resolve isso sem poluição visual.
 **Ação:** Aplicar texto auxiliar oculto em qualquer checklist ou indicador de status que dependa puramente de visual.
-
-## 2026-02-19 - Acessibilidade em Checkboxes Customizados
-**Aprendizado:** Ao substituir inputs nativos aninhados (`<label><input /></label>`) por componentes de UI desacoplados (Checkbox + Label), a associação explícita via `id` e `htmlFor` é obrigatória para garantir navegação por teclado e leitura correta por tecnologias assistivas.
-**Ação:** Sempre definir IDs únicos ao usar o componente `Checkbox` e garantir que o `Label` correspondente aponte para ele.
