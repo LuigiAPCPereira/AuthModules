@@ -17,13 +17,14 @@ describe("ResetPasswordForm", () => {
   it("renders correctly", () => {
     renderWithProviders(<ResetPasswordForm />);
     expect(screen.getByRole("heading", { name: "Redefinir senha" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Nova senha")).toBeInTheDocument();
+    // Use regex to match label text even if it contains * (required indicator)
+    expect(screen.getByLabelText(/Nova senha/i)).toBeInTheDocument();
   });
 
   it("validates password strength", async () => {
     renderWithProviders(<ResetPasswordForm />);
 
-    const passwordInput = screen.getByLabelText("Nova senha");
+    const passwordInput = screen.getByLabelText(/Nova senha/i);
     await userEvent.type(passwordInput, "weak");
 
     const submitButton = screen.getByRole("button", { name: /redefinir senha/i });
@@ -38,7 +39,7 @@ describe("ResetPasswordForm", () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     renderWithProviders(<ResetPasswordForm onSubmit={onSubmit} />);
 
-    const passwordInput = screen.getByLabelText("Nova senha");
+    const passwordInput = screen.getByLabelText(/Nova senha/i);
     await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
 
     const submitButton = screen.getByRole("button", { name: /redefinir senha/i });

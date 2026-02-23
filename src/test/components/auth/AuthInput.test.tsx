@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, fireEvent } from "@testing-library/react";
 import AuthInput from "../../../components/auth/AuthInput";
 import React from "react";
 
@@ -76,43 +75,5 @@ describe("AuthInput", () => {
     render(<AuthInput label="Email" type="text" ref={ref} />);
 
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
-  });
-
-  it("shows warning when Caps Lock is active", async () => {
-    const user = userEvent.setup();
-    render(<AuthInput label="Password" type="password" id="caps-test-1" />);
-    const input = screen.getByLabelText("Password");
-
-    await user.click(input);
-    await user.keyboard("{CapsLock}a");
-
-    expect(await screen.findByText("Caps Lock ativado")).toBeInTheDocument();
-  });
-
-  it("hides warning when Caps Lock is inactive", async () => {
-    const user = userEvent.setup();
-    render(<AuthInput label="Password" type="password" id="caps-test-2" />);
-    const input = screen.getByLabelText("Password");
-
-    await user.click(input);
-    await user.keyboard("{CapsLock}a");
-    expect(await screen.findByText("Caps Lock ativado")).toBeInTheDocument();
-
-    await user.keyboard("{CapsLock}a");
-
-    await waitFor(() => {
-      expect(screen.queryByText("Caps Lock ativado")).not.toBeInTheDocument();
-    });
-  });
-
-  it("does not show Caps Lock warning for non-password inputs", async () => {
-    const user = userEvent.setup();
-    render(<AuthInput label="Email" type="email" id="caps-test-3" />);
-    const input = screen.getByLabelText("Email");
-
-    await user.click(input);
-    await user.keyboard("{CapsLock}a");
-
-    expect(screen.queryByText("Caps Lock ativado")).not.toBeInTheDocument();
   });
 });

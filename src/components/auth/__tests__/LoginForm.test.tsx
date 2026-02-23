@@ -22,8 +22,8 @@ describe("LoginForm", () => {
     
     expect(screen.getAllByText("Entrar")[0]).toBeInTheDocument();
     expect(screen.getByText("Bem-vindo de volta. Faça login na sua conta.")).toBeInTheDocument();
-    expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^Senha/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
+    expect(screen.getByLabelText("Senha")).toBeInTheDocument();
   });
 
   it("valida campos obrigatórios", async () => {
@@ -45,7 +45,7 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={vi.fn()} />
     );
     
-    const emailInput = screen.getByLabelText(/E-mail/i);
+    const emailInput = screen.getByLabelText("E-mail");
     await userEvent.type(emailInput, "email-invalido");
     
     const submitButton = screen.getByRole("button", { name: /entrar/i });
@@ -62,11 +62,11 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={onSubmit} />
     );
     
-    const emailInput = screen.getByLabelText(/E-mail/i);
-    const passwordInput = screen.getByLabelText(/^Senha/i);
+    const emailInput = screen.getByLabelText("E-mail");
+    const passwordInput = screen.getByLabelText("Senha");
     
     await userEvent.type(emailInput, "teste@email.com");
-    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
+    await userEvent.type(passwordInput, "Senha123!");
     
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
@@ -74,7 +74,7 @@ describe("LoginForm", () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({
         email: "teste@email.com",
-        password: "TestPassword123!", // ggignore
+        password: "Senha123!",
       });
     });
   });
@@ -85,11 +85,11 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={onSubmit} />
     );
     
-    const emailInput = screen.getByLabelText(/E-mail/i);
-    const passwordInput = screen.getByLabelText(/^Senha/i);
+    const emailInput = screen.getByLabelText("E-mail");
+    const passwordInput = screen.getByLabelText("Senha");
     
     await userEvent.type(emailInput, "teste@email.com");
-    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
+    await userEvent.type(passwordInput, "Senha123!");
     
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
@@ -105,11 +105,11 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={onSubmit} />
     );
     
-    const emailInput = screen.getByLabelText(/E-mail/i);
-    const passwordInput = screen.getByLabelText(/^Senha/i);
+    const emailInput = screen.getByLabelText("E-mail");
+    const passwordInput = screen.getByLabelText("Senha");
     
     await userEvent.type(emailInput, "teste@email.com");
-    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
+    await userEvent.type(passwordInput, "Senha123!");
     
     const submitButton = screen.getByRole("button", { name: /entrar/i });
     fireEvent.click(submitButton);
