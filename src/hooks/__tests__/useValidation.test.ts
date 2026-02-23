@@ -35,7 +35,7 @@ describe("useValidation", () => {
     expect(result.current.errors.email).toBe("Invalid email");
 
     act(() => {
-      result.current.validateField("email", "test@example.com");
+      result.current.validateField("email", "test@example.com"); // ggignore
     });
     expect(result.current.errors.email).toBeUndefined();
   });
