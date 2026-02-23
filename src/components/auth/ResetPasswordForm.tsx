@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, KeyRound } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/schemas/auth";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
-import PasswordStrengthBar from "./PasswordStrengthBar";
+import FormPasswordStrength from "./FormPasswordStrength";
 
 interface ResetPasswordFormProps {
   onSubmit?: (password: string) => Promise<void>;
@@ -16,11 +15,12 @@ interface ResetPasswordFormProps {
 
 const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
   const [success, setSuccess] = useState(false);
+  const passwordRequirementsId = useId();
 
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -65,16 +65,20 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
           id="reset-password"
           label="Nova senha"
           type="password"
+          required
           placeholder="Mínimo 8 caracteres"
           error={errors.password?.message}
           autoComplete="new-password"
           autoFocus
+          aria-describedby={passwordRequirementsId}
           {...register("password")}
         />
 
-        <AnimatePresence>
-          <PasswordStrengthBar password={watch("password") || ""} />
-        </AnimatePresence>
+        <FormPasswordStrength
+          control={control}
+          name="password"
+          id={passwordRequirementsId}
+        />
 
         {errors.root && (
           <div

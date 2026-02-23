@@ -12,12 +12,14 @@ export const loginSchema = z.object({
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
-    .max(255, "Máximo de 255 caracteres")
+    .max(255, "E-mail muito longo")
+    .trim()
     .email("E-mail inválido"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
-    .min(8, "Mínimo de 8 caracteres")
-    .max(100, "Máximo de 100 caracteres"),
+    .min(1, "Senha é obrigatória")
+    .min(6, "Mínimo de 6 caracteres")
+    .max(100, "Senha muito longa"),
 });
 
 /**
@@ -27,17 +29,19 @@ export const signupSchema = z.object({
   name: z
     .string({ required_error: "Nome é obrigatório" })
     .min(1, "Nome é obrigatório")
-    .max(100, "Máximo de 100 caracteres")
+    .max(100, "Nome muito longo")
     .trim(),
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
-    .max(255, "Máximo de 255 caracteres")
+    .max(255, "E-mail muito longo")
+    .trim()
     .email("E-mail inválido"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
     .min(8, "Mínimo de 8 caracteres")
-    .max(100, "Máximo de 100 caracteres")
+    .trim()
+    .max(100, "Senha muito longa")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
     .regex(/\d/, "Deve conter um número")
@@ -51,7 +55,8 @@ export const forgotPasswordSchema = z.object({
   email: z
     .string({ required_error: "E-mail é obrigatório" })
     .min(1, "E-mail é obrigatório")
-    .max(255, "Máximo de 255 caracteres")
+    .max(255, "E-mail muito longo")
+    .trim()
     .email("E-mail inválido"),
 });
 
@@ -62,7 +67,8 @@ export const resetPasswordSchema = z.object({
   password: z
     .string({ required_error: "Nova senha é obrigatória" })
     .min(8, "Mínimo de 8 caracteres")
-    .max(100, "Máximo de 100 caracteres")
+    .trim()
+    .max(100, "Senha muito longa")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
     .regex(/\d/, "Deve conter um número")
