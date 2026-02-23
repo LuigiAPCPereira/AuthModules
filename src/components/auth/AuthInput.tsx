@@ -68,7 +68,6 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             id={id}
             className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
             aria-invalid={!!error}
-<<<<<<< HEAD
             aria-required={required}
             aria-describedby={describedBy}
             onKeyDown={handleKeyDown}
