@@ -15,7 +15,7 @@ const App = () => (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <TooltipProvider>
         <BrowserRouter
-          basename="/AuthModules"
+          basename={import.meta.env.BASE_URL}
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,

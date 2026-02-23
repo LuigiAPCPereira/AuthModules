@@ -17,7 +17,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 9.15.4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -26,7 +26,7 @@ jobs:
           cache: 'pnpm'
           
       - name: Instalar dependências
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
         
       - name: Type check
         run: pnpm run typecheck
@@ -55,7 +55,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 9.15.4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -64,7 +64,7 @@ jobs:
           cache: 'pnpm'
           
       - name: Instalar dependências
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
         
       - name: Build biblioteca
         run: pnpm run build:lib
@@ -96,7 +96,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 9.15.4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -105,7 +105,7 @@ jobs:
           cache: 'pnpm'
           
       - name: Instalar dependências
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
         
       - name: Build demo
         run: pnpm run build
@@ -143,7 +143,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 9.15.4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -153,15 +153,27 @@ jobs:
           cache: 'pnpm'
           
       - name: Instalar dependências
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
         
-      - name: Build biblioteca
-        run: pnpm run build:lib
+      - name: Baixar artifact do build
+        uses: actions/download-artifact@v4
+        with:
+          name: lib-build
+          path: dist/
         
       - name: Publicar no GitHub Packages
         run: |
-          # Tenta publicar, ignora erro se versão já existe (409 Conflict)
-          pnpm publish --no-git-checks 2>&1 || true
-          echo "✓ Publish attempted (ignored if version already exists)"
+          OUTPUT=$(pnpm publish --no-git-checks 2>&1) || EXIT_CODE=$?
+          if [ -n "$EXIT_CODE" ]; then
+            if echo "$OUTPUT" | grep -q "409"; then
+              echo "✓ Version already exists (409 Conflict), skipping publish."
+            else
+              echo "Publish failed:"
+              echo "$OUTPUT"
+              exit $EXIT_CODE
+            fi
+          else
+            echo "✓ Publish successful!"
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
