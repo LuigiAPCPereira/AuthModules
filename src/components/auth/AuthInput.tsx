@@ -40,6 +40,14 @@ const AuthInputComponent = forwardRef<HTMLInputElement, AuthInputProps>(
       props.onClick?.(e);
     };
 
+    const descriptionIds = [
+      error ? `${id}-error` : null,
+      capsLockActive && isPassword ? `${id}-caps-warning` : null,
+      props["aria-describedby"]
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     return (
       <div className="space-y-1.5">
         <label className="auth-label" htmlFor={id}>
@@ -53,7 +61,7 @@ const AuthInputComponent = forwardRef<HTMLInputElement, AuthInputProps>(
             id={id}
             className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
             aria-invalid={!!error}
-            aria-describedby={error ? `${id}-error` : undefined}
+            aria-describedby={descriptionIds || undefined}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
             onClick={handleClick}

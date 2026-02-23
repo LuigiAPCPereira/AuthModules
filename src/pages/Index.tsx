@@ -78,6 +78,9 @@ const Index = () => {
       {/* Skip links */}
       <SkipLink href="#main-content" />
 
+      {/* Main Content for SkipLink target and A11y */}
+      <main id="main-content" tabIndex={-1} className="focus:outline-none">
+
       {/* Auth Navigation Tabs */}
       <div
         role="tablist"
@@ -177,6 +180,7 @@ const Index = () => {
           </motion.div>
         </AnimatePresence>
       </div>
+      </main>
     </div>
   );
 };
