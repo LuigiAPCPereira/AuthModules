@@ -3,28 +3,25 @@ from playwright.sync_api import sync_playwright
 def run(playwright):
     browser = playwright.chromium.launch(headless=True)
     page = browser.new_page()
+
+    # Navigate to the app
     page.goto("http://localhost:8080/AuthModules/")
 
-    # Wait for the verify tab to appear
-    page.wait_for_selector('text="Verificação"')
+    # Click "Verificação" tab
+    page.get_by_role("tab", name="Verificação").click()
 
-    # Click the verify tab
-    page.click('text="Verificação"')
+    # Wait for the heading
+    page.wait_for_selector("text=Verificar e-mail")
 
-    # Wait for the verify screen
-    page.wait_for_selector('text="Insira o código de 6 dígitos enviado para o seu e-mail."')
+    # Verify input label
+    input_field = page.get_by_label("Código de verificação")
+    if not input_field.is_visible():
+        print("Input not visible!")
+        browser.close()
+        return
 
-    # Take screenshot of empty state
-    page.screenshot(path="verification_empty.png")
-
-    # Type the code into the input
-    page.keyboard.type("123456")
-
-    # Wait for update
-    page.wait_for_timeout(500)
-
-    # Take screenshot of filled state
-    page.screenshot(path="verification_filled.png")
+    # Take screenshot
+    page.screenshot(path="/home/jules/verification/verification.png")
 
     browser.close()
 

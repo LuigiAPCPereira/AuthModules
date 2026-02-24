@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { Loader2, Mail, ArrowLeft } from "lucide-react";
 import { getErrorMessage } from "@/lib/utils";
 import AuthCard from "./AuthCard";
@@ -22,6 +22,7 @@ const EmailVerification = ({ email = "seu@email.com", onVerify, onResend, onBack
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [error, setError] = useState("");
+  const errorId = useId();
 
   const handleComplete = async (code: string) => {
     setLoading(true);
@@ -72,6 +73,10 @@ const EmailVerification = ({ email = "seu@email.com", onVerify, onResend, onBack
           containerClassName="gap-3"
           disabled={loading}
           pattern={DIGIT_REGEX.source}
+          autoFocus
+          aria-label="Código de verificação"
+          aria-invalid={!!error}
+          aria-describedby={error ? errorId : undefined}
         >
           <InputOTPGroup>
             <InputOTPSlot index={0} className="w-12 h-14 text-xl font-semibold rounded-md border shadow-sm" />
@@ -95,7 +100,7 @@ const EmailVerification = ({ email = "seu@email.com", onVerify, onResend, onBack
       </div>
 
       {error && (
-        <p className="text-sm text-destructive text-center mb-4">{error}</p>
+        <p id={errorId} role="alert" className="text-sm text-destructive text-center mb-4">{error}</p>
       )}
 
       {loading && (
