@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useReducedMotion } from "framer-motion";
+import { m as motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { ReactNode } from "react";
 import { Shield, Lock } from "lucide-react";
 

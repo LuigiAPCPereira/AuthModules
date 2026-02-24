@@ -1,5 +1,5 @@
 import { CheckCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import AuthCard from "./AuthCard";
 
 interface EmailVerifiedProps {

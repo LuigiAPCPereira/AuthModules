@@ -1,6 +1,6 @@
 import { useState, InputHTMLAttributes, forwardRef, useId } from "react";
 import { Eye, EyeOff, AlertCircle, TriangleAlert } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
