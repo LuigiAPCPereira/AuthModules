@@ -45,4 +45,30 @@ describe("PasswordStrengthIndicator", () => {
     const progress = screen.getByRole("progressbar");
     expect(progress).toBeInTheDocument();
   });
+
+  it("updates when custom password field changes", async () => {
+    const TestComponentCustomName = () => {
+      const { control, register } = useForm({
+        defaultValues: {
+          newPassword: "",
+        },
+      });
+
+      return (
+        <Wrapper>
+          <input type="password" data-testid="custom-password-input" {...register("newPassword")} />
+          <PasswordStrengthIndicator control={control} name="newPassword" />
+        </Wrapper>
+      );
+    };
+
+    const user = userEvent.setup();
+    render(<TestComponentCustomName />);
+
+    const input = screen.getByTestId("custom-password-input");
+    await user.type(input, "strongpassword");
+
+    const progress = screen.getByRole("progressbar");
+    expect(progress).toBeInTheDocument();
+  });
 });
