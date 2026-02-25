@@ -5,20 +5,28 @@ import SignupForm from "@/components/auth/SignupForm";
 import { I18nProvider } from "@/contexts/I18nContext";
 import { defaultLabelsPt } from "@/lib/i18n/labels";
 
+import { AuthProvider } from "@/contexts/AuthContext";
+
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
-    <I18nProvider labels={defaultLabelsPt} locale="pt">
-      {ui}
-    </I18nProvider>
+    <AuthProvider supabaseUrl="https://test-url.supabase.co" supabaseAnonKey="test-key">
+      <I18nProvider labels={defaultLabelsPt} locale="pt">
+        {ui}
+      </I18nProvider>
+    </AuthProvider>
   );
 };
 
 describe("SignupForm", () => {
+  beforeAll(() => {
+    window.scrollTo = vi.fn();
+  });
+
   it("renderiza corretamente", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     expect(screen.getAllByText("Criar conta")[0]).toBeInTheDocument();
     expect(screen.getByLabelText(/Nome completo/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
@@ -39,10 +47,10 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     const passwordInput = screen.getByLabelText(/^Senha/i);
     await userEvent.type(passwordInput, "123");
-    
+
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
 
@@ -55,10 +63,10 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     const passwordInput = screen.getByLabelText(/^Senha/i);
     await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
-    
+
     // Verifica se o PasswordStrengthBar aparece
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
@@ -82,11 +90,11 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={onSubmit} />
     );
-    
+
     await userEvent.type(screen.getByLabelText(/Nome completo/i), "João Silva");
     await userEvent.type(screen.getByLabelText(/E-mail/i), "joao@email.com");
     await userEvent.type(screen.getByLabelText(/^Senha/i), "TestPassword123!"); // ggignore
-    
+
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
 

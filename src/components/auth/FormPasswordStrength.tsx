@@ -16,7 +16,9 @@ const FormPasswordStrength = <T extends FieldValues>({ control, name, id }: Form
 
   return (
     <AnimatePresence>
-      <PasswordStrengthBar password={password || ""} id={id} />
+      {password && (
+        <PasswordStrengthBar key="strength-bar" password={password} id={id} />
+      )}
     </AnimatePresence>
   );
 };
