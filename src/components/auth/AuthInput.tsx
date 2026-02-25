@@ -1,4 +1,4 @@
-import React, { useState, useCallback, InputHTMLAttributes, forwardRef, useId } from "react";
+import React, { useState, useCallback, memo, InputHTMLAttributes, forwardRef, useId } from "react";
 import { Eye, EyeOff, AlertCircle, TriangleAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -7,8 +7,8 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
-  ({ label, error, type, className = "", id: propsId, onKeyDown, onKeyUp, onClick, ...props }, ref) => {
+const AuthInputComponent = forwardRef<HTMLInputElement, AuthInputProps>(
+  ({ label, error, type, className = "", id: propsId, onKeyDown, onKeyUp, onClick, onBlur, "aria-describedby": ariaDescribedBy, ...props }, ref) => {
     // Auto-generate a unique ID if none is provided.
     // This ensures that the label is always correctly associated with the input (click-to-focus)
     // and that screen readers can announce the field correctly, even if the developer forgets to pass an ID.
@@ -40,6 +40,17 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
       onClick?.(e);
     }, [checkCapsLock, onClick]);
 
+    const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+      setCapsLockActive(false);
+      onBlur?.(e);
+    }, [onBlur]);
+
+    const combinedDescribedBy = [
+      ariaDescribedBy,
+      error ? `${id}-error` : null,
+      !error && capsLockActive && isPassword ? `${id}-caps-warning` : null,
+    ].filter(Boolean).join(" ") || undefined;
+
     return (
       <div className="space-y-1.5">
         <label className="auth-label" htmlFor={id}>
@@ -53,10 +64,11 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             id={id}
             className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
             aria-invalid={!!error}
-            aria-describedby={error ? `${id}-error` : undefined}
+            aria-describedby={combinedDescribedBy}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
             onClick={handleClick}
+            onBlur={handleBlur}
           />
           {isPassword && (
             <button
@@ -104,6 +116,8 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
   }
 );
 
-AuthInput.displayName = "AuthInput";
+AuthInputComponent.displayName = "AuthInput";
+
+const AuthInput = memo(AuthInputComponent);
 
 export default AuthInput;
