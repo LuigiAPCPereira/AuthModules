@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, type KeyboardEvent } from "react";
+import { useState, lazy, Suspense, type KeyboardEvent, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
@@ -41,8 +41,14 @@ const LoadingFallback = () => (
 
 const Index = () => {
   const [active, setActive] = useState<Screen>("login");
+  const authTabRefs = useRef(new Map<string, HTMLButtonElement | null>());
 
-  const simulateAsync = () => new Promise<void>((r) => setTimeout(r, 1500));
+  const goToForgot = useCallback(() => setActive("forgot"), []);
+  const goToSignup = useCallback(() => setActive("signup"), []);
+  const goToLogin = useCallback(() => setActive("login"), []);
+  const goToVerify = useCallback(() => setActive("verify"), []);
+  const goToVerified = useCallback(() => setActive("verified"), []);
+  const simulateAsync = useCallback(() => new Promise<void>((r) => setTimeout(r, 1500)), []);
 
   const handleScreenKeyNavigation = (event: KeyboardEvent<HTMLDivElement>) => {
     const currentIndex = screens.indexOf(active);
@@ -50,24 +56,30 @@ const Index = () => {
     // A11y: seta horizontal permite trocar de formulário sem precisar usar mouse.
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      setActive(screens[(currentIndex + 1) % screens.length]);
+      const nextScreen = screens[(currentIndex + 1) % screens.length];
+      setActive(nextScreen);
+      authTabRefs.current.get(nextScreen)?.focus();
       return;
     }
 
     if (event.key === "ArrowLeft") {
       event.preventDefault();
-      setActive(screens[(currentIndex - 1 + screens.length) % screens.length]);
+      const prevScreen = screens[(currentIndex - 1 + screens.length) % screens.length];
+      setActive(prevScreen);
+      authTabRefs.current.get(prevScreen)?.focus();
       return;
     }
 
     if (event.key === "Home") {
       event.preventDefault();
       setActive(screens[0]);
+      authTabRefs.current.get(screens[0])?.focus();
     }
 
     if (event.key === "End") {
       event.preventDefault();
       setActive(screens[screens.length - 1]);
+      authTabRefs.current.get(screens[screens.length - 1])?.focus();
     }
   };
 
@@ -85,35 +97,39 @@ const Index = () => {
         onKeyDown={handleScreenKeyNavigation}
         className="flex flex-wrap justify-center gap-2 max-w-2xl mx-auto pt-8"
       >
-          {screens.map((s) => (
-            <button
-              key={s}
-              onClick={() => setActive(s)}
-              role="tab"
-              aria-selected={active === s}
-              aria-controls={`auth-screen-${s}`}
-              id={`auth-tab-${s}`}
-              tabIndex={active === s ? 0 : -1}
-              className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                active === s
-                  ? "text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+        {screens.map((s) => (
+          <button
+            key={s}
+            ref={(el) => authTabRefs.current.set(s, el)}
+            onClick={() => setActive(s)}
+            role="tab"
+            aria-selected={active === s}
+            aria-controls={`auth-screen-${s}`}
+            id={`auth-tab-${s}`}
+            tabIndex={active === s ? 0 : -1}
+            className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${active === s
+              ? "text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent"
               }`}
-            >
-              {active === s && (
-                <motion.span
-                  layoutId="activeTab"
-                  className="absolute inset-0 bg-primary rounded-full"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10">{screenLabels[s]}</span>
-            </button>
-          ))}
-        </div>
+          >
+            {active === s && (
+              <motion.span
+                layoutId="activeTab"
+                className="absolute inset-0 bg-primary rounded-full"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <span className="relative z-10">{screenLabels[s]}</span>
+          </button>
+        ))}
+      </div>
 
       {/* Component display */}
-      <div className="flex items-center justify-center px-4 py-12 sm:py-20">
+      <div
+        id="main-content"
+        tabIndex={-1}
+        className="flex items-center justify-center px-4 py-12 sm:py-20 focus:outline-none"
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
@@ -130,28 +146,28 @@ const Index = () => {
               {active === "login" && (
                 <LoginForm
                   onSubmit={simulateAsync}
-                  onForgotPassword={() => setActive("forgot")}
-                  onSignup={() => setActive("signup")}
+                  onForgotPassword={goToForgot}
+                  onSignup={goToSignup}
                   onGoogleSignIn={simulateAsync}
                 />
               )}
               {active === "signup" && (
                 <SignupForm
                   onSubmit={simulateAsync}
-                  onLogin={() => setActive("login")}
+                  onLogin={goToLogin}
                   onGoogleSignIn={simulateAsync}
                 />
               )}
               {active === "forgot" && (
                 <ForgotPasswordForm
                   onSubmit={simulateAsync}
-                  onBack={() => setActive("login")}
+                  onBack={goToLogin}
                 />
               )}
               {active === "reset" && (
                 <ResetPasswordForm
                   onSubmit={simulateAsync}
-                  onLogin={() => setActive("login")}
+                  onLogin={goToLogin}
                 />
               )}
               {active === "verify" && (
@@ -159,18 +175,18 @@ const Index = () => {
                   email="demo@email.com"
                   onVerify={simulateAsync}
                   onResend={simulateAsync}
-                  onBack={() => setActive("login")}
+                  onBack={goToLogin}
                 />
               )}
               {active === "verified" && (
-                <EmailVerified onContinue={() => setActive("login")} />
+                <EmailVerified onContinue={goToLogin} />
               )}
               {active === "logout" && (
                 <LogoutCard
                   userName="João Silva"
                   userEmail="joao@email.com"
                   onLogout={simulateAsync}
-                  onCancel={() => setActive("login")}
+                  onCancel={goToLogin}
                 />
               )}
             </Suspense>
