@@ -46,28 +46,28 @@ const Index = () => {
 
   const handleScreenKeyNavigation = (event: KeyboardEvent<HTMLDivElement>) => {
     const currentIndex = screens.indexOf(active);
+    let nextScreen: Screen | undefined;
 
     // A11y: seta horizontal permite trocar de formulário sem precisar usar mouse.
+    // Quando o tab muda, o foco deve acompanhar para garantir que leitores de tela anunciem a mudança corretamente.
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      setActive(screens[(currentIndex + 1) % screens.length]);
-      return;
+      nextScreen = screens[(currentIndex + 1) % screens.length];
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      nextScreen = screens[(currentIndex - 1 + screens.length) % screens.length];
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      nextScreen = screens[0];
+    } else if (event.key === "End") {
+      event.preventDefault();
+      nextScreen = screens[screens.length - 1];
     }
 
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      setActive(screens[(currentIndex - 1 + screens.length) % screens.length]);
-      return;
-    }
-
-    if (event.key === "Home") {
-      event.preventDefault();
-      setActive(screens[0]);
-    }
-
-    if (event.key === "End") {
-      event.preventDefault();
-      setActive(screens[screens.length - 1]);
+    if (nextScreen) {
+      setActive(nextScreen);
+      // Move o foco para o botão correspondente imediatamente
+      document.getElementById(`auth-tab-${nextScreen}`)?.focus();
     }
   };
 
