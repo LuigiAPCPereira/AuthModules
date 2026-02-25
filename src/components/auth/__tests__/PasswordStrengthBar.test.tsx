@@ -2,17 +2,24 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import PasswordStrengthBar from "@/components/auth/PasswordStrengthBar";
 import { I18nProvider } from "@/contexts/I18nContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { defaultLabelsPt } from "@/lib/i18n/labels";
 
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
-    <I18nProvider labels={defaultLabelsPt} locale="pt">
-      {ui}
-    </I18nProvider>
+    <AuthProvider supabaseUrl="https://test-url.supabase.co" supabaseAnonKey="test-key">
+      <I18nProvider labels={defaultLabelsPt} locale="pt">
+        {ui}
+      </I18nProvider>
+    </AuthProvider>
   );
 };
 
 describe("PasswordStrengthBar", () => {
+  beforeAll(() => {
+    window.scrollTo = vi.fn();
+  });
+
   it("não renderiza quando senha está vazia", () => {
     const { container } = renderWithProviders(
       <PasswordStrengthBar password="" />
