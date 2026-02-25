@@ -14,8 +14,8 @@ interface PasswordStrengthIndicatorProps<T extends FieldValues> {
  */
 const PasswordStrengthIndicator = <T extends FieldValues>({ control, name = "password" }: PasswordStrengthIndicatorProps<T>) => {
   const password = useWatch({
-    control,
-    name,
+    control: control as unknown as Control<FieldValues>,
+    name: name as string,
     defaultValue: "",
   });
 
