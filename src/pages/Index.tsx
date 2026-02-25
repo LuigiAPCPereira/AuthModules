@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense, type KeyboardEvent } from "react";
+import { useState, lazy, Suspense, type KeyboardEvent, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
@@ -41,34 +41,45 @@ const LoadingFallback = () => (
 
 const Index = () => {
   const [active, setActive] = useState<Screen>("login");
-  const authTabRefs = React.useRef(new Map<string, HTMLButtonElement | null>());
+  const authTabRefs = useRef(new Map<string, HTMLButtonElement | null>());
 
-  const simulateAsync = () => new Promise<void>((r) => setTimeout(r, 1500));
+  const goToForgot = useCallback(() => setActive("forgot"), []);
+  const goToSignup = useCallback(() => setActive("signup"), []);
+  const goToLogin = useCallback(() => setActive("login"), []);
+  const goToVerify = useCallback(() => setActive("verify"), []);
+  const goToVerified = useCallback(() => setActive("verified"), []);
+  const simulateAsync = useCallback(() => new Promise<void>((r) => setTimeout(r, 1500)), []);
 
   const handleScreenKeyNavigation = (event: KeyboardEvent<HTMLDivElement>) => {
     const currentIndex = screens.indexOf(active);
-    let nextScreen: Screen | undefined;
 
     // A11y: seta horizontal permite trocar de formulário sem precisar usar mouse.
-    // Quando o tab muda, o foco deve acompanhar para garantir que leitores de tela anunciem a mudança corretamente.
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      nextScreen = screens[(currentIndex + 1) % screens.length];
-    } else if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      nextScreen = screens[(currentIndex - 1 + screens.length) % screens.length];
-    } else if (event.key === "Home") {
-      event.preventDefault();
-      nextScreen = screens[0];
-    } else if (event.key === "End") {
-      event.preventDefault();
-      nextScreen = screens[screens.length - 1];
+      const nextScreen = screens[(currentIndex + 1) % screens.length];
+      setActive(nextScreen);
+      authTabRefs.current.get(nextScreen)?.focus();
+      return;
     }
 
-    if (nextScreen) {
-      setActive(nextScreen);
-      // Move o foco para o botão correspondente imediatamente
-      authTabRefs.current.get(nextScreen)?.focus();
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      const prevScreen = screens[(currentIndex - 1 + screens.length) % screens.length];
+      setActive(prevScreen);
+      authTabRefs.current.get(prevScreen)?.focus();
+      return;
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      setActive(screens[0]);
+      authTabRefs.current.get(screens[0])?.focus();
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      setActive(screens[screens.length - 1]);
+      authTabRefs.current.get(screens[screens.length - 1])?.focus();
     }
   };
 
@@ -89,10 +100,7 @@ const Index = () => {
         {screens.map((s) => (
           <button
             key={s}
-            ref={(el) => {
-              if (el) authTabRefs.current.set(s, el);
-              else authTabRefs.current.delete(s);
-            }}
+            ref={(el) => authTabRefs.current.set(s, el)}
             onClick={() => setActive(s)}
             role="tab"
             aria-selected={active === s}
@@ -138,28 +146,28 @@ const Index = () => {
               {active === "login" && (
                 <LoginForm
                   onSubmit={simulateAsync}
-                  onForgotPassword={() => setActive("forgot")}
-                  onSignup={() => setActive("signup")}
+                  onForgotPassword={goToForgot}
+                  onSignup={goToSignup}
                   onGoogleSignIn={simulateAsync}
                 />
               )}
               {active === "signup" && (
                 <SignupForm
                   onSubmit={simulateAsync}
-                  onLogin={() => setActive("login")}
+                  onLogin={goToLogin}
                   onGoogleSignIn={simulateAsync}
                 />
               )}
               {active === "forgot" && (
                 <ForgotPasswordForm
                   onSubmit={simulateAsync}
-                  onBack={() => setActive("login")}
+                  onBack={goToLogin}
                 />
               )}
               {active === "reset" && (
                 <ResetPasswordForm
                   onSubmit={simulateAsync}
-                  onLogin={() => setActive("login")}
+                  onLogin={goToLogin}
                 />
               )}
               {active === "verify" && (
@@ -167,18 +175,18 @@ const Index = () => {
                   email="demo@email.com"
                   onVerify={simulateAsync}
                   onResend={simulateAsync}
-                  onBack={() => setActive("login")}
+                  onBack={goToLogin}
                 />
               )}
               {active === "verified" && (
-                <EmailVerified onContinue={() => setActive("login")} />
+                <EmailVerified onContinue={goToLogin} />
               )}
               {active === "logout" && (
                 <LogoutCard
                   userName="João Silva"
                   userEmail="joao@email.com"
                   onLogout={simulateAsync}
-                  onCancel={() => setActive("login")}
+                  onCancel={goToLogin}
                 />
               )}
             </Suspense>
