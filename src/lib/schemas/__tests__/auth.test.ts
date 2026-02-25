@@ -3,7 +3,7 @@ import {
   loginSchema,
   signupSchema,
   forgotPasswordSchema,
-  resetPasswordSchema 
+  resetPasswordSchema
 } from "@/lib/schemas/auth";
 
 describe("Schemas de Validação", () => {
@@ -32,6 +32,14 @@ describe("Schemas de Validação", () => {
         password: "12345",
       });
 
+      expect(result.success).toBe(false);
+    });
+
+    it("rejeita senha muito longa (>128 chars)", () => {
+      const result = loginSchema.safeParse({
+        email: "teste@email.com",
+        password: "A".repeat(129) + "1!a",
+      });
       expect(result.success).toBe(false);
     });
   });
@@ -67,6 +75,24 @@ describe("Schemas de Validação", () => {
         password: "12345678",
       });
 
+      expect(result.success).toBe(false);
+    });
+
+    it("rejeita senha muito longa (>128 chars)", () => {
+      const result = signupSchema.safeParse({
+        name: "João Silva",
+        email: "joao@email.com",
+        password: "A".repeat(129) + "1!a",
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("rejeita email muito longo (>254 chars)", () => {
+      const result = signupSchema.safeParse({
+        name: "João Silva",
+        email: "a".repeat(245) + "@example.com",
+        password: "SenhaForte123!",
+      });
       expect(result.success).toBe(false);
     });
 
