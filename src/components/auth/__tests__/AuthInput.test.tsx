@@ -165,4 +165,24 @@ describe("AuthInput", () => {
       expect(screen.queryByText("Caps Lock ativado")).not.toBeInTheDocument();
     });
   });
+
+  it("suppresses Caps Lock warning when there is an error", async () => {
+    render(<AuthInput id="caps-error-input" label="Password" type="password" error="Senha inválida" />);
+    const input = screen.getByLabelText("Password");
+
+    const event = new KeyboardEvent("keydown", {
+      key: "A",
+      bubbles: true,
+    });
+    Object.defineProperty(event, "getModifierState", {
+      value: (key: string) => key === "CapsLock",
+    });
+
+    fireEvent(input, event);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Caps Lock ativado")).not.toBeInTheDocument();
+      expect(screen.getByText("Senha inválida")).toBeInTheDocument();
+    });
+  });
 });
