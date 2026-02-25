@@ -115,5 +115,6 @@ const AuthInputComponent = forwardRef<HTMLInputElement, AuthInputProps>(
 AuthInputComponent.displayName = "AuthInput";
 
 const AuthInput = memo(AuthInputComponent);
+AuthInput.displayName = "Memo(ForwardRef(AuthInput))";
 
 export default AuthInput;
