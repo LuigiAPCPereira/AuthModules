@@ -14,11 +14,15 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe("SignupForm", () => {
+  beforeAll(() => {
+    window.scrollTo = vi.fn();
+  });
+
   it("renderiza corretamente", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     expect(screen.getAllByText("Criar conta")[0]).toBeInTheDocument();
     expect(screen.getByLabelText(/Nome completo/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
@@ -39,10 +43,10 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     const passwordInput = screen.getByLabelText(/^Senha/i);
     await userEvent.type(passwordInput, "123");
-    
+
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
 
@@ -55,10 +59,10 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />
     );
-    
+
     const passwordInput = screen.getByLabelText(/^Senha/i);
     await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
-    
+
     // Verifica se o PasswordStrengthBar aparece
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
@@ -82,11 +86,11 @@ describe("SignupForm", () => {
     renderWithProviders(
       <SignupForm onSubmit={onSubmit} />
     );
-    
+
     await userEvent.type(screen.getByLabelText(/Nome completo/i), "João Silva");
     await userEvent.type(screen.getByLabelText(/E-mail/i), "joao@email.com");
     await userEvent.type(screen.getByLabelText(/^Senha/i), "TestPassword123!"); // ggignore
-    
+
     const submitButton = screen.getByRole("button", { name: /criar conta/i });
     fireEvent.click(submitButton);
 
