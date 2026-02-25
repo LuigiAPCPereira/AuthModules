@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeAll } from "vitest";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ResetPasswordForm from "../ResetPasswordForm";
 import { I18nProvider } from "@/contexts/I18nContext";
@@ -17,6 +17,9 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe("ResetPasswordForm", () => {
+  beforeAll(() => {
+    window.scrollTo = vi.fn();
+  });
   it("renders correctly", () => {
     renderWithProviders(<ResetPasswordForm />);
     expect(screen.getByRole("heading", { name: "Redefinir senha" })).toBeInTheDocument();
@@ -30,7 +33,9 @@ describe("ResetPasswordForm", () => {
     await userEvent.type(passwordInput, "weak");
 
     const submitButton = screen.getByRole("button", { name: /redefinir senha/i });
-    fireEvent.click(submitButton);
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
 
     await waitFor(() => {
       expect(screen.getByText(/mínimo de 8 caracteres/i)).toBeInTheDocument();
@@ -45,7 +50,9 @@ describe("ResetPasswordForm", () => {
     await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
 
     const submitButton = screen.getByRole("button", { name: /redefinir senha/i });
-    fireEvent.click(submitButton);
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith("TestPassword123!"); // ggignore
