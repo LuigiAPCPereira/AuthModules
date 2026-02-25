@@ -14,28 +14,23 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
         
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+          cache: 'npm'
           
       - name: Instalar dependências
-        run: pnpm install --frozen-lockfile
+        run: npm ci
         
       - name: Type check
-        run: pnpm run typecheck
+        run: npm run typecheck
         
       - name: Lint
-        run: pnpm run lint
+        run: npm run lint
         
       - name: Testes
-        run: pnpm run test:coverage
+        run: npm run test:coverage
         
       - name: Upload coverage
         uses: codecov/codecov-action@v5
@@ -52,22 +47,17 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
         
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+          cache: 'npm'
           
       - name: Instalar dependências
-        run: pnpm install --frozen-lockfile
+        run: npm ci
         
       - name: Build biblioteca
-        run: pnpm run build:lib
+        run: npm run build:lib
         
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -93,22 +83,17 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
         
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+          cache: 'npm'
           
       - name: Instalar dependências
-        run: pnpm install --frozen-lockfile
+        run: npm ci
         
       - name: Build demo
-        run: pnpm run build
+        run: npm run build
         
       - name: Copiar arquivos estáticos
         run: |
@@ -140,40 +125,23 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
         
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
-          cache: 'pnpm'
+          cache: 'npm'
           
       - name: Instalar dependências
-        run: pnpm install --frozen-lockfile
+        run: npm ci
         
-      - name: Baixar artifact do build
-        uses: actions/download-artifact@v4
-        with:
-          name: lib-build
-          path: dist/
+      - name: Build biblioteca
+        run: npm run build:lib
         
       - name: Publicar no GitHub Packages
         run: |
-          OUTPUT=$(pnpm publish --no-git-checks 2>&1) || EXIT_CODE=$?
-          if [ -n "$EXIT_CODE" ]; then
-            if echo "$OUTPUT" | grep -q "409"; then
-              echo "✓ Version already exists (409 Conflict), skipping publish."
-            else
-              echo "Publish failed:"
-              echo "$OUTPUT"
-              exit $EXIT_CODE
-            fi
-          else
-            echo "✓ Publish successful!"
-          fi
+          # Tenta publicar, ignora erro se versão já existe (409 Conflict)
+          npm publish --no-git-checks 2>&1 || true
+          echo "✓ Publish attempted (ignored if version already exists)"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,28 +1,20 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LoginForm from "@/components/auth/LoginForm";
 import { I18nProvider } from "@/contexts/I18nContext";
 import { defaultLabelsPt } from "@/lib/i18n/labels";
 
-import { AuthProvider } from "@/contexts/AuthContext";
-
 // Wrapper para providers
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
-    <AuthProvider supabaseUrl="https://test-url.supabase.co" supabaseAnonKey="test-key">
-      <I18nProvider labels={defaultLabelsPt} locale="pt">
-        {ui}
-      </I18nProvider>
-    </AuthProvider>
+    <I18nProvider labels={defaultLabelsPt} locale="pt">
+      {ui}
+    </I18nProvider>
   );
 };
 
 describe("LoginForm", () => {
-  beforeAll(() => {
-    window.scrollTo = vi.fn();
-  });
-
   it("renderiza corretamente com labels em português", () => {
     renderWithProviders(
       <LoginForm onSubmit={vi.fn()} />
@@ -30,23 +22,21 @@ describe("LoginForm", () => {
 
     expect(screen.getAllByText("Entrar")[0]).toBeInTheDocument();
     expect(screen.getByText("Bem-vindo de volta. Faça login na sua conta.")).toBeInTheDocument();
-    expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^Senha/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
+    expect(screen.getByLabelText("Senha")).toBeInTheDocument();
   });
 
-  it.skip("valida campos obrigatórios", async () => {
+  it("valida campos obrigatórios", async () => {
     renderWithProviders(
       <LoginForm onSubmit={vi.fn()} />
     );
 
-    // Instead of clicking the button (which can be flaky in jsdom with required attributes),
-    // we directly submit the form wrapper.
-    const form = screen.getByRole("button", { name: /entrar/i }).closest("form");
-    if (form) fireEvent.submit(form);
+    const submitButton = screen.getByRole("button", { name: /entrar/i });
+    fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/E-mail.*(obrigatório|inválido)/i)).toBeInTheDocument();
-      expect(screen.getByText(/Senha.*(obrigatória|Mínimo)/i)).toBeInTheDocument();
+      expect(screen.getByText("E-mail é obrigatório")).toBeInTheDocument();
+      expect(screen.getByText("Senha é obrigatória")).toBeInTheDocument();
     });
   });
 
@@ -55,13 +45,11 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={vi.fn()} />
     );
 
-    const emailInput = screen.getByLabelText(/E-mail/i);
+    const emailInput = screen.getByLabelText("E-mail");
     await userEvent.type(emailInput, "email-invalido");
 
     const submitButton = screen.getByRole("button", { name: /entrar/i });
-    await act(async () => {
-      fireEvent.click(submitButton);
-    });
+    fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(screen.getByText("E-mail inválido")).toBeInTheDocument();
@@ -74,21 +62,19 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={onSubmit} />
     );
 
-    const emailInput = screen.getByLabelText(/E-mail/i);
-    const passwordInput = screen.getByLabelText(/^Senha/i);
+    const emailInput = screen.getByLabelText("E-mail");
+    const passwordInput = screen.getByLabelText("Senha");
 
     await userEvent.type(emailInput, "teste@email.com");
-    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
+    await userEvent.type(passwordInput, "Senha123!");
 
     const submitButton = screen.getByRole("button", { name: /entrar/i });
-    await act(async () => {
-      fireEvent.click(submitButton);
-    });
+    fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({
         email: "teste@email.com",
-        password: "TestPassword123!", // ggignore
+        password: "Senha123!",
       });
     });
   });
@@ -99,16 +85,14 @@ describe("LoginForm", () => {
       <LoginForm onSubmit={onSubmit} />
     );
 
-    const emailInput = screen.getByLabelText(/E-mail/i);
-    const passwordInput = screen.getByLabelText(/^Senha/i);
+    const emailInput = screen.getByLabelText("E-mail");
+    const passwordInput = screen.getByLabelText("Senha");
 
     await userEvent.type(emailInput, "teste@email.com");
-    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
+    await userEvent.type(passwordInput, "Senha123!");
 
     const submitButton = screen.getByRole("button", { name: /entrar/i });
-    await act(async () => {
-      fireEvent.click(submitButton);
-    });
+    fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -116,21 +100,19 @@ describe("LoginForm", () => {
   });
 
   it("desabilita botão durante submissão", async () => {
-    const onSubmit = vi.fn().mockImplementation(() => new Promise(() => { }));
+    const onSubmit = vi.fn().mockImplementation(() => new Promise(() => {}));
     renderWithProviders(
       <LoginForm onSubmit={onSubmit} />
     );
 
-    const emailInput = screen.getByLabelText(/E-mail/i);
-    const passwordInput = screen.getByLabelText(/^Senha/i);
+    const emailInput = screen.getByLabelText("E-mail");
+    const passwordInput = screen.getByLabelText("Senha");
 
     await userEvent.type(emailInput, "teste@email.com");
-    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
+    await userEvent.type(passwordInput, "Senha123!");
 
     const submitButton = screen.getByRole("button", { name: /entrar/i });
-    await act(async () => {
-      fireEvent.click(submitButton);
-    });
+    fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(submitButton).toBeDisabled();

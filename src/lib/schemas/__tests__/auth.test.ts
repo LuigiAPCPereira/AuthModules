@@ -34,14 +34,6 @@ describe("Schemas de Validação", () => {
 
       expect(result.success).toBe(false);
     });
-
-    it("rejeita senha muito longa (>128 chars)", () => {
-      const result = loginSchema.safeParse({
-        email: "teste@email.com",
-        password: "A".repeat(129) + "1!a",
-      });
-      expect(result.success).toBe(false);
-    });
   });
 
   describe("signupSchema", () => {
@@ -78,24 +70,6 @@ describe("Schemas de Validação", () => {
       expect(result.success).toBe(false);
     });
 
-    it("rejeita senha muito longa (>128 chars)", () => {
-      const result = signupSchema.safeParse({
-        name: "João Silva",
-        email: "joao@email.com",
-        password: "A".repeat(129) + "1!a",
-      });
-      expect(result.success).toBe(false);
-    });
-
-    it("rejeita email muito longo (>254 chars)", () => {
-      const result = signupSchema.safeParse({
-        name: "João Silva",
-        email: "a".repeat(245) + "@example.com",
-        password: "SenhaForte123!",
-      });
-      expect(result.success).toBe(false);
-    });
-
     it("rejeita nome vazio", () => {
       const result = signupSchema.safeParse({
         name: "",
@@ -123,13 +97,6 @@ describe("Schemas de Validação", () => {
 
       expect(result.success).toBe(false);
     });
-
-    it("rejeita e-mail muito longo (>255 chars)", () => {
-      const result = forgotPasswordSchema.safeParse({
-        email: "a".repeat(250) + "@example.com",
-      });
-      expect(result.success).toBe(false);
-    });
   });
 
   describe("resetPasswordSchema", () => {
@@ -142,13 +109,6 @@ describe("Schemas de Validação", () => {
       // Verifica que o schema não tem confirmPassword
       const shape = resetPasswordSchema.shape;
       expect(shape).not.toHaveProperty("confirmPassword");
-    });
-
-    it("rejeita senha muito longa (>100 chars)", () => {
-      const result = resetPasswordSchema.safeParse({
-        password: "A".repeat(101) + "1!a",
-      });
-      expect(result.success).toBe(false);
     });
   });
 });

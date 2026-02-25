@@ -11,9 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-.agents
-skills-lock.json
-.agent 
 
 # Editor directories and files
 .vscode/*
