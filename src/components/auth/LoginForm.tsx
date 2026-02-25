@@ -1,29 +1,27 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Loader2, LogIn } from "lucide-react";
 import { getAuthErrorMessage } from "@/lib/errorMessages";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { loginSchema, type LoginFormData } from "@/lib/schemas/auth";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
+import { rateLimit } from "../../utils/rateLimit";
+import { sanitize } from "../../utils/sanitize";
 
 interface LoginFormProps {
-  onSubmit?: (data: { email: string; password: string }) => Promise<void>;
+  onSubmit?: (data: LoginFormData) => Promise<void>;
   onForgotPassword?: () => void;
   onSignup?: () => void;
   onGoogleSignIn?: () => Promise<void>;
 }
 
-const loginSchema = z.object({
-  email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
-  password: z.string().min(1, "Senha é obrigatória").min(6, "Mínimo de 6 caracteres"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-
 const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: LoginFormProps) => {
   const [serverError, setServerError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   const {
     register,
@@ -38,9 +36,20 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
   });
 
   const handleFormSubmit = async (data: LoginFormData) => {
+    // Basic sanitization
+    const sanitizedEmail = sanitize(data.email);
+
     setServerError("");
+    // Rate limit checks
+    const rl = rateLimit.check("login_attempt", 5, 15);
+    if (!rl.allowed) {
+      setServerError(`Muitas tentativas. Tente novamente em ${Math.ceil(rl.remainingMs / 60000)} minutos.`);
+      return;
+    }
+
     try {
-      await onSubmit?.(data);
+      await onSubmit?.({ ...data, email: sanitizedEmail });
+      rateLimit.reset("login_attempt");
     } catch (err: unknown) {
       setServerError(getAuthErrorMessage(err));
     }
@@ -53,25 +62,44 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           id="login-email"
           label="E-mail"
           type="email"
+          required
           placeholder="seu@email.com"
           error={!isSubmitting ? errors.email?.message : undefined}
           autoComplete="email"
-          autoFocus
           {...register("email")}
         />
         <AuthInput
           id="login-password"
           label="Senha"
           type="password"
+          required
           placeholder="••••••"
           error={!isSubmitting ? errors.password?.message : undefined}
           autoComplete="current-password"
           {...register("password")}
         />
-        <label className="flex items-center gap-2 mt-2">
-          <input type="checkbox" className="rounded border-input" />
-          <span className="text-sm text-auth-subtle">Lembrar de mim</span>
-        </label>
+        <div className="flex items-center gap-2 mt-2">
+          <Checkbox
+            id="login-remember-me"
+            className="cursor-pointer"
+            checked={rememberMe}
+            onCheckedChange={(c) => {
+              const val = !!c;
+              setRememberMe(val);
+              if (val) {
+                if (typeof window !== "undefined") localStorage.setItem("rememberMe", "true");
+              } else {
+                if (typeof window !== "undefined") localStorage.removeItem("rememberMe");
+              }
+            }}
+          />
+          <Label
+            htmlFor="login-remember-me"
+            className="font-normal text-auth-subtle cursor-pointer"
+          >
+            Lembrar de mim
+          </Label>
+        </div>
 
         <button
           type="button"
@@ -99,7 +127,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           aria-busy={isSubmitting}
         >
           {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
-          {isSubmitting ? "Entrando..." : "Entrar"}
+          {isSubmitting ? "Entrando…" : "Entrar"}
         </button>
       </form>
 
