@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useValidation } from "../useValidation";
 
@@ -32,12 +32,9 @@ describe("useValidation", () => {
       })
     );
 
-    const mockEvent = {
-      target: { value: "invalid-email" },
-    } as React.FocusEvent<HTMLInputElement>;
-
     act(() => {
-      result.current.getFieldProps("email").onBlur(mockEvent);
+      // New API: validateField(field, value)
+      result.current.validateField("email", "invalid-email");
     });
 
     expect(result.current.errors).toEqual({ email: "Invalid email" });
@@ -57,40 +54,22 @@ describe("useValidation", () => {
     );
 
     // Set error first
-    const invalidEvent = {
-      target: { value: "invalid" },
-    } as React.FocusEvent<HTMLInputElement>;
-
     act(() => {
-      result.current.getFieldProps("email").onBlur(invalidEvent);
+      result.current.validateField("email", "invalid");
     });
     expect(result.current.errors).toEqual({ email: "Invalid email" });
 
     // Validate with correct value
-    const validEvent = {
-      target: { value: "test@example.com" },
-    } as React.FocusEvent<HTMLInputElement>;
-
     act(() => {
-      result.current.getFieldProps("email").onBlur(validEvent);
+      result.current.validateField("email", "test@example.com");
     });
 
     expect(result.current.errors).toEqual({});
   });
 
   it("should explicitly clear error", () => {
+    // To test clearError, we need to set an error first.
     const { result } = renderHook(() =>
-      useValidation({
-        rules: [],
-      })
-    );
-
-    // Manually set error state (simulating previous validation)
-    // Since we can't easily set state directly, we'll rely on the fact that clearError works
-    // But to test it properly without validation, we might need a rule that fails first.
-
-    // Let's reuse the validation flow
-    const { result: res } = renderHook(() =>
       useValidation({
         rules: [
           {
@@ -102,16 +81,15 @@ describe("useValidation", () => {
       })
     );
 
-    const event = { target: { value: "" } } as React.FocusEvent<HTMLInputElement>;
     act(() => {
-      res.current.getFieldProps("test").onBlur(event);
+        result.current.validateField("test", "");
     });
-    expect(res.current.errors).toEqual({ test: "error" });
+    expect(result.current.errors).toEqual({ test: "error" });
 
     act(() => {
-      res.current.clearError("test");
+      result.current.clearError("test");
     });
 
-    expect(res.current.errors).toEqual({});
+    expect(result.current.errors).toEqual({});
   });
 });

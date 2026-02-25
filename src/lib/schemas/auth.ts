@@ -11,14 +11,12 @@ import { z } from "zod";
 export const loginSchema = z.object({
   email: z
     .string({ required_error: "E-mail é obrigatório" })
-    .trim()
     .min(1, "E-mail é obrigatório")
-    .max(255, "E-mail muito longo")
     .email("E-mail inválido"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
-    .min(6, "Mínimo de 6 caracteres")
-    .max(100, "Senha muito longa"),
+    .min(1, "Senha é obrigatória")
+    .min(6, "Mínimo de 6 caracteres"),
 });
 
 /**
@@ -27,20 +25,15 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   name: z
     .string({ required_error: "Nome é obrigatório" })
-    .trim()
     .min(1, "Nome é obrigatório")
-    .max(100, "Nome muito longo"),
+    .trim(),
   email: z
     .string({ required_error: "E-mail é obrigatório" })
-    .trim()
     .min(1, "E-mail é obrigatório")
-    .max(255, "E-mail muito longo")
     .email("E-mail inválido"),
   password: z
     .string({ required_error: "Senha é obrigatória" })
-    .trim()
     .min(8, "Mínimo de 8 caracteres")
-    .max(100, "Senha muito longa")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
     .regex(/\d/, "Deve conter um número")
@@ -53,9 +46,7 @@ export const signupSchema = z.object({
 export const forgotPasswordSchema = z.object({
   email: z
     .string({ required_error: "E-mail é obrigatório" })
-    .trim()
     .min(1, "E-mail é obrigatório")
-    .max(255, "E-mail muito longo")
     .email("E-mail inválido"),
 });
 
@@ -65,9 +56,7 @@ export const forgotPasswordSchema = z.object({
 export const resetPasswordSchema = z.object({
   password: z
     .string({ required_error: "Nova senha é obrigatória" })
-    .trim()
     .min(8, "Mínimo de 8 caracteres")
-    .max(100, "Senha muito longa")
     .regex(/[A-Z]/, "Deve conter uma letra maiúscula")
     .regex(/[a-z]/, "Deve conter uma letra minúscula")
     .regex(/\d/, "Deve conter um número")

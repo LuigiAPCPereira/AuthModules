@@ -71,6 +71,7 @@ const SignupForm = ({ onSubmit, onLogin, onGoogleSignIn }: SignupFormProps) => {
           placeholder="Mínimo 8 caracteres"
           error={errors.password?.message}
           autoComplete="new-password"
+          aria-describedby="password-requirements"
           {...register("password")}
         />
 
