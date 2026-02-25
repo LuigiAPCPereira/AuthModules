@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, type KeyboardEvent } from "react";
+import React, { useState, lazy, Suspense, type KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
@@ -41,6 +41,7 @@ const LoadingFallback = () => (
 
 const Index = () => {
   const [active, setActive] = useState<Screen>("login");
+  const authTabRefs = React.useRef(new Map<string, HTMLButtonElement | null>());
 
   const simulateAsync = () => new Promise<void>((r) => setTimeout(r, 1500));
 
@@ -67,7 +68,7 @@ const Index = () => {
     if (nextScreen) {
       setActive(nextScreen);
       // Move o foco para o botão correspondente imediatamente
-      document.getElementById(`auth-tab-${nextScreen}`)?.focus();
+      authTabRefs.current.get(nextScreen)?.focus();
     }
   };
 
@@ -85,32 +86,35 @@ const Index = () => {
         onKeyDown={handleScreenKeyNavigation}
         className="flex flex-wrap justify-center gap-2 max-w-2xl mx-auto pt-8"
       >
-          {screens.map((s) => (
-            <button
-              key={s}
-              onClick={() => setActive(s)}
-              role="tab"
-              aria-selected={active === s}
-              aria-controls={`auth-screen-${s}`}
-              id={`auth-tab-${s}`}
-              tabIndex={active === s ? 0 : -1}
-              className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                active === s
-                  ? "text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+        {screens.map((s) => (
+          <button
+            key={s}
+            ref={(el) => {
+              if (el) authTabRefs.current.set(s, el);
+              else authTabRefs.current.delete(s);
+            }}
+            onClick={() => setActive(s)}
+            role="tab"
+            aria-selected={active === s}
+            aria-controls={`auth-screen-${s}`}
+            id={`auth-tab-${s}`}
+            tabIndex={active === s ? 0 : -1}
+            className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${active === s
+              ? "text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent"
               }`}
-            >
-              {active === s && (
-                <motion.span
-                  layoutId="activeTab"
-                  className="absolute inset-0 bg-primary rounded-full"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10">{screenLabels[s]}</span>
-            </button>
-          ))}
-        </div>
+          >
+            {active === s && (
+              <motion.span
+                layoutId="activeTab"
+                className="absolute inset-0 bg-primary rounded-full"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <span className="relative z-10">{screenLabels[s]}</span>
+          </button>
+        ))}
+      </div>
 
       {/* Component display */}
       <div
