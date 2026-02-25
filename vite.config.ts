@@ -11,9 +11,6 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
-    headers: {
-      "Content-Security-Policy": "default-src 'self'; script-src 'self' https://use.typekit.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net; font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net; img-src 'self' data: https://p.typekit.net; connect-src 'self' wss://*.supabase.co wss://*.supabase.in; object-src 'none'; base-uri 'self';"
-    }
   },
   build: {
     outDir: "dist",

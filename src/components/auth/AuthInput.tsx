@@ -1,7 +1,6 @@
-import { useState, InputHTMLAttributes, forwardRef, useId, memo } from "react";
+import React, { useState, useCallback, InputHTMLAttributes, forwardRef, useId } from "react";
 import { Eye, EyeOff, AlertCircle, TriangleAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -9,77 +8,59 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
-  ({ label, error, type, className = "", id, ...props }, ref) => {
-    const [showPassword, setShowPassword] = useState(false);
-    const [isCapsLockActive, setIsCapsLockActive] = useState(false);
+  ({ label, error, type, className = "", id: propsId, onKeyDown, onKeyUp, onClick, ...props }, ref) => {
+    // Auto-generate a unique ID if none is provided.
+    // This ensures that the label is always correctly associated with the input (click-to-focus)
+    // and that screen readers can announce the field correctly, even if the developer forgets to pass an ID.
     const generatedId = useId();
-    const inputId = id || generatedId;
-    const errorId = `${inputId}-error`;
-    const capsWarningId = `${inputId}-caps-warning`;
-
+    const id = propsId ?? generatedId;
+    const [showPassword, setShowPassword] = useState(false);
+    const [capsLockActive, setCapsLockActive] = useState(false);
     const isPassword = type === "password";
     const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
-    const checkCapsLock = (e: React.KeyboardEvent | React.MouseEvent) => {
+    const checkCapsLock = useCallback((e: React.KeyboardEvent | React.MouseEvent) => {
       if (e.getModifierState) {
-        setIsCapsLockActive(e.getModifierState("CapsLock"));
+        setCapsLockActive(e.getModifierState("CapsLock"));
       }
-    };
+    }, []);
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
       checkCapsLock(e);
-      props.onKeyDown?.(e);
-    };
+      onKeyDown?.(e);
+    }, [checkCapsLock, onKeyDown]);
 
-    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyUp = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
       checkCapsLock(e);
-      props.onKeyUp?.(e);
-    };
+      onKeyUp?.(e);
+    }, [checkCapsLock, onKeyUp]);
 
-    const handleClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    const handleClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
       checkCapsLock(e);
-      props.onClick?.(e);
-    };
-
-    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-      // CapsLock detection runs only on keydown and click
-      props.onFocus?.(e);
-    };
-
-    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-      props.onBlur?.(e);
-    };
-
-    const descriptionIds = [
-      props["aria-describedby"],
-      error ? errorId : null,
-      isCapsLockActive && isPassword && !error ? capsWarningId : null
-    ].filter(Boolean).join(" ") || undefined;
+      onClick?.(e);
+    }, [checkCapsLock, onClick]);
 
     return (
       <div className="space-y-1.5">
-        <label className="auth-label" htmlFor={inputId}>
+        <label className="auth-label" htmlFor={id}>
           {label}
         </label>
         <div className="relative">
           <input
-            ref={ref}
-            id={inputId}
-            type={inputType}
-            className={cn(
-              "auth-input",
-              isPassword && "pr-12",
-              error && "ring-2 ring-destructive border-transparent",
-              className
-            )}
-            aria-invalid={!!error}
             {...props}
-            aria-describedby={descriptionIds}
+            ref={ref}
+            type={inputType}
+            id={id}
+            className={`auth-input ${isPassword ? "pr-12" : ""} ${error ? "ring-2 ring-destructive border-transparent" : ""} ${className}`}
+            aria-invalid={!!error}
+            aria-describedby={
+              [error ? `${id}-error` : undefined, props["aria-describedby"]]
+                .filter(Boolean)
+                .join(" ") || undefined
+            }
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
             onClick={handleClick}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
           />
           {isPassword && (
             <button
@@ -93,20 +74,6 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
           )}
         </div>
         <AnimatePresence>
-          {isCapsLockActive && isPassword && !error && (
-            <motion.p
-              key="caps-warning"
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              className="text-xs font-medium flex items-center gap-1.5 mt-1.5 text-[hsl(var(--warning))]"
-              id={capsWarningId}
-              role="alert"
-            >
-              <TriangleAlert size={14} />
-              Caps Lock ativado
-            </motion.p>
-          )}
           {error && (
             <motion.p
               key="error"
@@ -114,11 +81,25 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               className="auth-error"
-              id={errorId}
+              id={`${id}-error`}
               role="alert"
             >
               <AlertCircle size={14} />
               {error}
+            </motion.p>
+          )}
+          {!error && capsLockActive && isPassword && (
+            <motion.p
+              key="caps-warning"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              className="text-sm mt-1.5 flex items-center gap-1.5 text-[hsl(var(--warning))]"
+              id={`${id}-caps-warning`}
+              role="alert"
+            >
+              <TriangleAlert size={14} />
+              Caps Lock ativado
             </motion.p>
           )}
         </AnimatePresence>
@@ -127,6 +108,6 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
   }
 );
 
-AuthInput.displayName = "memo(forwardRef(AuthInput))";
+AuthInput.displayName = "AuthInput";
 
-export default memo(AuthInput);
+export default AuthInput;

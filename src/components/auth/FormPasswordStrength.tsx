@@ -5,10 +5,9 @@ import PasswordStrengthBar from "./PasswordStrengthBar";
 interface FormPasswordStrengthProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
-  id?: string;
 }
 
-const FormPasswordStrength = <T extends FieldValues>({ control, name, id }: FormPasswordStrengthProps<T>) => {
+const FormPasswordStrength = <T extends FieldValues>({ control, name }: FormPasswordStrengthProps<T>) => {
   const password = useWatch({
     control,
     name,
@@ -16,9 +15,7 @@ const FormPasswordStrength = <T extends FieldValues>({ control, name, id }: Form
 
   return (
     <AnimatePresence>
-      {password && (
-        <PasswordStrengthBar key="strength-bar" password={password} id={id} />
-      )}
+      <PasswordStrengthBar password={password || ""} />
     </AnimatePresence>
   );
 };

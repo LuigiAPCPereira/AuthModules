@@ -38,11 +38,10 @@ export { default as ThemeToggle } from "./components/auth/ThemeToggle";
 export { default as SkipLink } from "./components/auth/SkipLink";
 
 // Contextos
-export { AuthProvider } from "./contexts/AuthContext";
+export { AuthProvider, useAuth } from "./contexts/AuthContext";
 export { I18nProvider, useI18n } from "./contexts/I18nContext";
 
 // Hooks
-export { useAuth } from "./hooks/useAuth";
 export { useValidation } from "./hooks/useValidation";
 
 // Schemas e tipos
