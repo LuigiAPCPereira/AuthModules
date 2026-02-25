@@ -16,6 +16,10 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe("PasswordStrengthBar", () => {
+  beforeAll(() => {
+    window.scrollTo = vi.fn();
+  });
+
   it("não renderiza quando senha está vazia", () => {
     const { container } = renderWithProviders(
       <PasswordStrengthBar password="" />

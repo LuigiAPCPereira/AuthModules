@@ -18,6 +18,10 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe("SignupForm", () => {
+  beforeAll(() => {
+    window.scrollTo = vi.fn();
+  });
+
   it("renderiza corretamente", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />

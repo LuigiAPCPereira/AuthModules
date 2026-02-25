@@ -1,8 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import AuthInput from "../components/auth/AuthInput";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 
 describe("AuthInput Accessibility", () => {
+  beforeAll(() => {
+    window.scrollTo = vi.fn();
+  });
+
   it("renders with label associated to input when id is provided", () => {
     render(<AuthInput label="Test Label" id="test-id" />);
     const input = screen.getByLabelText("Test Label");
