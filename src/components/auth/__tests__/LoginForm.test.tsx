@@ -5,12 +5,16 @@ import LoginForm from "@/components/auth/LoginForm";
 import { I18nProvider } from "@/contexts/I18nContext";
 import { defaultLabelsPt } from "@/lib/i18n/labels";
 
+import { AuthProvider } from "@/contexts/AuthContext";
+
 // Wrapper para providers
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
-    <I18nProvider labels={defaultLabelsPt} locale="pt">
-      {ui}
-    </I18nProvider>
+    <AuthProvider supabaseUrl="https://test-url.supabase.co" supabaseAnonKey="test-key">
+      <I18nProvider labels={defaultLabelsPt} locale="pt">
+        {ui}
+      </I18nProvider>
+    </AuthProvider>
   );
 };
 

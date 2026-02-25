@@ -3,13 +3,16 @@ import { render, screen, fireEvent, waitFor, act } from "@testing-library/react"
 import userEvent from "@testing-library/user-event";
 import ResetPasswordForm from "../ResetPasswordForm";
 import { I18nProvider } from "@/contexts/I18nContext";
+import { AuthProvider } from "@/contexts/AuthContext"; // Added AuthProvider import
 import { defaultLabelsPt } from "@/lib/i18n/labels";
 
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
-    <I18nProvider labels={defaultLabelsPt} locale="pt">
-      {ui}
-    </I18nProvider>
+    <AuthProvider supabaseUrl="https://test-url.supabase.co" supabaseAnonKey="test-key">
+      <I18nProvider labels={defaultLabelsPt} locale="pt">
+        {ui}
+      </I18nProvider>
+    </AuthProvider>
   );
 };
 

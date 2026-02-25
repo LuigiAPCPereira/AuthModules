@@ -2,13 +2,16 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import LogoutCard from "../LogoutCard";
 import { I18nProvider } from "@/contexts/I18nContext";
+import { AuthProvider } from "@/contexts/AuthContext"; // Added import for AuthProvider
 import { defaultLabelsPt } from "@/lib/i18n/labels";
 
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
-    <I18nProvider labels={defaultLabelsPt} locale="pt">
-      {ui}
-    </I18nProvider>
+    <AuthProvider supabaseUrl="https://test-url.supabase.co" supabaseAnonKey="test-key">
+      <I18nProvider labels={defaultLabelsPt} locale="pt">
+        {ui}
+      </I18nProvider>
+    </AuthProvider>
   );
 };
 
