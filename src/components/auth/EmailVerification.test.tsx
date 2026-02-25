@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import EmailVerification from "./EmailVerification";
 import { describe, it, expect, vi, beforeAll } from "vitest";
 
@@ -10,10 +10,21 @@ describe("EmailVerification Component", () => {
     }
   });
 
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
+  });
+
   it("allows entering digits", () => {
     render(<EmailVerification />);
     const input = screen.getByRole("textbox");
-    fireEvent.change(input, { target: { value: "123456" } });
+    act(() => {
+      fireEvent.change(input, { target: { value: "123456" } });
+    });
     expect(input).toHaveValue("123456");
   });
 
@@ -22,7 +33,9 @@ describe("EmailVerification Component", () => {
     const input = screen.getByRole("textbox");
 
     // Simulate user typing non-digits
-    fireEvent.change(input, { target: { value: "abc" } });
+    act(() => {
+      fireEvent.change(input, { target: { value: "abc" } });
+    });
 
     // Expect the value to remain empty because the component regex check prevents state update
     expect(input).toHaveValue("");
@@ -33,7 +46,9 @@ describe("EmailVerification Component", () => {
     render(<EmailVerification onVerify={onVerifyMock} />);
     const input = screen.getByRole("textbox");
 
-    fireEvent.change(input, { target: { value: "123456" } });
+    act(() => {
+      fireEvent.change(input, { target: { value: "123456" } });
+    });
 
     await screen.findByText("Verification failed");
     await waitFor(() => expect(input).toHaveValue(""));
