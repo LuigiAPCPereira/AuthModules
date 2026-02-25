@@ -9,6 +9,8 @@ import { loginSchema, type LoginFormData } from "@/lib/schemas/auth";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import GoogleSignInButton from "./GoogleSignInButton";
+import { rateLimit } from "../../utils/rateLimit";
+import { sanitize } from "../../utils/sanitize";
 
 interface LoginFormProps {
   onSubmit?: (data: LoginFormData) => Promise<void>;
@@ -19,6 +21,7 @@ interface LoginFormProps {
 
 const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: LoginFormProps) => {
   const [serverError, setServerError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   const {
     register,
@@ -33,9 +36,20 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
   });
 
   const handleFormSubmit = async (data: LoginFormData) => {
+    // Basic sanitization
+    const sanitizedEmail = sanitize(data.email);
+
     setServerError("");
+    // Rate limit checks
+    const rl = rateLimit.check("login_attempt", 5, 15);
+    if (!rl.allowed) {
+      setServerError(`Muitas tentativas. Tente novamente em ${Math.ceil(rl.remainingMs / 60000)} minutos.`);
+      return;
+    }
+
     try {
-      await onSubmit?.(data);
+      await onSubmit?.({ ...data, email: sanitizedEmail });
+      rateLimit.reset("login_attempt");
     } catch (err: unknown) {
       setServerError(getAuthErrorMessage(err));
     }
@@ -52,7 +66,6 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           placeholder="seu@email.com"
           error={!isSubmitting ? errors.email?.message : undefined}
           autoComplete="email"
-          autoFocus
           {...register("email")}
         />
         <AuthInput
@@ -66,7 +79,20 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           {...register("password")}
         />
         <div className="flex items-center gap-2 mt-2">
-          <Checkbox id="login-remember-me" className="cursor-pointer" />
+          <Checkbox
+            id="login-remember-me"
+            className="cursor-pointer"
+            checked={rememberMe}
+            onCheckedChange={(c) => {
+              const val = !!c;
+              setRememberMe(val);
+              if (val) {
+                if (typeof window !== "undefined") localStorage.setItem("rememberMe", "true");
+              } else {
+                if (typeof window !== "undefined") localStorage.removeItem("rememberMe");
+              }
+            }}
+          />
           <Label
             htmlFor="login-remember-me"
             className="font-normal text-auth-subtle cursor-pointer"
@@ -101,7 +127,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           aria-busy={isSubmitting}
         >
           {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
-          {isSubmitting ? "Entrando..." : "Entrar"}
+          {isSubmitting ? "Entrando…" : "Entrar"}
         </button>
       </form>
 

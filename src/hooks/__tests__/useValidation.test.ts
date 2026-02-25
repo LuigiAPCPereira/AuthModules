@@ -37,7 +37,7 @@ describe("useValidation", () => {
     } as React.FocusEvent<HTMLInputElement>;
 
     act(() => {
-      result.current.validateField("email")(mockEvent);
+      result.current.getFieldProps("email").onBlur(mockEvent);
     });
 
     expect(result.current.errors).toEqual({ email: "Invalid email" });
@@ -62,7 +62,7 @@ describe("useValidation", () => {
     } as React.FocusEvent<HTMLInputElement>;
 
     act(() => {
-      result.current.validateField("email")(invalidEvent);
+      result.current.getFieldProps("email").onBlur(invalidEvent);
     });
     expect(result.current.errors).toEqual({ email: "Invalid email" });
 
@@ -72,7 +72,7 @@ describe("useValidation", () => {
     } as React.FocusEvent<HTMLInputElement>;
 
     act(() => {
-      result.current.validateField("email")(validEvent);
+      result.current.getFieldProps("email").onBlur(validEvent);
     });
 
     expect(result.current.errors).toEqual({});
@@ -90,7 +90,7 @@ describe("useValidation", () => {
     // But to test it properly without validation, we might need a rule that fails first.
 
     // Let's reuse the validation flow
-     const { result: res } = renderHook(() =>
+    const { result: res } = renderHook(() =>
       useValidation({
         rules: [
           {
@@ -104,7 +104,7 @@ describe("useValidation", () => {
 
     const event = { target: { value: "" } } as React.FocusEvent<HTMLInputElement>;
     act(() => {
-        res.current.validateField("test")(event);
+      res.current.getFieldProps("test").onBlur(event);
     });
     expect(res.current.errors).toEqual({ test: "error" });
 
