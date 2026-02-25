@@ -21,6 +21,7 @@ interface LoginFormProps {
 
 const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: LoginFormProps) => {
   const [serverError, setServerError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   const {
     register,
@@ -78,7 +79,20 @@ const LoginForm = ({ onSubmit, onForgotPassword, onSignup, onGoogleSignIn }: Log
           {...register("password")}
         />
         <div className="flex items-center gap-2 mt-2">
-          <Checkbox id="login-remember-me" className="cursor-pointer" />
+          <Checkbox
+            id="login-remember-me"
+            className="cursor-pointer"
+            checked={rememberMe}
+            onCheckedChange={(c) => {
+              const val = !!c;
+              setRememberMe(val);
+              if (val) {
+                if (typeof window !== "undefined") localStorage.setItem("rememberMe", "true");
+              } else {
+                if (typeof window !== "undefined") localStorage.removeItem("rememberMe");
+              }
+            }}
+          />
           <Label
             htmlFor="login-remember-me"
             className="font-normal text-auth-subtle cursor-pointer"

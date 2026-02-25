@@ -1,6 +1,6 @@
 /**
  * Componente de link para pular conteúdo repetitivo
- * Ajuda usuários de teclado e screen readers a navegar efficientemente
+ * Ajuda usuários de teclado e screen readers a navegar eficientemente
  */
 
 import { ArrowDown } from "lucide-react";
