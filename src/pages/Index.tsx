@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense, type KeyboardEvent } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m as motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
 import ThemeToggle from "@/components/auth/ThemeToggle";
