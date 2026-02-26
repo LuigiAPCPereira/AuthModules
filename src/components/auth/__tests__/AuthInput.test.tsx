@@ -185,4 +185,26 @@ describe("AuthInput", () => {
       expect(screen.getByText("Senha inválida")).toBeInTheDocument();
     });
   });
+
+  it("displays visual required indicator when required prop is true", () => {
+    render(<AuthInput label="Email" required />);
+
+    // Check for the asterisk
+    const asterisk = screen.getByText("*");
+    expect(asterisk).toBeInTheDocument();
+    expect(asterisk).toHaveClass("text-destructive");
+    expect(asterisk).toHaveAttribute("aria-hidden", "true");
+
+    // Check if input has required attribute
+    const input = screen.getByRole("textbox");
+    expect(input).toBeRequired();
+  });
+
+  it("does not display visual required indicator when required prop is false", () => {
+    render(<AuthInput label="Email" />);
+
+    expect(screen.queryByText("*")).not.toBeInTheDocument();
+    const input = screen.getByRole("textbox");
+    expect(input).not.toBeRequired();
+  });
 });
