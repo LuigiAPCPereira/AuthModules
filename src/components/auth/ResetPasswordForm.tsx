@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, KeyRound } from "lucide-react";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/schemas/auth";
+import { getAuthErrorMessage } from "@/lib/errorMessages";
 import AuthCard from "./AuthCard";
 import AuthInput from "./AuthInput";
 import FormPasswordStrength from "./FormPasswordStrength";
@@ -21,6 +22,7 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
     register,
     handleSubmit,
     control,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -34,9 +36,9 @@ const ResetPasswordForm = ({ onSubmit, onLogin }: ResetPasswordFormProps) => {
       await onSubmit?.(data.password);
       setSuccess(true);
     } catch (err: unknown) {
-      // For now, re-throw or handle as needed.
-      // Assuming parent handles it or swallowed by hook form if not set on root.
-      // Log to a secure monitoring service instead
+      setError("root", {
+        message: getAuthErrorMessage(err),
+      });
     }
   };
 
