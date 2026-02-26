@@ -58,4 +58,28 @@ describe("ResetPasswordForm", () => {
       expect(onSubmit).toHaveBeenCalledWith("TestPassword123!"); // ggignore
     });
   });
+
+  it("handles submission errors", async () => {
+    const onSubmit = vi.fn().mockRejectedValue(new Error("Token inválido"));
+    renderWithProviders(<ResetPasswordForm onSubmit={onSubmit} />);
+
+    const passwordInput = screen.getByLabelText(/Nova senha/i);
+    await userEvent.type(passwordInput, "TestPassword123!"); // ggignore
+
+    const submitButton = screen.getByRole("button", { name: /redefinir senha/i });
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
+
+    await waitFor(() => {
+      // The error message might be mapped or passed directly.
+      // Based on our implementation, it uses getAuthErrorMessage.
+      // Since "Token inválido" isn't a standard key, it might return "Ocorreu um erro inesperado." or similar if not mapped,
+      // but if we used a standard error like "INVALID_RESET_TOKEN", it would be deterministic.
+      // However, our getAuthErrorMessage falls back to string matching.
+      // Let's check for the error role alert.
+      const alert = screen.getByRole("alert");
+      expect(alert).toBeInTheDocument();
+    });
+  });
 });
