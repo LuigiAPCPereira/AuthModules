@@ -33,7 +33,6 @@ describe("useValidation", () => {
     );
 
     act(() => {
-      // New API: validateField(field, value)
       result.current.validateField("email", "invalid-email");
     });
 
@@ -68,7 +67,6 @@ describe("useValidation", () => {
   });
 
   it("should explicitly clear error", () => {
-    // To test clearError, we need to set an error first.
     const { result } = renderHook(() =>
       useValidation({
         rules: [
@@ -91,5 +89,37 @@ describe("useValidation", () => {
     });
 
     expect(result.current.errors).toEqual({});
+  });
+
+  it("should do nothing if clearing non-existent error", () => {
+     const { result } = renderHook(() => useValidation({ rules: [] }));
+     act(() => {
+       result.current.clearError("nonexistent");
+     });
+     expect(result.current.errors).toEqual({});
+  });
+
+  it("should return true if validating field with no rules", () => {
+     const { result } = renderHook(() => useValidation({ rules: [] }));
+     let isValid = false;
+     act(() => {
+       isValid = result.current.validateField("unknown", "value");
+     });
+     expect(isValid).toBe(true);
+     expect(result.current.errors).toEqual({});
+  });
+
+  it("should return props with onBlur handler", () => {
+     const { result } = renderHook(() => useValidation({
+       rules: [{ field: "test", validate: () => "error", error: "msg" }]
+     }));
+     const props = result.current.getFieldProps("test");
+     expect(props.onBlur).toBeDefined();
+
+     // Simulate onBlur
+     act(() => {
+        props.onBlur({ target: { value: "val" } } as any);
+     });
+     expect(result.current.errors).toEqual({ test: "msg" });
   });
 });

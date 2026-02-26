@@ -33,16 +33,16 @@ export { default as LogoutCard } from "./components/auth/LogoutCard";
 export { default as AuthCard } from "./components/auth/AuthCard";
 export { default as AuthInput } from "./components/auth/AuthInput";
 export { default as PasswordStrengthBar } from "./components/auth/PasswordStrengthBar";
+export { default as PasswordStrengthIndicator } from "./components/auth/PasswordStrengthIndicator";
 export { default as GoogleSignInButton } from "./components/auth/GoogleSignInButton";
 export { default as ThemeToggle } from "./components/auth/ThemeToggle";
 export { default as SkipLink } from "./components/auth/SkipLink";
 
 // Contextos
-export { AuthProvider } from "./contexts/AuthContext";
+export { AuthProvider, AuthContext } from "./contexts/AuthContext";
 export { I18nProvider, useI18n } from "./contexts/I18nContext";
 
 // Hooks
-export { useAuth } from "./hooks/useAuth";
 export { useValidation } from "./hooks/useValidation";
 
 // Schemas e tipos
