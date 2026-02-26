@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useValidation } from "../useValidation";
+import React from "react";
 
 describe("useValidation", () => {
   it("should initialize with no errors", () => {
@@ -32,12 +33,8 @@ describe("useValidation", () => {
       })
     );
 
-    const mockEvent = {
-      target: { value: "invalid-email" },
-    } as React.FocusEvent<HTMLInputElement>;
-
     act(() => {
-      result.current.getFieldProps("email").onBlur(mockEvent);
+      result.current.validateField("email", "invalid-email");
     });
 
     expect(result.current.errors).toEqual({ email: "Invalid email" });
@@ -57,22 +54,14 @@ describe("useValidation", () => {
     );
 
     // Set error first
-    const invalidEvent = {
-      target: { value: "invalid" },
-    } as React.FocusEvent<HTMLInputElement>;
-
     act(() => {
-      result.current.getFieldProps("email").onBlur(invalidEvent);
+      result.current.validateField("email", "invalid");
     });
     expect(result.current.errors).toEqual({ email: "Invalid email" });
 
     // Validate with correct value
-    const validEvent = {
-      target: { value: "test@example.com" },
-    } as React.FocusEvent<HTMLInputElement>;
-
     act(() => {
-      result.current.getFieldProps("email").onBlur(validEvent);
+      result.current.validateField("email", "test@example.com");
     });
 
     expect(result.current.errors).toEqual({});
@@ -80,17 +69,6 @@ describe("useValidation", () => {
 
   it("should explicitly clear error", () => {
     const { result } = renderHook(() =>
-      useValidation({
-        rules: [],
-      })
-    );
-
-    // Manually set error state (simulating previous validation)
-    // Since we can't easily set state directly, we'll rely on the fact that clearError works
-    // But to test it properly without validation, we might need a rule that fails first.
-
-    // Let's reuse the validation flow
-    const { result: res } = renderHook(() =>
       useValidation({
         rules: [
           {
@@ -102,16 +80,47 @@ describe("useValidation", () => {
       })
     );
 
-    const event = { target: { value: "" } } as React.FocusEvent<HTMLInputElement>;
     act(() => {
-      res.current.getFieldProps("test").onBlur(event);
+        result.current.validateField("test", "");
     });
-    expect(res.current.errors).toEqual({ test: "error" });
+    expect(result.current.errors).toEqual({ test: "error" });
 
     act(() => {
-      res.current.clearError("test");
+      result.current.clearError("test");
     });
 
-    expect(res.current.errors).toEqual({});
+    expect(result.current.errors).toEqual({});
+  });
+
+  it("should do nothing if clearing non-existent error", () => {
+     const { result } = renderHook(() => useValidation({ rules: [] }));
+     act(() => {
+       result.current.clearError("nonexistent");
+     });
+     expect(result.current.errors).toEqual({});
+  });
+
+  it("should return true if validating field with no rules", () => {
+     const { result } = renderHook(() => useValidation({ rules: [] }));
+     let isValid = false;
+     act(() => {
+       isValid = result.current.validateField("unknown", "value");
+     });
+     expect(isValid).toBe(true);
+     expect(result.current.errors).toEqual({});
+  });
+
+  it("should return props with onBlur handler", () => {
+     const { result } = renderHook(() => useValidation({
+       rules: [{ field: "test", validate: () => "error", error: "msg" }]
+     }));
+     const props = result.current.getFieldProps("test");
+     expect(props.onBlur).toBeDefined();
+
+     // Simulate onBlur
+     act(() => {
+        props.onBlur({ target: { value: "val" } } as React.FocusEvent<HTMLInputElement>);
+     });
+     expect(result.current.errors).toEqual({ test: "msg" });
   });
 });

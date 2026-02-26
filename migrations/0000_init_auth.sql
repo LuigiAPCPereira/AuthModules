@@ -17,17 +17,17 @@ alter table public.profiles force row level security;
 
 -- Policy: Users can view their own profile
 -- Rationale: Ensures a user can only query their own data
-create policy "Users can view own profile" 
+create policy "Users can view own profile"
 on public.profiles
-for select 
+for select
 to authenticated
 using ( (select auth.uid()) = id );
 
 -- Policy: Users can update their own profile
 -- Rationale: Users should be able to edit their own profile details
-create policy "Users can update own profile" 
+create policy "Users can update own profile"
 on public.profiles
-for update 
+for update
 to authenticated
 using ( (select auth.uid()) = id );
 

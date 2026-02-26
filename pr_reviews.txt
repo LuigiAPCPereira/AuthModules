@@ -113,28 +113,28 @@ Reviewing files that changed from the base of the PR and between b1414fbd43dc1e4
 
 > [!CAUTION]
 > Some comments are outside the diff and can’t be posted inline due to platform limitations.
-> 
-> 
-> 
+>
+>
+>
 > <details>
 > <summary>⚠️ Outside diff range comments (1)</summary><blockquote>
-> 
+>
 > <details>
 > <summary>src/pages/Index.tsx (1)</summary><blockquote>
-> 
+>
 > `130-175`: _🧹 Nitpick_ | _🔵 Trivial_
-> 
+>
 > **Callbacks inline `() => setActive(...)` criam novas referências a cada render de `Index`**
-> 
+>
 > O PR menciona explicitamente "impedindo otimizações futuras caso `LoginForm` seja memoizado". No estado atual, callbacks como `onForgotPassword={() => setActive("forgot")}` gerarão novas referências a cada render de `Index`. Se qualquer formulário-filho for futuramente envolto em `memo`, esses props sempre diferirão e o bailout será ineficaz.
-> 
+>
 > Como `setActive` de `useState` é estável por garantia do React, os handlers derivados podem ser declarados fora do componente ou com `useCallback(fn, [])`:
-> 
-> 
-> 
+>
+>
+>
 > <details>
 > <summary>♻️ Exemplo: mover handlers estáticos para fora do componente (sem dependências de estado)</summary>
-> 
+>
 > ```diff
 > +// Fora do componente Index — setActive é passado como parâmetro
 > +// ou usar useCallback com deps vazias dentro do componente:
@@ -146,9 +146,9 @@ Reviewing files that changed from the base of the PR and between b1414fbd43dc1e4
 > +  const goToLogin    = useCallback(() => setActive("login"),    []);
 > +  const goToVerify   = useCallback(() => setActive("verify"),   []);
 > +  const goToVerified = useCallback(() => setActive("verified"), []);
-> 
+>
 >    // ...
-> 
+>
 > -  <LoginForm
 > -    onSubmit={simulateAsync}
 > -    onForgotPassword={() => setActive("forgot")}
@@ -163,15 +163,15 @@ Reviewing files that changed from the base of the PR and between b1414fbd43dc1e4
 > +  />
 > ```
 > </details>
-> 
+>
 > Essa mudança completaria a intenção declarada no PR de fornecer referências estáveis a todos os props passados para os formulários-filhos.
-> 
+>
 > <details>
 > <summary>🤖 Prompt for AI Agents</summary>
-> 
+>
 > ```
 > Verify each finding against the current code and only fix it if needed.
-> 
+>
 > In `@src/pages/Index.tsx` around lines 130 - 175, Inline arrow callbacks like
 > onForgotPassword={() => setActive("forgot")} create new function references
 > every render, preventing future memoization of child components; refactor by
@@ -182,11 +182,11 @@ Reviewing files that changed from the base of the PR and between b1414fbd43dc1e4
 > EmailVerified, and LogoutCard instead of inline arrow functions so props remain
 > referentially stable.
 > ```
-> 
+>
 > </details>
-> 
+>
 > </blockquote></details>
-> 
+>
 > </blockquote></details>
 
 <details>
@@ -287,31 +287,31 @@ markdownlint to confirm MD022 is resolved.
 
 > [!CAUTION]
 > Some comments are outside the diff and can’t be posted inline due to platform limitations.
-> 
-> 
-> 
+>
+>
+>
 > <details>
 > <summary>⚠️ Outside diff range comments (1)</summary><blockquote>
-> 
+>
 > <details>
 > <summary>src/lib/schemas/__tests__/auth.test.ts (1)</summary><blockquote>
-> 
+>
 > `14-105`: _🧹 Nitpick_ | _🔵 Trivial_
-> 
+>
 > **LGTM! Atualização dos valores de senha**
-> 
+>
 > Os novos valores (`"senha123"`, `"SenhaForte123!"`, `"NovaSenhaForte123!"`) são mais representativos e consistentes com os cenários de validação. A lógica de cada teste permanece correta.
-> 
-> 
-> 
+>
+>
+>
 > > **Cobertura opcional:** Testes de fronteira para e-mail > 256 caracteres e senha > 100 caracteres foram removidos. Se o schema ainda impõe esses limites, considere adicionar casos de rejeição explícitos para garantir que essas regras continuam cobertas por testes.
-> 
+>
 > <details>
 > <summary>🤖 Prompt for AI Agents</summary>
-> 
+>
 > ```
 > Verify each finding against the current code and only fix it if needed.
-> 
+>
 > In `@src/lib/schemas/__tests__/auth.test.ts` around lines 14 - 105, The tests
 > removed boundary cases for overly long inputs; add explicit rejection tests to
 > ensure the schemas still enforce max lengths by adding cases in
@@ -322,11 +322,11 @@ markdownlint to confirm MD022 is resolved.
 > loginSchema, signupSchema and resetPasswordSchema to mirror the structure and
 > assertions.
 > ```
-> 
+>
 > </details>
-> 
+>
 > </blockquote></details>
-> 
+>
 > </blockquote></details>
 
 <details>
@@ -587,29 +587,29 @@ de senhas existentes.
 
 > [!CAUTION]
 > Some comments are outside the diff and can’t be posted inline due to platform limitations.
-> 
-> 
-> 
+>
+>
+>
 > <details>
 > <summary>⚠️ Outside diff range comments (1)</summary><blockquote>
-> 
+>
 > <details>
 > <summary>src/lib/schemas/auth.ts (1)</summary><blockquote>
-> 
+>
 > `37-44`: _🧹 Nitpick_ | _🔵 Trivial_
-> 
+>
 > **Observação: Zod v3 não faz short-circuit — regexes executam mesmo quando `.max()` falha.**
-> 
+>
 > Em Zod v3, todos os checks acumulam erros sem interrupção antecipada. Portanto, uma entrada de 100 000 caracteres ainda percorre os quatro `.regex()` mesmo após o `.max(100)` falhar. Neste caso específico o risco é baixo — `/[A-Z]/`, `/[a-z]/`, `/\d/`, `/[^A-Za-z0-9]/` são matchers simples de classe de caracteres sem backtracking catastrófico (O(n)), então DoS por ReDoS não é aplicável. O `.max()` continua sendo eficaz na proteção contra overflow em banco de dados e em alocação de memória excessiva.
-> 
+>
 > Caso a equipe queira garantia total de que regex não processa strings fora do limite, uma opção é utilizar `.superRefine()` com retorno antecipado após checar o comprimento.
-> 
+>
 > <details>
 > <summary>🤖 Prompt for AI Agents</summary>
-> 
+>
 > ```
 > Verify each finding against the current code and only fix it if needed.
-> 
+>
 > In `@src/lib/schemas/auth.ts` around lines 37 - 44, The password schema currently
 > runs all .regex() checks even when .max(100) fails because Zod v3 doesn't
 > short-circuit; change password to perform a length-first guard using
@@ -620,11 +620,11 @@ de senhas existentes.
 > .max(100)/.regex(...) calls, and replace/augment them with a .superRefine() that
 > enforces length first and then applies the character-class checks.
 > ```
-> 
+>
 > </details>
-> 
+>
 > </blockquote></details>
-> 
+>
 > </blockquote></details>
 
 <details>
@@ -724,62 +724,62 @@ remover o token de comentário).
 
 > [!CAUTION]
 > Some comments are outside the diff and can’t be posted inline due to platform limitations.
-> 
-> 
-> 
+>
+>
+>
 > <details>
 > <summary>⚠️ Outside diff range comments (5)</summary><blockquote>
-> 
+>
 > <details>
 > <summary>src/components/auth/SkipLink.tsx (1)</summary><blockquote>
-> 
+>
 > `3-3`: _⚠️ Potential issue_ | _🟡 Minor_
-> 
+>
 > **Corrigir erro tipográfico no comentário.**
-> 
+>
 > "efficientemente" → "eficientemente" (uma só letra 'f').
-> 
+>
 > <details>
 > <summary>✏️ Correção sugerida</summary>
-> 
+>
 > ```diff
 > - * Ajuda usuários de teclado e screen readers a navegar efficientemente
 > + * Ajuda usuários de teclado e screen readers a navegar eficientemente
 > ```
 > </details>
-> 
+>
 > <details>
 > <summary>🤖 Prompt for AI Agents</summary>
-> 
+>
 > ```
 > Verify each finding against the current code and only fix it if needed.
-> 
+>
 > In `@src/components/auth/SkipLink.tsx` at line 3, Corrija o comentário dentro do
 > componente SkipLink: altere a palavra "efficientemente" para "eficientemente" no
 > texto do comentário que descreve a ajuda a usuários de teclado e screen readers
 > no arquivo/objeto SkipLink (procure pelo componente/function/class SkipLink e
 > atualize o comentário correspondente).
 > ```
-> 
+>
 > </details>
-> 
+>
 > </blockquote></details>
 > <details>
 > <summary>src/pages/Index.tsx (1)</summary><blockquote>
-> 
+>
 > `79-79`: _⚠️ Potential issue_ | _🟠 Major_
-> 
+>
 > **O `SkipLink` aponta para um destino inexistente — bloqueador de acessibilidade.**
-> 
+>
 > A linha 79 contém `<SkipLink href="#main-content" />`, mas o elemento com `id="main-content"` foi removido da linha 116 (o div principal). Isso quebra completamente o skip link, tornando impossível para usuários de teclado e leitores de tela acessar o conteúdo principal.
-> 
+>
 > O SkipLink é um simples link âncora (`<a href>`) que depende da existência de um elemento no DOM com o id correspondente. Sem `id="main-content"` no div de conteúdo, o navegador não consegue localizar o alvo da navegação.
-> 
+>
 > Adicionalmente, o teste que cobria essa funcionalidade (`src/pages/__tests__/Index.test.tsx`) foi removido, mascarando a regressão.
-> 
+>
 > <details>
 > <summary>♿ Correção necessária</summary>
-> 
+>
 > ```diff
 > -      <div className="flex items-center justify-center px-4 py-12 sm:py-20">
 > +      <div
@@ -787,16 +787,16 @@ remover o token de comentário).
 > +        className="flex items-center justify-center px-4 py-12 sm:py-20"
 > +      >
 > ```
-> 
+>
 > Restaurar `id="main-content"` garante que o `SkipLink` consegue navegar para o destino correto.
 > </details>
-> 
+>
 > <details>
 > <summary>🤖 Prompt for AI Agents</summary>
-> 
+>
 > ```
 > Verify each finding against the current code and only fix it if needed.
-> 
+>
 > In `@src/pages/Index.tsx` at line 79, O SkipLink (<SkipLink href="#main-content"
 > />) aponta para um id inexistente porque o atributo id="main-content" foi
 > removido do container principal; restaure id="main-content" no elemento de
@@ -806,36 +806,36 @@ remover o token de comentário).
 > src/pages/__tests__/Index.test.tsx para cobrir o comportamento do SkipLink
 > apontando para o elemento com id="main-content".
 > ```
-> 
+>
 > </details>
-> 
+>
 > </blockquote></details>
 > <details>
 > <summary>src/components/auth/PasswordStrengthBar.tsx (1)</summary><blockquote>
-> 
+>
 > `72-93`: _⚠️ Potential issue_ | _🟠 Major_
-> 
+>
 > **`role="list"` sem `role="listitem"` nos filhos viola a especificação WAI-ARIA**
-> 
+>
 > O contêiner da lista de requisitos tem `role="list"`, mas cada item filho (linha 79) é um `div` simples sem `role="listitem"`. A especificação WAI-ARIA exige que o papel `list` possua elementos com os papéis `listitem` ou `group`. Listas devem conter filhos cujo papel é `listitem`, ou elementos com papel `group` que, por sua vez, contenham filhos com papel `listitem`.
-> 
+>
 > Sem `role="listitem"`, leitores de tela anunciarão a lista como vazia, quebrando a experiência de usuários com tecnologias assistivas. O AI summary confirma que `role="listitem"` foi deliberadamente removido neste PR — isso é uma regressão de acessibilidade.
-> 
+>
 > <details>
 > <summary>♿ Correção sugerida</summary>
-> 
+>
 > ```diff
 > -        <div key={i} className="flex items-center gap-1.5">
 > +        <div key={i} role="listitem" className="flex items-center gap-1.5">
 > ```
 > </details>
-> 
+>
 > <details>
 > <summary>🤖 Prompt for AI Agents</summary>
-> 
+>
 > ```
 > Verify each finding against the current code and only fix it if needed.
-> 
+>
 > In `@src/components/auth/PasswordStrengthBar.tsx` around lines 72 - 93, The
 > PasswordStrengthBar component renders a container with role="list" but its
 > children rendered in rules.map (the anonymous div in the map) lack
@@ -845,24 +845,24 @@ remover o token de comentário).
 > announced correctly by assistive tech; ensure the change preserves existing
 > classes and layout and keep the Check/X and span structure intact.
 > ```
-> 
+>
 > </details>
-> 
+>
 > </blockquote></details>
 > <details>
 > <summary>src/lib/schemas/auth.ts (1)</summary><blockquote>
-> 
+>
 > `11-64`: _⚠️ Potential issue_ | _🟠 Major_
-> 
+>
 > **Ausência de validação de comprimento máximo abre vetor de DoS por bcrypt**
-> 
+>
 > A remoção de todos os `.max()` em campos de senha e e-mail representa um risco real: senhas muito longas (ex.: strings de vários KB) serão processadas pelo algoritmo de hash na camada de autenticação. O bcrypt, em especial, tem custo linear com o número de blocos e pode tornar o endpoint de login/signup suscetível a ataques de exaustão de CPU com entradas controladas pelo atacante.
-> 
+>
 > Recomendação: restaurar limites sensatos no mínimo para os campos de senha (`max(128)`) e e-mail (`max(254)` — limite RFC 5321).
-> 
+>
 > <details>
 > <summary>🛡️ Correção sugerida</summary>
-> 
+>
 > ```diff
 >   email: z
 >     .string({ required_error: "E-mail é obrigatório" })
@@ -876,13 +876,13 @@ remover o token de comentário).
 >     .min(6, "Mínimo de 6 caracteres"),
 > ```
 > </details>
-> 
+>
 > <details>
 > <summary>🤖 Prompt for AI Agents</summary>
-> 
+>
 > ```
 > Verify each finding against the current code and only fix it if needed.
-> 
+>
 > In `@src/lib/schemas/auth.ts` around lines 11 - 64, The schemas (loginSchema,
 > signupSchema, forgotPasswordSchema, resetPasswordSchema) lack max length checks
 > which allows very long inputs that can be abused to DoS bcrypt; add sensible max
@@ -892,41 +892,41 @@ remover o token de comentário).
 > longo") (keep existing required/min/email rules), so the validators
 > short-circuit before expensive hashing.
 > ```
-> 
+>
 > </details>
-> 
+>
 > </blockquote></details>
 > <details>
 > <summary>src/components/auth/__tests__/LoginForm.test.tsx (1)</summary><blockquote>
-> 
+>
 > `96-99`: _⚠️ Potential issue_ | _🟡 Minor_
-> 
+>
 > **`getByRole("alert")` pode quebrar com o novo aviso de Caps Lock.**
-> 
+>
 > O aviso de Caps Lock introduzido nesta PR em `AuthInput` também usa `role="alert"`. Se algum evento de teclado no campo de senha acionar a detecção de Caps Lock durante este teste, haverá dois elementos com `role="alert"` na tela simultaneamente e `getByRole` lançará erro por ambiguidade. Prefira uma query mais específica:
-> 
+>
 > <details>
 > <summary>🛡️ Sugestão de fix</summary>
-> 
+>
 > ```diff
 > - expect(screen.getByRole("alert")).toBeInTheDocument();
 > + expect(screen.getByText("Credenciais inválidas")).toBeInTheDocument();
 > ```
-> 
+>
 > Ou, se a mensagem mapeada puder variar, consulte pelo `id` do contêiner de erro do servidor:
-> 
+>
 > ```diff
 > - expect(screen.getByRole("alert")).toBeInTheDocument();
 > + expect(screen.getByRole("alert", { name: /credenciais/i })).toBeInTheDocument();
 > ```
 > </details>
-> 
+>
 > <details>
 > <summary>🤖 Prompt for AI Agents</summary>
-> 
+>
 > ```
 > Verify each finding against the current code and only fix it if needed.
-> 
+>
 > In `@src/components/auth/__tests__/LoginForm.test.tsx` around lines 96 - 99, The
 > test uses getByRole("alert") which can collide with the new Caps Lock alert from
 > AuthInput; update the assertion in LoginForm.test (the await waitFor block) to
@@ -936,11 +936,11 @@ remover o token de comentário).
 > referenced in the component) so the test no longer fails when the Caps Lock
 > alert is present.
 > ```
-> 
+>
 > </details>
-> 
+>
 > </blockquote></details>
-> 
+>
 > </blockquote></details>
 
 <details>

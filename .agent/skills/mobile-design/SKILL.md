@@ -130,7 +130,7 @@ allowed-tools: Read, Glob, Grep, Bash
 Business Logic      ✅ Always                     -
 Data Layer          ✅ Always                     -
 Core Features       ✅ Always                     -
-                    
+
 Navigation          -                             ✅ iOS: edge swipe, Android: back button
 Gestures            -                             ✅ Platform-native feel
 Icons               -                             ✅ SF Symbols vs Material Icons

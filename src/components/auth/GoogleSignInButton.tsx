@@ -1,7 +1,5 @@
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "../../hooks/useAuth";
-import { rateLimit } from "../../utils/rateLimit";
 
 interface GoogleSignInButtonProps {
   onGoogleSignIn?: () => Promise<void>;
@@ -12,43 +10,27 @@ const GoogleSignInButton = ({
   onGoogleSignIn,
   label = "Continuar com Google",
 }: GoogleSignInButtonProps) => {
-  const [isPending, startTransition] = useTransition();
-  const { loginWithGoogle } = useAuth();
+  const [loading, setLoading] = useState(false);
 
-  const handleClick = () => {
-    if (isPending) return; // Debounce
-
-    const rl = rateLimit.check("oauth_attempt", 5, 15);
-    if (!rl.allowed) {
-      console.warn("Muitas tentativas de OAuth.");
-      return;
+  const handleClick = async () => {
+    setLoading(true);
+    try {
+      await onGoogleSignIn?.();
+    } catch {
+      // handled by parent
+    } finally {
+      setLoading(false);
     }
-
-    startTransition(() => {
-      const executeSignIn = async () => {
-        try {
-          if (onGoogleSignIn) {
-            await onGoogleSignIn();
-          } else {
-            await loginWithGoogle();
-          }
-          rateLimit.reset("oauth_attempt");
-        } catch (error) {
-          console.error("Google sign in error", error);
-        }
-      };
-      executeSignIn();
-    });
   };
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      disabled={isPending}
-      className="auth-btn-secondary flex items-center justify-center gap-3 transition-opacity disabled:opacity-70"
+      disabled={loading}
+      className="auth-btn-secondary flex items-center justify-center gap-3"
     >
-      {isPending ? (
+      {loading ? (
         <Loader2 size={18} className="animate-spin" />
       ) : (
         <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">

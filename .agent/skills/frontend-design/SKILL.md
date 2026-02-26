@@ -48,7 +48,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 **Color not specified?** Ask:
 > "What color palette do you prefer? (blue/green/orange/neutral/other?)"
 
-**Style not specified?** Ask: 
+**Style not specified?** Ask:
 > "What style are you going for? (minimal/bold/retro/futuristic/organic?)"
 
 **Layout not specified?** Ask:

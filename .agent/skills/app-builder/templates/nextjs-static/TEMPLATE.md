@@ -56,7 +56,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'export',        // Required for Static Hosting (S3, GitHub Pages)
-  images: { 
+  images: {
     unoptimized: true      // Required if not using Node.js server image optimization
   },
   trailingSlash: true,     // Recommended for SEO and fixing 404s on some hosts

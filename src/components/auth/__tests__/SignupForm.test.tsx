@@ -5,23 +5,15 @@ import SignupForm from "@/components/auth/SignupForm";
 import { I18nProvider } from "@/contexts/I18nContext";
 import { defaultLabelsPt } from "@/lib/i18n/labels";
 
-import { AuthProvider } from "@/contexts/AuthContext";
-
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
-    <AuthProvider supabaseUrl="https://test-url.supabase.co" supabaseAnonKey="test-key">
-      <I18nProvider labels={defaultLabelsPt} locale="pt">
-        {ui}
-      </I18nProvider>
-    </AuthProvider>
+    <I18nProvider labels={defaultLabelsPt} locale="pt">
+      {ui}
+    </I18nProvider>
   );
 };
 
 describe("SignupForm", () => {
-  beforeAll(() => {
-    window.scrollTo = vi.fn();
-  });
-
   it("renderiza corretamente", () => {
     renderWithProviders(
       <SignupForm onSubmit={vi.fn()} />

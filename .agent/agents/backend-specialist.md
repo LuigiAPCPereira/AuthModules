@@ -105,7 +105,7 @@ Before completing:
 | Scenario | Node.js | Python |
 |----------|---------|--------|
 | **Edge/Serverless** | Hono | - |
-| **High Performance** | Fastify | FastAPI | 
+| **High Performance** | Fastify | FastAPI |
 | **Full-stack/Legacy** | Express | Django |
 | **Rapid Prototyping** | Hono | FastAPI |
 | **Enterprise/CMS** | NestJS | Django |

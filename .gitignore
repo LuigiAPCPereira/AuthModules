@@ -13,7 +13,7 @@ dist-ssr
 *.local
 .agents
 skills-lock.json
-.agent 
+.agent
 
 # Editor directories and files
 .vscode/*
