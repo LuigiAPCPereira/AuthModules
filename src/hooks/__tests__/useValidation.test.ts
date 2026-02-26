@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useValidation } from "../useValidation";
+import React from "react";
 
 describe("useValidation", () => {
   it("should initialize with no errors", () => {
@@ -118,7 +119,7 @@ describe("useValidation", () => {
 
      // Simulate onBlur
      act(() => {
-        props.onBlur({ target: { value: "val" } } as any);
+        props.onBlur({ target: { value: "val" } } as React.FocusEvent<HTMLInputElement>);
      });
      expect(result.current.errors).toEqual({ test: "msg" });
   });
