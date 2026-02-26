@@ -22,8 +22,7 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ["react", "react-dom"],
-          ui: ["framer-motion"],
-          // lucide-react is intentionally excluded to allow tree-shaking and splitting
+          // lucide-react and framer-motion are intentionally excluded to allow tree-shaking and splitting
           // into lazy-loaded chunks (e.g. signup/forgot-password forms).
         },
       },

@@ -1,6 +1,6 @@
 import { useState, InputHTMLAttributes, forwardRef, useId, memo } from "react";
 import { Eye, EyeOff, AlertCircle, TriangleAlert } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -94,7 +94,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
         </div>
         <AnimatePresence>
           {isCapsLockActive && isPassword && !error && (
-            <motion.p
+            <m.p
               key="caps-warning"
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
@@ -105,10 +105,10 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             >
               <TriangleAlert size={14} />
               Caps Lock ativado
-            </motion.p>
+            </m.p>
           )}
           {error && (
-            <motion.p
+            <m.p
               key="error"
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
@@ -119,7 +119,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             >
               <AlertCircle size={14} />
               {error}
-            </motion.p>
+            </m.p>
           )}
         </AnimatePresence>
       </div>
