@@ -15,8 +15,6 @@ describe("AuthInput Accessibility", () => {
   });
 
   it("renders with label associated to input even when id is NOT provided (auto-generated)", () => {
-    // Before fix: This would fail because htmlFor would be undefined.
-    // After fix: This should pass because an ID is auto-generated.
     render(<AuthInput label="Auto ID Label" />);
 
     const input = screen.getByLabelText("Auto ID Label");
@@ -33,5 +31,33 @@ describe("AuthInput Accessibility", () => {
 
     const input = screen.getByLabelText("Error Label");
     expect(input.getAttribute("aria-describedby")).toBe(errorNode.id);
+  });
+
+  it("shows required indicator when required prop is passed", () => {
+    // Label will be "Required Label *" because of the indicator
+    // But getByLabelText usually matches the text content of the label
+    // We can use a regex to be flexible
+    render(<AuthInput label="Required Label" required />);
+
+    // Check if the asterisk is present in the document
+    const indicator = screen.getByText("*");
+    expect(indicator).toBeInTheDocument();
+    expect(indicator).toHaveClass("text-destructive");
+    expect(indicator).toHaveAttribute("aria-hidden", "true");
+
+    // Verify the input has required attribute
+    // Note: getByLabelText might need to include the asterisk in the query or use regex
+    const input = screen.getByLabelText(/Required Label/);
+    expect(input).toBeRequired();
+  });
+
+  it("does not show required indicator when required prop is missing", () => {
+    render(<AuthInput label="Optional Label" />);
+
+    const indicator = screen.queryByText("*");
+    expect(indicator).not.toBeInTheDocument();
+
+    const input = screen.getByLabelText("Optional Label");
+    expect(input).not.toBeRequired();
   });
 });
