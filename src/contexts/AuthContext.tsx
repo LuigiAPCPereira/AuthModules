@@ -2,7 +2,6 @@ import { createContext, useEffect, ReactNode } from "react";
 import { supabase, initializeSupabase } from "../services/supabaseClient";
 import { authService } from "../services/authService";
 import { useAuthStore } from "../store/authStore";
-import { cookieStorage } from "../utils/cookies";
 
 export interface AuthContextValue {
   login: typeof authService.signInWithPassword;
@@ -33,10 +32,6 @@ export const AuthProvider = ({ children, supabaseUrl, supabaseAnonKey }: AuthPro
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (!error) {
         setSession(session);
-        if (session) {
-          cookieStorage.set("sb-access-token", session.access_token);
-          cookieStorage.set("sb-refresh-token", session.refresh_token);
-        }
       }
       setLoading(false);
     });
@@ -46,13 +41,6 @@ export const AuthProvider = ({ children, supabaseUrl, supabaseAnonKey }: AuthPro
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session) {
-        cookieStorage.set("sb-access-token", session.access_token);
-        cookieStorage.set("sb-refresh-token", session.refresh_token);
-      } else {
-        cookieStorage.remove("sb-access-token");
-        cookieStorage.remove("sb-refresh-token");
-      }
     });
 
     return () => {
