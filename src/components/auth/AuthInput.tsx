@@ -9,7 +9,7 @@ interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
-  ({ label, error, type, className = "", id, ...props }, ref) => {
+  ({ label, error, type, className = "", id, required, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
     const [isCapsLockActive, setIsCapsLockActive] = useState(false);
     const generatedId = useId();
@@ -60,12 +60,18 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
       <div className="space-y-1.5">
         <label className="auth-label" htmlFor={inputId}>
           {label}
+          {required && (
+            <span className="text-destructive ml-1" aria-hidden="true">
+              *
+            </span>
+          )}
         </label>
         <div className="relative">
           <input
             ref={ref}
             id={inputId}
             type={inputType}
+            required={required}
             className={cn(
               "auth-input",
               isPassword && "pr-12",
