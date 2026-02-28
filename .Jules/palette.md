@@ -5,3 +5,7 @@
 ## 2026-02-12 - Navegação por teclado em tabs de autenticação
 **Aprendizado:** Em navegação tipo "pills" para trocar telas, tratar o grupo como `tablist` com `aria-selected`, `tabIndex` em roving e atalhos `ArrowLeft/ArrowRight/Home/End` melhora bastante a usabilidade sem alterar layout.
 **Ação:** Reutilizar esse padrão em qualquer seletor horizontal de telas/etapas para manter experiência consistente entre mouse, teclado e leitor de tela.
+
+## 2024-06-15 - Tooltips para botões com ícone
+**Aprendizado:** Botões contendo apenas ícones (como o `ThemeToggle`) precisam mais do que um `aria-label`. Usuários videntes não recebem feedback de contexto ao passar o mouse por cima se não houver um tooltip explicitando a ação.
+**Ação:** Ao criar botões de ícone (icon-only), sempre envolvê-olds no componente `Tooltip` do Shadcn e exibir sua ação em texto (`TooltipContent`).
