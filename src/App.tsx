@@ -4,9 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { LazyMotion } from "framer-motion";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
+import { loadFeatures } from "@/lib/motion-features";
 
 const queryClient = new QueryClient();
 
@@ -16,8 +18,9 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "placeholder-a
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <TooltipProvider>
+    <LazyMotion strict features={loadFeatures}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <TooltipProvider>
         <BrowserRouter
           basename={import.meta.env.BASE_URL}
           future={{
@@ -34,9 +37,10 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </LazyMotion>
   </QueryClientProvider>
 );
 

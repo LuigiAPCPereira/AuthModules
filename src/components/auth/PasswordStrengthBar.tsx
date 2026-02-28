@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Check, X } from "lucide-react";
 
 interface PasswordStrengthBarProps {
@@ -32,7 +32,7 @@ const PasswordStrengthBar = ({ password, id }: PasswordStrengthBarProps) => {
   const config = strengthConfig[Math.max(0, score - 1)];
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
@@ -96,7 +96,7 @@ const PasswordStrengthBar = ({ password, id }: PasswordStrengthBarProps) => {
           </div>
         ))}
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 
