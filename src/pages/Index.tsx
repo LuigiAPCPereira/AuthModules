@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense, type KeyboardEvent, useCallback, useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
 import ThemeToggle from "@/components/auth/ThemeToggle";
@@ -113,7 +113,7 @@ const Index = () => {
               }`}
           >
             {active === s && (
-              <motion.span
+              <m.span
                 layoutId="activeTab"
                 className="absolute inset-0 bg-primary rounded-full"
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -131,7 +131,7 @@ const Index = () => {
         className="flex items-center justify-center px-4 py-12 sm:py-20 focus:outline-none"
       >
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={active}
             role="tabpanel"
             aria-labelledby={`auth-tab-${active}`}
@@ -190,7 +190,7 @@ const Index = () => {
                 />
               )}
             </Suspense>
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </div>
     </div>

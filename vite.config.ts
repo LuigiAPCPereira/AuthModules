@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
     headers: {
-      "Content-Security-Policy": "default-src 'self'; script-src 'self' https://use.typekit.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net; font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net; img-src 'self' data: https://p.typekit.net; connect-src 'self' wss://*.supabase.co wss://*.supabase.in; object-src 'none'; base-uri 'self';"
+      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://use.typekit.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net; font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net; img-src 'self' data: https://p.typekit.net; connect-src 'self' wss://*.supabase.co wss://*.supabase.in; object-src 'none'; base-uri 'self';"
     }
   },
   build: {
@@ -22,9 +22,9 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ["react", "react-dom"],
-          ui: ["framer-motion"],
-          // lucide-react is intentionally excluded to allow tree-shaking and splitting
-          // into lazy-loaded chunks (e.g. signup/forgot-password forms).
+          // framer-motion and lucide-react are intentionally excluded from manualChunks
+          // to allow the bundler to correctly split them into separate lazy-loaded chunks
+          // via dynamic import (e.g. signup/forgot-password forms, motion-features).
         },
       },
     },
