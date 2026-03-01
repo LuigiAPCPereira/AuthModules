@@ -1,12 +1,15 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ThemeProvider } from "next-themes";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import ThemeToggle from "./ThemeToggle";
 import { describe, it, expect } from "vitest";
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-    {children}
+    <TooltipProvider>
+      {children}
+    </TooltipProvider>
   </ThemeProvider>
 );
 
